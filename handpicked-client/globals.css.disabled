@@ -1,0 +1,303 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Regular.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  font-optical-sizing: auto;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Italic.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  font-optical-sizing: auto;
+}
+
+:root {
+  --brand-primary: #1abc9c; /* teal */
+  --brand-secondary: #2e86de; /* blue */
+  --brand-accent: #1282a2; /* gradient midpoint */
+  --brand-dark: #0b1220; /* background navy */
+
+  --brand-saving: #00C48C; /* teal */
+  --brand-harbor: #0077FF; /* blue */
+  --brand-anchor: #00B4DB; /* gradient midpoint */
+  --brand-waves: #0083B0; /* background navy */
+  --brand-navybg: #0B0F1A; /* dark navy */
+  --brand-tagline: #E4E4E4; /* light gray */
+
+
+  /* surface tokens — used for cards and light surfaces */
+  --surface: #ffffff; /* default light surface */
+  --surface-2: rgba(255, 255, 255, 0.03); /* subtle dark-surface */
+  --on-surface: #0f1724; /* text on light surface */
+}
+
+/* ---------- existing helpers ---------- */
+.card-accent-top {
+  border-top: 3px solid var(--brand-accent);
+}
+
+/* Base buttons */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+  /* accessible focus ring by default */
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary;
+}
+
+/* Primary button */
+.btn-primary {
+  @apply bg-brand-primary text-white border border-brand-primary hover:bg-brand-secondary hover:border-brand-secondary;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary;
+}
+
+/* Outline button */
+.btn-outline {
+  @apply border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary;
+}
+
+/* Secondary button (optional, for less emphasis) */
+.btn-secondary {
+  @apply bg-brand-secondary text-white border border-brand-secondary hover:bg-brand-primary hover:border-brand-primary;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary;
+}
+
+/* Disabled state */
+.btn:disabled,
+.btn-disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+/* Toast styling (to unify any toasts) */
+.toast {
+  @apply fixed bottom-6 right-6 bg-brand-dark text-white text-sm px-3 py-2 rounded shadow-lg;
+}
+
+/* Sidebar sections */
+.sidebar-box {
+  @apply bg-white border border-gray-100 rounded-md p-4;
+}
+
+/* Swiper pagination bullets */
+.swiper-pagination-bullet {
+  @apply bg-gray-300 opacity-80;
+}
+
+.swiper-pagination-bullet-active {
+  @apply bg-brand-primary opacity-100;
+}
+
+/* Swiper navigation arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  @apply text-brand-primary;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  @apply text-brand-secondary;
+}
+
+/* Card base: smoother hover */
+.card-base {
+  @apply bg-white border border-gray-200 rounded-lg transition-shadow duration-150;
+}
+.card-base:hover {
+  @apply shadow-lg -translate-y-0.5;
+}
+
+/* Headings */
+.section-heading {
+  @apply text-xl font-semibold text-brand-primary mb-4;
+}
+
+/* Truncate utilities (fallback if tailwind line-clamp plugin is not enabled) */
+/* clamp fallback utilities for ExpandableText */
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* set line counts */
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+/* Pills (consistent style for stats, used-by, trust chips) */
+.pill {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+.pill-green {
+  @apply bg-emerald-50 text-emerald-700;
+}
+.pill-gray {
+  @apply bg-gray-100 text-gray-600;
+}
+
+/* optional smooth reveal (height transition) — works when removing clamp only */
+.expandable {
+  position: relative;
+}
+
+.expandable .expandable-content {
+  transition: max-height 180ms ease;
+}
+
+/* Inline toggle styling — consistent with earlier suggestions */
+.expand-toggle {
+  display: inline-block;
+  margin-left: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.92rem;
+  color: #2563eb; /* indigo-600 */
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.expand-toggle:focus {
+  outline: 2px solid #bfdbfe; /* subtle focus */
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.expandable p {
+  margin: 0;
+}
+
+.details-panel.hidden {
+  display: none !important;
+}
+
+.preview-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
+    monospace;
+  letter-spacing: 0.02em;
+}
+
+.hp-summary::marker,
+.hp-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* optional: subtle transition for expanded content */
+.hp-details > div {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+/* ensure expanded block displays normally */
+.group-open\\:line-clamp-none {
+  -webkit-line-clamp: unset;
+  display: block;
+  white-space: normal;
+}
+
+/* Tailwind utilities (put in your globals or component CSS) */
+.footer-link {
+  @apply inline-block text-gray-300 hover:text-white transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary rounded px-1;
+}
+.social-btn {
+  @apply p-2 rounded hover:bg-white/5 hover:text-brand-primary transition focus:outline-none focus:ring-2 focus:ring-brand-primary;
+}
+.social-btn.small {
+  @apply p-1;
+}
+
+/* @apply helpers (Tailwind) */
+.detail-summary {
+  @apply cursor-pointer font-medium;
+}
+.details-panel {
+  @apply mt-2 text-sm text-gray-300;
+}
+
+/* ---------- NEW / ADDED helpers (from audit) ---------- */
+
+/* unified card helper used across index and pages */
+.card {
+  @apply rounded-md bg-white/3 p-4 transition-shadow;
+}
+
+/* card variant for light surfaces (e.g. testimonials) */
+.card-surface {
+  /* use --surface tokens — override these in dark mode if needed */
+  background-color: var(--surface-2);
+  color: var(--on-surface);
+  @apply rounded-md p-4 border;
+  border-color: var(--surface-6);
+}
+
+/* Accent border helpers for card top */
+.accent-blue {
+  border-top-width: 4px;
+  border-top-style: solid;
+  border-top-color: var(--brand-secondary);
+}
+.accent-amber {
+  border-top-width: 4px;
+  border-top-style: solid;
+  border-top-color: #f59e0b;
+}
+
+/* Re-usable shadow for store/coupon cards */
+.shadow-store-card {
+  box-shadow: 0 6px 20px rgba(10, 12, 20, 0.06);
+}
+
+/* Hero helper */
+.site-hero {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+}
+
+/* Prose overrides to nudge colors to brand tokens (safe & minimal) */
+.prose :where(h1, h2, h3, h4) {
+  @apply text-on-surface;
+}
+.prose {
+  /* default link color inside prose */
+  --tw-prose-links: var(--brand-primary);
+}
+.prose a {
+  @apply underline-offset-2 hover:underline;
+  color: var(--brand-primary);
+}
+
+/* small utility to ensure readable text on brand-primary backgrounds */
+.on-brand-contrast {
+  color: white;
+  mix-blend-mode: normal;
+}
+
+/* accessibility helpers */
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-3 focus:py-2 focus:bg-white focus:text-brand-primary rounded;
+}
+
+/* small responsive tweaks for footer columns spacing */
+.footer-col {
+  @apply space-y-3;
+}
+
+.hero-placeholder {
+  width: 100%;
+  aspect-ratio: 16/5;
+  background: #f3f4f6; /* neutral gray or brand color */
+}

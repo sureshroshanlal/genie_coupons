@@ -1,0 +1,23 @@
+# robots.txt for Saving Harbor
+# Last updated: 2025-09-17
+
+User-agent: *
+# Block internal and sensitive areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /scripts/
+Disallow: /user/profile/
+Disallow: /login/
+Disallow: /register/
+
+# Prevent indexing of search results or filter pages
+Disallow: /*?*
+
+# Sitemap reference
+Sitemap: https://savingharbor.com/sitemap-index.xml
+
+# Host directive (optional, some crawlers honor this)
+Host: savingharbor.com

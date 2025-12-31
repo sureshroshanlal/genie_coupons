@@ -1,0 +1,107 @@
+---
+// src/pages/blogs/index.astro
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import CardBlog from "../../components/CardBlog.astro";
+import Pagination from "../../components/Pagination.astro";
+import { api } from "../../lib/api";
+
+type Blog = {
+  id: string | number;
+  slug: string;
+  title: string;
+  hero_image_url?: string | null;
+  category?: string | null;
+  created_at?: string | null;
+};
+
+type BlogsResponse = {
+  data: Blog[];
+  meta: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    canonical?: string;
+    prev?: string | null;
+    next?: string | null;
+    total_pages?: number;
+    jsonld?: any;
+    title?: string;
+    description?: string;
+  };
+};
+
+let resp: BlogsResponse | null = null;
+try {
+  // forward current request querystring to backend so SSR respects ?page=, ?limit=, etc.
+const currentSearch = (typeof Astro !== "undefined" && Astro?.request && Astro.request.url)
+  ? new URL(Astro.request.url).search
+  : ""; // fallback: no query when rendering outside SSR
+  resp = await api.get<BlogsResponse>(
+    `/blogs${currentSearch}`,
+    {},
+    { retries: 2, timeout: 8000 }
+  );
+} catch (e) {
+  console.error("Error fetching blogs:", e);
+  resp = {
+    data: [],
+    meta: {
+      page: 1,
+      limit: 0,
+      total: 0,
+      prev: null,
+      next: null,
+      total_pages: 1,
+      title: "Blog - Saving Harbor",
+      description: "Blog temporarily unavailable.",
+      canonical: undefined,
+      jsonld: undefined,
+    },
+  };
+}
+
+const blogs = resp?.data || [];
+const meta = resp?.meta || {};
+const pageTitle = meta.title || "Blog - Saving Harbor";
+const pageDesc =
+  meta.description || "Guides, tips, and insights from the Saving Harbor team.";
+const canonical = meta.canonical;
+const jsonld = meta.jsonld;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-brand-primary">Blog</h1>
+    <p class="mt-2 text-sm text-gray-500 max-w-2xl">{pageDesc}</p>
+
+    <!-- resource-list wrapper used by client pagination script -->
+    <div id="resource-list" class="mt-6">
+      {
+        blogs.length > 0 ? (
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogs.map((b) => (
+              <CardBlog blog={b} />
+            ))}
+          </div>
+        ) : (
+          <p class="mt-6 text-gray-500">No posts found.</p>
+        )
+      }
+    </div>
+
+    <div class="mt-10">
+      <Pagination
+        prev={meta.prev}
+        next={meta.next}
+        total_pages={meta.total_pages}
+      />
+    </div>
+  </main>
+  <Footer />
+
+  <!-- client pagination script (shared for coupons/stores/blogs) -->
+  <script type="module" src="/js/cursor-pagination.js"></script>
+</Base>

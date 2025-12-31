@@ -1,0 +1,111 @@
+---
+// src/pages/contact.astro
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const pageMeta = {
+  title: "Contact Saving Harbor",
+  description:
+    "Get in touch with the Saving Harbor team for questions, partnerships, and support.",
+};
+const contactOrg = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  mainEntity: {
+    "@type": "Organization",
+    name: "Saving Harbor",
+    email: "connect.savingharbor@gmail.com",
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: "support.savingharbor@gmail.com",
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "partnerships",
+        email: "partnerships.savingharbor@gmail.com",
+      },
+    ],
+  },
+};
+---
+
+<Base meta={pageMeta}>
+  <Header />
+
+  <main
+    role="main"
+    aria-labelledby="contact-heading"
+    class="container mx-auto px-4 py-10"
+  >
+    <header id="contact-heading" class="mb-6">
+      <h1 class="site-hero text-on-surface">Contact</h1>
+      <p class="mt-2 text-gray-400">
+        We’d love to hear from you. Use the details below and we’ll get back as
+        soon as possible.
+      </p>
+    </header>
+
+    <section class="grid gap-6 sm:grid-cols-2" aria-label="Contact options">
+      <!-- General -->
+      <article class="card card-surface" aria-labelledby="contact-general">
+        <h2 id="contact-general" class="section-heading">General inquiries</h2>
+        <address class="not-italic">
+          Email:
+          <a
+            href="mailto:hello.savingharbor@gmail.com"
+            class="text-brand-primary hover:underline"
+          >
+            hello.savingharbor@gmail.com
+          </a>
+        </address>
+      </article>
+
+      <!-- Partnerships -->
+      <article class="card card-surface" aria-labelledby="contact-partnerships">
+        <h2 id="contact-partnerships" class="section-heading">Partnerships</h2>
+        <address class="not-italic">
+          Email:
+          <a
+            href="mailto:partnerships.savingharbor@gmail.com"
+            class="text-brand-primary hover:underline"
+          >
+            partnerships.savingharbor@gmail.com
+          </a>
+        </address>
+      </article>
+
+      <!-- Support -->
+      <article class="card card-surface" aria-labelledby="contact-support">
+        <h2 id="contact-support" class="section-heading">Support</h2>
+        <address class="not-italic">
+          Email:
+          <a
+            href="mailto:support.savingharbor@gmail.com"
+            class="text-brand-primary hover:underline"
+          >
+            support.savingharbor@gmail.com
+          </a>
+          <!-- optional phone fallback -->
+          <!-- <div class="mt-1">Phone: <a href="tel:+911234567890" class="text-brand-primary hover:underline">+91 12345 67890</a></div> -->
+        </address>
+      </article>
+
+      <!-- Feedback -->
+      <article class="card card-surface" aria-labelledby="contact-feedback">
+        <h2 id="contact-feedback" class="section-heading">Feedback</h2>
+        <p>
+          Found an expired code or want to suggest a new store? Send details and
+          we’ll review promptly.
+        </p>
+      </article>
+    </section>
+
+    <!-- JSON-LD for ContactPage (search engines) -->
+    <script type="application/ld+json" set:html={JSON.stringify(contactOrg)} />
+  </main>
+
+  <Footer />
+</Base>

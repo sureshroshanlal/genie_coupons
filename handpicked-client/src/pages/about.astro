@@ -1,0 +1,99 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const pageMeta = {
+  title: "About Saving Harbor",
+  description:
+    "Welcome to SavingHarbor — trusted coupon experts delivering verified offers and great savings.",
+};
+---
+
+<Base meta={pageMeta}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <article class="prose max-w-none lg:prose-lg text-on-surface">
+      <h1>About Saving Harbor</h1>
+
+      <p>
+        Welcome to <strong>SavingHarbor</strong> — your trusted source for the very
+        best offers, every single day. With over <strong
+          >14 years of experience</strong
+        > in the coupon industry, we know precisely what users want: unbeatable deals,
+        seamless service, and a platform that earns your trust.
+      </p>
+
+      <h2>Our mission</h2>
+      <p>
+        Our mission is simple yet powerful: to curate and deliver premium offers
+        from trusted brands so that you save more and stress less. We build with
+        modern, performant technology to ensure lightning-fast page loads,
+        mobile-friendly navigation, and an interface so intuitive you’ll feel
+        right at home.
+      </p>
+
+      <h2>How we verify coupons</h2>
+      <p>
+        Trust is the foundation of everything we do — here’s how we make sure
+        the coupons you see actually work:
+      </p>
+      <ul>
+        <li>We test codes against live carts before publishing.</li>
+        <li>
+          High-traffic merchants are re-checked daily; others are reviewed on a
+          rolling cadence.
+        </li>
+        <li>
+          We clearly label limited-time or single-use codes so you know what to
+          expect.
+        </li>
+      </ul>
+
+      <h2>Editorial standards</h2>
+      <p>
+        We disclose affiliate relationships where relevant and never accept
+        payment to list a code that does not work as described. Your trust comes
+        first—always.
+      </p>
+
+      <h2>Join our community</h2>
+      <p>
+        When you use SavingHarbor, you’re joining a community of deal-hunters.
+        Follow us on our official channels so you never miss a premier offer:
+      </p>
+      <ul>
+        <li>
+          <a
+            href="https://www.facebook.com/profile.php?id=61580887157989"
+            class="text-brand-primary hover:underline">Facebook</a>
+        </li>
+        <li>
+          <a
+            href="https://www.instagram.com/savingharbor/"
+            class="text-brand-primary hover:underline">Instagram</a>
+        </li>
+        <li>
+          <a
+            href="https://www.youtube.com/@SavingHarbor"
+            class="text-brand-primary hover:underline">YouTube</a>
+        </li>
+        <li>
+          <a
+            href="https://x.com/SavingHarbor"
+            class="text-brand-primary hover:underline">Twitter (X)</a>
+        </li>
+      </ul>
+      
+      <h2>Contact us</h2>
+      <p>
+        Have a question, partnership idea, or found a code that needs updating?
+        Reach out via our
+        <a href="/contact" class="text-brand-primary hover:underline"
+          >Get in touch</a
+        >.
+      </p>
+    </article>
+  </main>
+  <Footer />
+</Base>

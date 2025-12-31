@@ -1,0 +1,320 @@
+---
+/* src/pages/stores/[slug].astro
+   - Hero: compact stacked layout (logo + title + meta + actions)
+   - Descriptions: ExpandableText islands inline with View more… / Show less
+   - Sidebar: sticky at top (unchanged)
+*/
+
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import CardStore from "../../components/CardStore.astro";
+import Pagination from "../../components/Pagination.astro";
+
+import CouponRevealIsland from "../../components/islands/CouponRevealIsland.astro";
+import SubscribeBox from "../../components/SubscribeBox.jsx";
+import FaqAccordion from "../../components/FAQAccordion.jsx";
+import TestimonialsList from "../../components/TestimonialsList.jsx";
+import RecentActivity from "../../components/RecentActivity.jsx";
+import TrendingOffersCompact from "../../components/TrendingOffersCompact.jsx";
+import WhyTrustUs from "../../components/WhyTrustUs.jsx";
+import ExpandableText from "../../components/ExpandableText.jsx";
+import DOMPurify from "isomorphic-dompurify";
+import { api } from "../../lib/api";
+
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  coupon_type?: string | null;
+  ends_at?: string | null;
+  merchant_name?: string | null;
+  merchant?: {
+    slug?: string | null;
+    logo_url?: string | null;
+    affl_url?: string | null;
+    web_url?: string | null;
+  };
+};
+
+type StoreDetail = {
+  id: number | string;
+  slug: string;
+  name: string;
+  logo_url?: string | null;
+  category_names?: string[];
+  side_description_html?: string | null;
+  description_html?: string | null;
+  about_html?: string | null;
+  breadcrumbs?: { name: string; url: string }[];
+  coupon_h2_blocks?: string[];
+  coupon_h3_blocks?: string[];
+  stats?: { active_coupons?: number };
+  coupons?: {
+    items: Coupon[];
+    page?: number;
+    limit?: number;
+    total?: number;
+    prev?: string | null;
+    next?: string | null;
+    total_pages?: number;
+  };
+  related_stores?: { id: string | number; name: string; slug: string; logo_url?: string | null }[];
+  faqs?: { question: string; answer: string }[];
+  testimonials?: { id: string; user_name: string; rating: number; comment: string; avatar_url?: string; posted_at?: string }[];
+  avg_rating?: number | null;
+  reviews_count?: number;
+  trending_offers?: any[];
+  recent_activity?: { total_offers_added_last_30d: number; recent: any[] };
+  trust_text?: string | null;
+  subscribe_info?: { endpoint: string; required_fields: string[] };
+};
+
+type StoreDetailResponse = {
+  data: StoreDetail | null;
+  meta?: {
+    canonical?: string;
+    jsonld?: any;
+    title?: string;
+    description?: string;
+  };
+};
+
+const { slug } = Astro.params as { slug: string };
+
+let resp: StoreDetailResponse | null = null;
+try {
+  resp = await api.get<StoreDetailResponse>(`/stores/${slug}`, {}, { retries: 2, timeout: 8000 });
+} catch (e) {
+  console.error("Error fetching store detail:", e);
+  resp = { data: null, meta: { title: "Store - Saving Harbor", description: "Store details unavailable." } };
+}
+const store = resp?.data || null;
+const meta = resp?.meta || {};
+const pageTitle = meta?.title || (store?.name ? `${store.name} - Saving Harbor` : "Store - Saving Harbor");
+const pageDesc =
+  meta?.description ||
+  (store?.name ? `Saving Harbor coupons and deals for ${store.name}.` : "Saving Harbor store coupons and deals.");
+const canonical = meta?.canonical;
+const jsonld = meta?.jsonld;
+// const safeSideHtml = store?.about_html ? DOMPurify.sanitize(store.about_html) : null;
+// const safeDescriptionHtml = store?.description_html ? DOMPurify.sanitize(store.description_html) : null;
+const _ALLOWED_TAGS = [
+  "h1","h2","h3","h4","p","br",
+  "strong","b","em","i","u","s",
+  "ul","ol","li",
+  "a","img","blockquote"
+];
+const _ALLOWED_ATTR = {
+  a: ["href","title","rel","target"],
+  img: ["src","alt","title","width","height"],
+  "*": [] // leave empty unless you need classes; see note below
+};
+
+const safeSideHtml = store?.about_html
+  ? DOMPurify.sanitize(store.about_html, { ALLOWED_TAGS: _ALLOWED_TAGS, ALLOWED_ATTR: _ALLOWED_ATTR })
+  : null;
+
+const safeDescriptionHtml = store?.description_html
+  ? DOMPurify.sanitize(store.description_html, { ALLOWED_TAGS: _ALLOWED_TAGS, ALLOWED_ATTR: _ALLOWED_ATTR })
+  : null;
+---
+
+<style>
+/* fallback clamp utilities if tailwind line-clamp plugin isn't available */
+.clamp-1, .clamp-2, .clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.clamp-1 { -webkit-line-clamp: 1; }
+.clamp-2 { -webkit-line-clamp: 2; }
+.clamp-3 { -webkit-line-clamp: 3; }
+</style>
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
+  <Header />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    {store ? (
+      <>
+        <Breadcrumbs breadcrumbs={store.breadcrumbs} />
+        
+        <!-- Hero: left column wider (flexible) + right column for descriptions -->
+        <section class="mt-4">
+          <div class="grid grid-cols-1 md:grid-cols-[minmax(220px,420px)_1fr] gap-2 md:gap-6 items-start">
+            <!-- LEFT: grouped logo + title/meta/actions -->
+            <div>
+              <div class="flex items-start gap-4">
+                <!-- logo -->
+                <div class="w-28 h-28 flex items-center justify-center border rounded-lg bg-white shadow-sm overflow-hidden flex-shrink-0">
+                  {store.logo_url ? (
+                    <img
+                      src={store.logo_url}
+                      alt={store.name}
+                      width="112"
+                      height="112"
+                      class="object-contain max-h-full max-w-full"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="text-sm text-gray-400">Logo</div>
+                  )}
+                </div>
+
+                <!-- title + meta -->
+                <div class="min-w-0">
+                  <h1 class="text-2xl font-extrabold text-brand-primary leading-tight">
+                    {store.name}
+                  </h1>
+
+                  <div class="mt-1 text-sm text-gray-500">
+                    {store.category_names && store.category_names.length > 0 ? store.category_names.join(", ") : null}
+                  </div>
+
+                  {store.stats?.active_coupons !== undefined && (
+                    <div class="mt-2">
+                      <span class="pill pill-green">
+                        {store.stats.active_coupons}{" "}
+                        {store.stats.active_coupons === 1 ? "active coupon" : "active coupons"}
+                      </span>
+                    </div>
+                  )}
+
+                  <div class="mt-3">
+                    <a href={`/stores/${store.slug}#about-section`} class="btn btn-outline--light text-sm">About</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: descriptions — ensure min-w-0 so it can shrink for truncation -->
+            <div class="min-w-0">
+              {meta.description && (
+                <ExpandableText
+                  client:load
+                  html={meta.description}
+                  id="store-meta-desc"
+                  initialLines={2}
+                  className="text-gray-800 text-[15px] leading-relaxed mb-3 font-medium"
+                />
+              )}
+
+              {safeSideHtml && (
+                <ExpandableText
+                  client:load
+                  html={safeSideHtml}
+                  id="store-side-desc"
+                  initialLines={2}
+                  className="prose max-w-none text-gray-700"
+                />
+              )}
+            </div>
+          </div>
+        </section>
+
+        <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Main content -->
+          <div class="lg:col-span-2 space-y-8">
+            <!-- Coupons -->
+            <section id="coupons">
+              <h2 class="section-heading">Coupons & Deals</h2>
+              {store.coupons?.items && store.coupons.items.length > 0 ? (
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+                  {store.coupons.items.map((c) => (
+                    <div class="h-full card-base p-0">
+                      <CouponRevealIsland client:load coupon={c} storeSlug={store.slug} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p class="text-gray-500">No active coupons at the moment.</p>
+              )}
+
+              <div class="mt-4">
+                <Pagination
+                  aria-label="Store coupons pagination"
+                  prev={store.coupons?.prev}
+                  next={store.coupons?.next}
+                  total_pages={store.coupons?.total_pages}
+                />
+              </div>
+            </section>
+
+            <!-- About Store -->
+            <section id="about-section" class="card-base p-6">
+              <h2 class="section-heading">About this store</h2>
+              {safeDescriptionHtml ? (
+                <div class="prose max-w-none ql-editor merchant-description" set:html={safeDescriptionHtml}></div>
+              ) : store.about_html ? (
+                <div class="prose max-w-none ql-editor merchant-description" set:html={store.about_html}></div>
+              ) : (
+                <p class="text-gray-500">No detailed description available for this store.</p>
+              )}
+            </section>
+
+            <!-- FAQs -->
+            {store.faqs && store.faqs.length > 0 && (
+              <section id="faqs-section" class="card-base p-6">
+                <FaqAccordion client:load faqs={store.faqs} />
+              </section>
+            )}
+
+            <!-- Related Stores -->
+            {store.related_stores && store.related_stores.length > 0 && (
+              <section>
+                <h2 class="section-heading">Similar stores</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {store.related_stores.map((rs) => (
+                    <CardStore store={rs} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="lg:col-span-1 lg:sticky lg:top-4 lg:self-start space-y-6">
+            <div class="sidebar-box">
+              <TrendingOffersCompact client:load offers={store.trending_offers} storeSlug={store.slug} />
+            </div>
+
+            <div class="sidebar-box">
+              <RecentActivity client:load data={store.recent_activity} />
+            </div>
+
+            {/* <div class="sidebar-box"> */}
+            <div class="sidebar-box">
+              <div class="card-base p-4">
+                <h3 class="text-lg font-semibold text-brand-secondary mb-3">Get updates</h3>
+                <SubscribeBox client:load source={store.slug} />
+              </div>
+            </div>
+            <div class="sidebar-box">
+              <WhyTrustUs client:load />
+            </div>
+
+            {store.trust_text && (
+              <div class="sidebar-box text-sm text-gray-700">
+                {store.trust_text}
+              </div>
+            )}
+          </aside>
+        </div>
+      </>
+    ) : (
+      <section class="py-20 text-center">
+        <h1 class="text-2xl font-bold text-brand-primary">Store not found</h1>
+        <p class="text-gray-600 mt-2">Please check the URL or browse all stores.</p>
+        <div class="mt-4">
+          <a href="/stores" class="px-4 py-2 rounded border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition">
+            Back to Stores
+          </a>
+        </div>
+      </section>
+    )}
+  </main>
+
+  <Footer />
+</Base>

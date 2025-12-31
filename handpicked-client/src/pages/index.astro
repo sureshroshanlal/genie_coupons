@@ -1,0 +1,248 @@
+---
+export const prerender = true;
+
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CouponRevealIsland from "../components/islands/CouponRevealIsland.astro";
+import CardStore from "../components/CardStore.astro";
+import LandingSubscribeIsland from "../components/islands/LandingSubscribeIsland.jsx";
+import TestimonialsList from "../components/TestimonialsList";
+import { SAMPLE_TESTIMONIALS } from "../content/testimonials.sample";
+import banners from "../content/banners.server";
+import BannerCarousel from "../components/BannerCarousel.jsx";
+
+const firstBanner = banners[0];
+
+const pageMeta = {
+  title: "Saving Harbor | Verified Coupons & Discounts",
+  description:
+    "Verified coupons, real savings, no expired junk — handpicked by real humans.",
+  preloadHero: true,
+  heroSrc: firstBanner.variants.avif[2],
+  heroSrcSetAvif: firstBanner.variants.avif
+    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
+    .join(", "),
+  heroSrcSetWebp: firstBanner.variants.webp
+    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
+    .join(", "),
+};
+
+import fs from "fs/promises";
+import path from "path";
+
+async function readStaticFile(filename: string) {
+  try {
+    const full = path.join(process.cwd(), "public", "_data", filename);
+    const raw = await fs.readFile(full, "utf-8");
+    return JSON.parse(raw);
+  } catch (e) {
+    return { data: [], meta: {} };
+  }
+}
+
+async function fetchFallback(url: string) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return { data: [], meta: {} };
+    return await res.json();
+  } catch {
+    return { data: [], meta: {} };
+  }
+}
+
+let resp = { data: [], meta: {} },
+  cresp = { data: [], meta: {} };
+
+try {
+  const [homeFile, couponsFile] = await Promise.all([
+    readStaticFile("home.json"),
+    readStaticFile("coupons.json"),
+  ]);
+
+  if (homeFile && (homeFile.stores || homeFile.coupons)) {
+    const h = homeFile;
+    resp = {
+      data: Array.isArray(h.stores) ? h.stores : h.stores?.data || [],
+      meta: h.meta || {},
+    };
+    cresp = {
+      data: Array.isArray(h.coupons) ? h.coupons : h.coupons?.data || [],
+      meta: h.meta || {},
+    };
+  } else {
+    resp = {
+      data: Array.isArray(homeFile.data)
+        ? homeFile.data
+        : homeFile.stores || [],
+      meta: homeFile.meta || {},
+    };
+    cresp = {
+      data: Array.isArray(couponsFile.data)
+        ? couponsFile.data
+        : couponsFile.coupons || [],
+      meta: couponsFile.meta || {},
+    };
+  }
+
+  const likelyEmpty = (arr: any) =>
+    !arr || (Array.isArray(arr) && arr.length === 0);
+  if (
+    typeof window !== "undefined" &&
+    likelyEmpty(resp.data) &&
+    likelyEmpty(cresp.data)
+  ) {
+    const [hf, cf] = await Promise.all([
+      fetchFallback("/_data/home.json"),
+      fetchFallback("/_data/coupons.json"),
+    ]);
+    resp = {
+      data: Array.isArray(hf.data) ? hf.data : hf.stores || [],
+      meta: hf.meta || {},
+    };
+    cresp = {
+      data: Array.isArray(cf.data) ? cf.data : cf.coupons || [],
+      meta: cf.meta || {},
+    };
+  }
+} catch (e) {
+  resp = { data: [], meta: {} };
+  cresp = { data: [], meta: {} };
+}
+
+const stores = resp?.data || [];
+const coupons = cresp?.data || {};
+const avg =
+  SAMPLE_TESTIMONIALS.reduce((s, t) => s + (t.rating || 0), 0) /
+    SAMPLE_TESTIMONIALS.length || null;
+---
+
+<Base meta={pageMeta}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <!-- Hero -->
+    <section class="mx-auto max-w-3xl text-center">
+      <h1
+        class="text-5xl md:text-6xl font-bold tracking-tight text-brand-primary"
+      >
+        Saving Harbor...
+      </h1>
+      <h2
+        class="text-2xl md:text-3xl font-bold tracking-tight text-brand-primary"
+      >
+        Your trusted source for verified coupons & discounts.
+      </h2>
+      <p class="mt-3 text-gray-700">
+        Save on top brands with codes we test ourselves.
+      </p>
+    </section>
+
+    <!-- New Embla Carousel -->
+    <section class="homepage-hero my-8 mx-auto max-w-6xl">
+      <!-- Preload LCP hero (place directly above BannerCarousel / hero markup) -->
+      <link
+        rel="preload"
+        as="image"
+        href={pageMeta.heroSrc}
+        imagesrcset={pageMeta.heroSrcSetAvif}
+        imagesizes="(max-width:640px) 100vw, 1200px"
+        fetchpriority="high"
+      />
+      <div class="mt-8 relative mx-auto max-w-6xl rounded-lg overflow-hidden">
+        <BannerCarousel client:visible banners={banners} />
+      </div>
+    </section>
+
+    <!-- Stores -->
+    <div class="mt-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-brand-secondary">Stores</h2>
+        <a href="/stores" class="btn btn-outline--light" aria-label="View all stores">
+          View all →
+        </a>
+      </div>
+      <section>
+        {
+          stores.length > 0 ? (
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {stores.map((store: any) => (
+                <div
+                  class="rounded-md bg-white/5 p-3 transition-shadow hover:shadow-store-card"
+                  style="border-top-width: 3px; border-top-style: solid; border-top-color: transparent;"
+                >
+                  <CardStore store={store} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-gray-500">No stores found.</p>
+          )
+        }
+      </section>
+    </div>
+
+    <!-- Coupons -->
+    <div class="mt-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-brand-secondary">Coupons</h2>
+        <a
+          href="/coupons"
+          class="btn btn-outline--light"
+          aria-label="Explore more coupons"
+        >
+          Explore more →
+        </a>
+      </div>
+      <section>
+        {
+          coupons.length > 0 ? (
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {coupons.map((c: any) => (
+                <div
+                  class="rounded-md bg-white/5 p-3 transition-shadow hover:shadow-store-card"
+                  style="border-top-width: 3px; border-top-style: solid; border-top-color: transparent;"
+                >
+                  <CouponRevealIsland
+                    client:idle
+                    coupon={c}
+                    storeSlug={c.merchant_name}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-gray-500">
+              No coupons available right now. Check back soon.
+            </p>
+          )
+        }
+      </section>
+    </div>
+
+    <!-- Testimonials -->
+    <TestimonialsList
+      items={SAMPLE_TESTIMONIALS}
+      avgRating={avg}
+      totalReviews={SAMPLE_TESTIMONIALS.length}
+    />
+
+    <!-- Newsletter -->
+    <section class="relative mt-16 rounded-xl overflow-hidden">
+      <div class="absolute inset-0 bg-brand-primary" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-black/25" aria-hidden="true"></div>
+      <div
+        class="relative z-10 p-6 text-center text-white"
+        aria-labelledby="newsletter-cta-heading"
+      >
+        <h2 id="newsletter-cta-heading" class="text-white font-semibold">
+          Subscribe and stay ahead — no spam, ever.
+        </h2>
+        <p class="mt-2 text-white font-medium">
+          Get the best deals delivered weekly.
+        </p>
+        <LandingSubscribeIsland client:visible />
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

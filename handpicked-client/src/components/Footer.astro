@@ -1,0 +1,101 @@
+---
+// src/components/Footer.astro (replace existing footer markup)
+---
+<footer role="contentinfo" class="w-full bg-white border-t border-gray-100">
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 items-start">
+      <!-- Brand -->
+      <div class="space-y-3 md:col-span-1">
+        <a href="/" class="flex items-center gap-3 mb-2" aria-label="Saving Harbor home">
+          <img src="/logo.webp" alt="Saving Harbor logo" width="70" height="55" class="rounded-sm" />
+          <span class="font-semibold text-lg tracking-tight text-[var(--on-surface)]">Saving Harbor</span>
+        </a>
+        <p class="text-sm text-gray-600 max-w-sm leading-relaxed">
+          Verified coupons, trusted stores, and savings you can count on.
+        </p>
+      </div>
+
+      <!-- Company -->
+      <div class="space-y-3">
+        <p class="text-sm font-semibold uppercase text-gray-700 tracking-wide">Company</p>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/about" class="footer-link" aria-label="About Saving Harbor">About</a></li>
+          <li><a href="/contact" class="footer-link" aria-label="Contact Saving Harbor">Contact</a></li>
+          <li><a href="/careers" class="footer-link" aria-label="Careers at Saving Harbor">Careers</a></li>
+          <li><a href="/press" class="footer-link" aria-label="Press">Press</a></li>
+          <li><a href="/privacy" class="footer-link" aria-label="Privacy policy">Privacy</a></li>
+          <li><a href="/terms" class="footer-link" aria-label="Terms of service">Terms</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div class="space-y-3">
+        <p class="text-sm font-semibold uppercase text-gray-700 tracking-wide">Resources</p>
+        <ul class="space-y-2 text-sm">
+          <li><a href="/stores" class="footer-link">Stores</a></li>
+          <li><a href="/coupons" class="footer-link">Coupons</a></li>
+          <li><a href="/blogs" class="footer-link">Blogs</a></li>
+          <li><a href="/how-it-works" class="footer-link">How it works</a></li>
+          <li><a href="/faq" class="footer-link">FAQ</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect / Social -->
+      <div class="space-y-3">
+        <p class="text-sm font-semibold uppercase text-gray-700 tracking-wide">Connect</p>
+        <p class="text-sm text-gray-600">Follow us for updates and exclusive coupons.</p>
+
+        <div class="flex items-center gap-3 mt-2">
+          <!-- social buttons (keeps icons but uses muted/default colors on white) -->
+          <a href="https://www.facebook.com/profile.php?id=61580887157989" aria-label="Facebook" class="social-btn" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4v-3h2.4V9.6c0-2.4 1.4-3.8 3.6-3.8 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.5.7-1.5 1.5V12h2.6l-.4 3h-2.2v7A10 10 0 0 0 22 12z"></path>
+            </svg>
+          </a>
+
+          <a href="https://www.instagram.com/savingharbor/" aria-label="Instagram" class="social-btn" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm4.8-.9a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z"></path>
+            </svg>
+          </a>
+
+          <a href="https://www.youtube.com/@SavingHarbor" aria-label="YouTube" class="social-btn" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.2 3.5 12 3.5 12 3.5s-7.2 0-9.4.6A3 3 0 0 0 .5 6.2 31.2 31.2 0 0 0 0 12c0 1.9.2 3.9.5 5.8a3 3 0 0 0 2.1 2.1c2.2.6 9.4.6 9.4.6s7.2 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.9.5-5.8 0-1.9-.2-3.9-.5-5.8zM9.5 15.6V8.4l6.2 3.6-6.2 3.6z"></path>
+            </svg>
+          </a>
+
+          <a href="https://x.com/SavingHarbor" aria-label="Twitter (X)" class="social-btn" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.9 2H22l-7.7 8.8L23 22h-7.2l-5.6-7.3L4.9 22H2l8.2-9.4L1 2h7.3l5 6.6L18.9 2z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-8 border-t border-gray-100 pt-4">
+      <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+        <div class="text-xs text-gray-500">
+          © {new Date().getFullYear()} Saving Harbor. All rights reserved.
+        </div>
+
+        <div class="flex items-center gap-4">
+          <nav class="hidden md:flex items-center gap-4">
+            <a href="#" class="text-xs text-gray-500 hover:text-brand-primary transition">↑ Back to top</a>
+          </nav>
+
+          <!-- small-screen social -->
+          <div class="md:hidden flex items-center gap-3">
+            <a href="#" aria-label="Twitter" class="social-btn small">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8.29 20c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.36-.01-.54A8.36 8.36 0 0022.46 6a8.19 8.19 0 01-2.36.65A4.13 4.13 0 0021.9 4.1a8.27 8.27 0 01-2.61 1 4.13 4.13 0 00-7 3.76A11.7 11.7 0 013 5.1a4.12 4.12 0 001.28 5.5A4.06 4.06 0 012.8 10v.05a4.13 4.13 0 003.3 4 4.2 4.2 0 01-1.86.07 4.14 4.14 0 003.86 2.86A8.3 8.3 0 012 18.57a11.7 11.7 0 006.29 1.84"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

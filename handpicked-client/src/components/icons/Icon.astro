@@ -1,0 +1,35 @@
+---
+const {
+  title,
+  size = 20,
+  class: className = "",
+  stroke = "currentColor",
+  fill = "none",
+  strokeWidth = 2,
+} = Astro.props as {
+  title?: string;
+  size?: number;
+  class?: string;
+  stroke?: string;
+  fill?: string;
+  strokeWidth?: number;
+};
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={fill}
+  stroke={stroke}
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={title ? "false" : "true"}
+  role="img"
+  class={className}
+>
+  {title && <title>{title}</title>}
+  <slot />
+</svg>

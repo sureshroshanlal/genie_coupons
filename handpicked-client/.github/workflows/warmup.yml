@@ -1,0 +1,33 @@
+mkdir -p .github/workflows
+cat > .github/workflows/warmup.yml <<'YML'
+name: keep-render-warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping render endpoints
+        env:
+          RENDER_URLS: ${{ secrets.RENDER_URLS }}
+        run: |
+          if [ -z "$RENDER_URLS" ]; then
+            echo "ERROR: RENDER_URLS secret is empty"
+            exit 1
+          fi
+          IFS=',' read -ra URLS <<< "$RENDER_URLS"
+          for url in "${URLS[@]}"; do
+            url="$(echo "$url" | xargs)"
+            echo "Pinging: $url"
+            sleep $((RANDOM % 20))
+            curl -fsS -o /dev/null "$url" && echo "OK: $url" || echo "FAIL: $url"
+          done
+YML
+
+git add .github/workflows/warmup.yml
+git commit -m "fix: validated warmup workflow"
+git push origin main

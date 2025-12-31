@@ -1,0 +1,110 @@
+---
+// src/pages/coupons/index.astro
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Pagination from "../../components/Pagination.astro";
+import { api } from "../../lib/api";
+import CouponRevealIsland from "../../components/islands/CouponRevealIsland.astro"; // explicit .astro
+
+type merchant = {
+  id: number | null;
+  slug: string | null;
+  logo_url: String | null;
+};
+
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  code?: string | null;
+  ends_at?: string | null;
+  merchant_name?: string | null;
+  merchant_id?: number | null;
+  merchant: merchant | null;
+};
+
+type CouponsResponse = {
+  data: Coupon[];
+  meta: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    canonical?: string;
+    prev?: string | null;
+    next?: string | null;
+    total_pages?: number;
+    jsonld?: any;
+    title?: string;
+    description?: string;
+  };
+};
+
+let resp: CouponsResponse | null = null;
+try {
+  // resp = await api.get<CouponsResponse>("/coupons", {}, { retries: 2, timeout: 8000 });
+  const currentSearch = (typeof Astro !== "undefined" && Astro?.request && Astro.request.url)
+  ? new URL(Astro.request.url).search
+  : ""; // fallback: no query when rendering outside SSR
+  resp = await api.get<CouponsResponse>(`/coupons${currentSearch}`, {}, { retries: 2, timeout: 8000 });
+} catch (e) {
+  console.error("Error fetching coupons:", e);
+  resp = {
+    data: [],
+    meta: {
+      page: 1,
+      limit: 0,
+      total: 0,
+      prev: null,
+      next: null,
+      total_pages: 1,
+      title: "Coupons - Saving Harbor",
+      description: "Coupons temporarily unavailable.",
+      canonical: undefined,
+      jsonld: undefined,
+    },
+  };
+}
+
+const coupons = resp?.data || [];
+const meta = resp?.meta || {};
+const pageTitle = meta.title || "Coupons - Saving Harbor";
+const pageDesc = meta.description || "Browse verified, handpicked coupons and deals.";
+const canonical = meta.canonical;
+const jsonld = meta.jsonld;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-brand-primary">Coupons</h1>
+    <p class="mt-2 text-sm text-gray-500 max-w-2xl">{pageDesc}</p>
+
+    {
+      coupons.length > 0 ? (
+        <!-- stable wrapper for client-side pagination updates -->
+        <div id="resource-list" data-resource="coupons" class="mt-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {coupons.map((c) => (
+                <div
+                  class="rounded-md bg-white/5 p-3 transition-shadow hover:shadow-store-card"
+                  style="border-top-width: 3px; border-top-style: solid; border-top-color: transparent;"
+                >
+              <CouponRevealIsland client:idle coupon={c} storeSlug={c.merchant?.slug} />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p class="mt-6 text-gray-500">No coupons available right now. Check back soon.</p>
+      )
+    }
+
+    <div class="mt-10">
+      <Pagination prev={meta.prev} next={meta.next} total_pages={meta.total_pages} />
+    </div>
+  </main>
+  <Footer />
+
+  <!-- Inline import so Vite bundles src/client/cursor-pagination.js and rewrites the path for prod -->
+<script type="module" src="/js/cursor-pagination.js"></script>
+</Base>

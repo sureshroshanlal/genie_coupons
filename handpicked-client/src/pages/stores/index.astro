@@ -1,0 +1,96 @@
+---
+// src/pages/stores/index.astro
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import CardStore from "../../components/CardStore.astro";
+import Pagination from "../../components/Pagination.astro";
+import { api } from "../../lib/api";
+
+type Store = {
+  id: string | number;
+  name: string;
+  slug: string;
+  logo_url?: string | null;
+  stats?: { active_coupons?: number };
+};
+
+type StoresResponse = {
+  data: Store[];
+  meta: {
+    page?: number;
+    limit?: number;
+    total?: number;
+    canonical?: string;
+    prev?: string | null;
+    next?: string | null;
+    total_pages?: number;
+    title?: string;
+    description?: string;
+  };
+};
+
+let resp: StoresResponse | null = null;
+try {
+  // forward the current request querystring to the backend so SSR respects ?page, ?limit, etc.
+  const currentSearch =
+    typeof Astro !== "undefined" && Astro?.request && Astro.request.url
+      ? new URL(Astro.request.url).search
+      : ""; // fallback: no query when rendering outside SSR
+  resp = await api.get<StoresResponse>(
+    `/stores${currentSearch}`,
+    {},
+    { retries: 2, timeout: 8000 }
+  );
+} catch (e) {
+  console.error("Error fetching stores:", e);
+  resp = { data: [], meta: { page: 1, limit: 20, total: 0, total_pages: 1 } };
+}
+
+const stores = resp?.data || [];
+const meta = resp?.meta || {};
+const pageTitle = meta.title || "Stores - Saving Harbor";
+const pageDesc =
+  meta.description || "Explore verified stores with handpicked coupons.";
+const canonical = meta.canonical;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-brand-primary">Stores</h1>
+    <p class="mt-2 text-sm text-gray-500 max-w-2xl">{pageDesc}</p>
+
+    <!-- resource-list wrapper used by client pagination script -->
+    <div id="resource-list" class="mt-6">
+      {
+        stores.length > 0 ? (
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {stores.map((store) => (
+              <div
+                class="rounded-md bg-white/5 p-3 transition-shadow hover:shadow-store-card"
+                style="border-top-width: 3px; border-top-style: solid; border-top-color: transparent;"
+              >
+                <CardStore store={store} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p class="mt-6 text-gray-500">No stores found.</p>
+        )
+      }
+    </div>
+
+    <div class="mt-10">
+      <Pagination
+        prev={meta.prev}
+        next={meta.next}
+        total_pages={meta.total_pages}
+      />
+    </div>
+  </main>
+  <Footer />
+
+  <!-- client pagination script (same one used for coupons) -->
+  <script type="module" src="/js/cursor-pagination.js"></script>
+</Base>

@@ -1,0 +1,55 @@
+// src/content/banners.server.js
+export const banners = [
+  {
+    id: 1,
+    alt: "Curated collection banner",
+    variants: {
+      webp: [
+        "/optimized/banner1-320.webp",
+        "/optimized/banner1-768.webp",
+        "/optimized/banner1-1600.webp",
+      ],
+      avif: [
+        "/optimized/banner1-320.avif",
+        "/optimized/banner1-768.avif",
+        "/optimized/banner1-1600.avif",
+      ],
+      fallback: "/optimized/banner1-1024.webp",
+    },
+  },
+  {
+    id: 2,
+    alt: "Curated collection banner",
+    variants: {
+      webp: [
+        "/optimized/banner2-320.webp",
+        "/optimized/banner2-768.webp",
+        "/optimized/banner2-1600.webp",
+      ],
+      avif: [
+        "/optimized/banner2-320.avif",
+        "/optimized/banner2-768.avif",
+        "/optimized/banner2-1600.avif",
+      ],
+      fallback: "/optimized/banner2-1024.webp",
+    },
+  },
+  {
+    id: 3,
+    alt: "Curated collection banner",
+    variants: {
+      webp: [
+        "/optimized/banner3-320.webp",
+        "/optimized/banner3-768.webp",
+        "/optimized/banner3-1600.webp",
+      ],
+      avif: [
+        "/optimized/banner3-320.avif",
+        "/optimized/banner3-768.avif",
+        "/optimized/banner3-1600.avif",
+      ],
+      fallback: "/optimized/banner3-1024.webp",
+    },
+  },
+];
+export default banners;

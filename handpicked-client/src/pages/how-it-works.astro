@@ -1,0 +1,61 @@
+---
+// src/pages/how-it-works.astro
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const pageMeta = {
+  title: "How Saving Harbor Works",
+  description:
+    "Simple, transparent, and built for your convenience—learn how SavingHarbor helps you save.",
+};
+---
+
+<Base meta={pageMeta}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <article class="prose max-w-none lg:prose-lg text-on-surface">
+      <h1>How it works</h1>
+      <p>
+        Getting the best deals with <strong>SavingHarbor</strong> is simple, transparent,
+        and built for your convenience. Here’s how we do it:
+      </p>
+
+      <h2>Offer curation</h2>
+      <p>
+        Each deal or coupon is handpicked and verified for quality and value. We
+        partner directly with trusted brands so you always get authentic
+        savings.
+      </p>
+
+      <h2>Real-time updates</h2>
+      <p>
+        Offers can change quickly. That’s why we maintain active social channels where we share fresh deals daily:  
+      </p>
+      <ul>
+        <li><a href="https://www.facebook.com/profile.php?id=61580887157989" class="text-brand-primary hover:underline">Facebook</a></li>
+        <li><a href="https://www.instagram.com/savingharbor/" class="text-brand-primary hover:underline">Instagram</a></li>
+        <li><a href="https://www.youtube.com/@SavingHarbor" class="text-brand-primary hover:underline">YouTube</a></li>
+        <li><a href="https://x.com/SavingHarbor" class="text-brand-primary hover:underline">Twitter (X)</a></li>
+      </ul>
+
+      <h2>Easy navigation</h2>
+      <p>
+        Browse by category, popularity, or brand. Use filters such as “Coupons,”
+        “Discount Codes,” or “Flash Deals” to find what you need—fast.
+      </p>
+
+      <h2>Notifications & alerts</h2>
+      <p>
+        Subscribe to our updates on social media and get early access to premier deals.  
+      </p>
+
+      <h2>Redemption made easy</h2>
+      <p>
+        When you see an offer you like, just click, copy the code, and use it at
+        the seller’s site. We streamline the journey so you save time and money.
+      </p>
+    </article>
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const pageMeta = {
+  title: "Page not found - Saving Harbor",
+  description: "The page requested could not be found.",
+};
+---
+
+<Base meta={pageMeta}>
+  <Header />
+  <main class="container py-20 text-center">
+    <h1 class="text-3xl font-bold">404 — Page not found</h1>
+    <p class="mt-3 text-gray-600">
+      The page requested could not be found. Try one of these sections:
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <a href="/" class="btn btn-outline">Home</a>
+      <a href="/coupons" class="btn btn-outline">Coupons</a>
+      <a href="/stores" class="btn btn-outline">Stores</a>
+      <a href="/blog" class="btn btn-outline">Blog</a>
+    </div>
+  </main>
+  <Footer />
+</Base>

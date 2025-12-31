@@ -1,0 +1,52 @@
+{
+  "name": "handpicked-client",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "prebuild": "node scripts/fetch-home.js && npm run optimize:banners && npm run export:banners",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "generate-sitemaps": "node scripts/generate-sitemaps.js",
+    "optimize:logos": "node scripts/optimize-logos.js",
+    "optimize:banners": "node scripts/optimize-banners.js",
+    "export:banners": "node scripts/export-banners.mjs",
+    "build": "astro build"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.5",
+    "@astrojs/rss": "^4.0.12",
+    "@astrojs/sitemap": "^3.6.0",
+    "@supabase/supabase-js": "^2.57.4",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@upstash/redis": "^1.35.4",
+    "astro-critters": "^2.2.1",
+    "dompurify": "^3.2.6",
+    "embla-carousel-react": "^8.6.0",
+    "isomorphic-dompurify": "^2.26.0",
+    "lru-cache": "^11.2.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "sitemap": "^8.0.0",
+    "swiper": "^11.2.10"
+  },
+  "devDependencies": {
+    "@astrojs/react": "^4.3.1",
+    "@astrojs/tailwind": "^6.0.2",
+    "@astrojs/vercel": "^8.2.7",
+    "@iconify-json/heroicons": "^1.2.2",
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify/utils": "^3.0.1",
+    "@types/dompurify": "^3.2.0",
+    "astro": "^5.13.3",
+    "autoprefixer": "10.4.20",
+    "dotenv": "^17.2.2",
+    "node-fetch": "^3.3.2",
+    "postcss": "^8.4.47",
+    "sharp": "^0.34.2",
+    "tailwindcss": "^3.4.13",
+    "vite": "^5.4.19"
+  }
+}
