@@ -7,6 +7,7 @@ import helmet from "helmet";
 // import { etagMiddleware } from "./middleware/etagMiddleware.js";
 // import { publicRateLimiter } from "./middleware/rateLimit.js";
 // import { requestLogger } from "./middleware/logger.js";
+import { storeContext } from "./middleware/storeContext.js";
 
 import publicRouter from "./routes/public.js";
 
@@ -20,8 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS
 const allowedOrigins = [
-  'https://savingharbor.com',
-  'https://www.savingharbor.com'
+  'https://geniecoupons.com',
+  'https://www.geniecoupons.com'
 ];
 
 app.use(
@@ -39,6 +40,8 @@ app.use(
   })
 );
 
+// store context middleware
+app.use(storeContext);
 // Logging
 // if (process.env.NODE_ENV !== "test") {
 //   app.use(requestLogger);

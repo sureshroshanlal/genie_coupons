@@ -1,6 +1,10 @@
 ---
 import "../styles/global.css";
 import SeoHead from "../components/SeoHead.astro";
+import { getStoreFromHost } from "../utils/getStoreFromHost";
+
+const host = Astro.request.headers.get('host');
+const storeName = getStoreFromHost(host);
 
 const { meta = {} } = Astro.props as {
   meta?: {

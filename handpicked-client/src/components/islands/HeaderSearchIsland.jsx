@@ -158,7 +158,7 @@ export default function HeaderSearchIsland() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const sel = active >= 0 ? items[active] : items[0];
-      if (sel) window.location.href = `/stores/${sel.slug}`;
+      if (sel) window.location.href = `https://${sel.slug}.geniecoupons.com`;
     } else if (e.key === "Escape") {
       setOpen(false);
       setActive(-1);
@@ -166,7 +166,7 @@ export default function HeaderSearchIsland() {
   };
 
   const onClickItem = (s) => {
-    if (s && s.slug) window.location.href = `/stores/${s.slug}`;
+    if (s && s.slug) window.location.href = `https://${sel.slug}.geniecoupons.com`;
   };
 
   return (

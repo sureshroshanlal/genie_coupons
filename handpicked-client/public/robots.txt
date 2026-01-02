@@ -1,4 +1,4 @@
-# robots.txt for Saving Harbor
+# robots.txt for Genie Coupons
 # Last updated: 2025-09-17
 
 User-agent: *
@@ -17,7 +17,7 @@ Disallow: /register/
 Disallow: /*?*
 
 # Sitemap reference
-Sitemap: https://savingharbor.com/sitemap-index.xml
+Sitemap: https://geniecoupons.com/sitemap-index.xml
 
 # Host directive (optional, some crawlers honor this)
-Host: savingharbor.com
+Host: geniecoupons.com

@@ -1,0 +1,16 @@
+---
+import StorePage from "./stores/[slug].astro";
+
+const host = Astro.request?.headers.get("host") || "";
+
+const store = host.split(".")[0];
+
+// ignore root + www
+if (!store || store === "www" || store === "geniecoupons") {
+  throw Astro.redirect("/stores");
+}
+
+Astro.params.slug = store;
+---
+
+<StorePage />

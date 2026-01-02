@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Ping Render health
         run: |
-          URL="https://api.savingharbor.com/public/v1/health"
+          URL="https://api.geniecoupons.com/public/v1/health"
           echo "Pinging $URL"
           sleep $((RANDOM % 20))
           if curl -fsS -m 10 "$URL" -o /dev/null; then

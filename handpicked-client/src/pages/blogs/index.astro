@@ -54,7 +54,7 @@ const currentSearch = (typeof Astro !== "undefined" && Astro?.request && Astro.r
       prev: null,
       next: null,
       total_pages: 1,
-      title: "Blog - Saving Harbor",
+      title: "Blog - Genie Coupons",
       description: "Blog temporarily unavailable.",
       canonical: undefined,
       jsonld: undefined,
@@ -64,9 +64,9 @@ const currentSearch = (typeof Astro !== "undefined" && Astro?.request && Astro.r
 
 const blogs = resp?.data || [];
 const meta = resp?.meta || {};
-const pageTitle = meta.title || "Blog - Saving Harbor";
+const pageTitle = meta.title || "Blog - Genie Coupons";
 const pageDesc =
-  meta.description || "Guides, tips, and insights from the Saving Harbor team.";
+  meta.description || "Guides, tips, and insights from the Genie Coupons team.";
 const canonical = meta.canonical;
 const jsonld = meta.jsonld;
 ---

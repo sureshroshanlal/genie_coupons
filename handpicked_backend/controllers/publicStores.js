@@ -137,9 +137,10 @@ export async function list(req, res) {
  */
 export async function detail(req, res) {
   try {
-    const slug = String(req.params.slug || "")
+    const slug = String(req.params.slug || req.storeSlug || "")
       .trim()
       .toLowerCase();
+
     if (!slug) return badRequest(res, "Invalid store slug");
 
     const origin = await Promise.resolve(getOrigin(req, { trustProxy: false }));
@@ -376,51 +377,15 @@ export async function detail(req, res) {
                 : idx - (store.coupon_h2_blocks || []).length,
           },
         }));
-        // Trending offers fallback
-        // let trendingOffers = [];
-        // if (
-        //   trendingResult &&
-        //   trendingResult.items &&
-        //   trendingResult.items.length > 0
-        // ) {
-        //   trendingOffers = trendingResult.items.map((r) => ({
-        //     id: r.id,
-        //     title: r.title,
-        //     coupon_type: r.coupon_type,
-        //     short_desc: r.description,
-        //     banner_image: r.proof_image_url || null,
-        //     expires_at: r.ends_at,
-        //     is_active: true,
-        //     click_count: r.click_count || null,
-        //     code: null,
-        //   }));
-        // } else {
-        //   try {
-        //     if (typeof CouponsRepo.listTopByClicks === "function") {
-        //       const top = await CouponsRepo.listTopByClicks(store.id, 3);
-        //       trendingOffers = (top || []).map((r) => ({
-        //         id: r.id,
-        //         title: r.title,
-        //         coupon_type: r.coupon_type,
-        //         short_desc: r.description,
-        //         banner_image: r.proof_image_url || null,
-        //         expires_at: r.ends_at,
-        //         is_active: true,
-        //         click_count: r.click_count || null,
-        //         code: null,
-        //       }));
-        //     }
-        //   } catch (tbErr) {
-        //     console.warn("Trending fallback failed:", tbErr);
-        //     trendingOffers = [];
-        //   }
-        // }
 
         const recentActivity = recentResult || {
           total_offers_added_last_30d: 0,
           recent: [],
         };
 
+        if (req.storeSlug && !req.params.slug) {
+          params.path = "/";
+        }
         // canonical + seo
         const canonical = await buildCanonical({
           origin: params.origin,
@@ -437,6 +402,10 @@ export async function detail(req, res) {
           locale: params.locale,
         });
         const breadcrumbs = StoresRepo.buildBreadcrumbs(store, params);
+
+        if (req.storeSlug) {
+          breadcrumbs.length = 1;
+        }
         const jsonld = {
           organization: buildStoreJsonLd(store, params.origin),
           breadcrumb: {
