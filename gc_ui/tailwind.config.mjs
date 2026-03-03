@@ -22,56 +22,57 @@ export default {
       },
       boxShadow: {
         "store-card":
-          "0 4px 6px -1px rgba(34,34,34,0.08), 0 2px 4px -1px rgba(34,34,34,0.05)",
-        "card-hover": "0 8px 24px rgba(137,233,0,0.18)",
+          "0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2)",
+        "card-hover": "0 8px 32px rgba(137,233,0,0.12)",
       },
       colors: {
-        // ── Verified Badge Colors ──
+        // ── Verified Badge ──
         "verified-badge": {
           gold: "#FFD700",
           silver: "#C0C0C0",
           bronze: "#CD7F32",
         },
 
-        // ── Genie Coupon Brand Colors ──
-        "brand-primary": "#89E900", // Electric Lime
-        "brand-secondary": "#75C900", // Lime hover
-        "brand-pressed": "#5EA300", // Lime pressed
-        "brand-dark": "#222222", // Charcoal
-        "brand-muted": "#666666", // Muted grey
+        // ── Brand ──
+        "brand-primary": "#89E900",
+        "brand-secondary": "#75C900",
+        "brand-pressed": "#5EA300",
+        "brand-dark": "#181818",
+        "brand-muted": "#707068",
 
         // ── Accent ──
-        "brand-accent": "#222222", // Charcoal
-        "brand-accent-soft": "#2E2E2E",
-        "brand-accent-text": "#89E900", // Lime on charcoal
+        "brand-accent": "#89E900",
+        "brand-accent-soft": "rgba(137,233,0,0.12)",
+        "brand-accent-text": "#181818",
 
-        // ── Deal Tag Colors ──
-        "tag-verified": "#0F766E",
-        "tag-expiring": "#F59E0B",
-        "tag-exclusive": "#222222",
+        // ── Deal Tags ──
+        "tag-verified": "#4ade80",
+        "tag-expiring": "#fbbf24",
+        "tag-exclusive": "#a78bfa",
 
         // ── Typography ──
-        "text-primary": "#222222",
-        "text-secondary": "#444444",
-        "text-muted": "#666666",
-        link: "#222222",
-        "link-hover": "#5EA300",
+        "text-primary": "#F5F5F0",
+        "text-secondary": "#B0B0A8",
+        "text-muted": "#707068",
+        link: "#89E900",
+        "link-hover": "#75C900",
 
         // ── Backgrounds ──
-        "bg-default": "#F5F5F5",
-        "bg-surface": "#FFFFFF",
-        "bg-subtle": "#EBEBEB",
-        "border-default": "#D0D0D0",
+        "bg-default": "#181818",
+        "bg-surface": "#222222",
+        "bg-subtle": "#2a2a2a",
+        "bg-elevated": "#2e2e2e",
+        "border-default": "#333333",
 
-        // ── Legacy named tokens ──
-        "brand-navybg": "#222222",
+        // ── Legacy ──
+        "brand-navybg": "#181818",
         "brand-saving": "#89E900",
         "brand-harbor": "#75C900",
         "brand-anchor": "#89E900",
-        "brand-waves": "#222222",
-        "brand-tagline": "#666666",
+        "brand-waves": "#F5F5F0",
+        "brand-tagline": "#707068",
 
-        // ── Surface tokens (CSS-var backed) ──
+        // ── Surface tokens ──
         surface: "var(--surface)",
         "surface-2": "var(--surface-2)",
         "on-surface": "var(--on-surface)",

@@ -123,12 +123,12 @@ const icons: Record<string, string> = {
 
   <main class="container mx-auto px-4 py-10 max-w-4xl">
     <!-- Breadcrumb -->
-    <nav class="text-xs mb-6 flex items-center gap-1.5" style="color:#6B7280;">
+    <nav class="text-xs mb-6 flex items-center gap-1.5" style="color:#B0B0A8;">
       <a href="/" class="hover:text-brand-primary transition">Home</a>
       <span>›</span>
       <a href="/authors" class="hover:text-brand-primary transition">Authors</a>
       <span>›</span>
-      <span style="color:#111418;">{author.name}</span>
+      <span style="color:#F5F5F0;">{author.name}</span>
     </nav>
 
     <!-- Author hero -->
@@ -146,7 +146,7 @@ const icons: Record<string, string> = {
           ) : (
             <div
               class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-3xl"
-              style="background:#FFF0EB; color:#FF5A1F;"
+              style="background:#FFF0EB; color:#89E900;"
             >
               {author.name.charAt(0)}
             </div>
@@ -158,13 +158,13 @@ const icons: Record<string, string> = {
       <div class="flex-1 min-w-0">
         <h1
           class="text-2xl font-bold tracking-tight mb-0.5"
-          style="color:#111418;"
+          style="color:#F5F5F0;"
         >
           {author.name}
         </h1>
         <div
           class="text-sm font-semibold uppercase tracking-wide mb-3"
-          style="color:#FF5A1F;"
+          style="color:#89E900;"
         >
           {author.designation}
         </div>
@@ -182,7 +182,7 @@ const icons: Record<string, string> = {
         <!-- Meta -->
         <div
           class="flex flex-wrap items-center gap-4 text-xs"
-          style="color:#6B7280;"
+          style="color:#B0B0A8;"
         >
           {
             author.verifying_since && (
@@ -252,7 +252,7 @@ const icons: Record<string, string> = {
     {
       author.stores?.length > 0 && (
         <section>
-          <h2 class="text-lg font-bold mb-4" style="color:#111418;">
+          <h2 class="text-lg font-bold mb-4" style="color:#F5F5F0;">
             Stores Verified by {author.name} Today.
           </h2>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -271,19 +271,19 @@ const icons: Record<string, string> = {
                 ) : (
                   <div
                     class="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold"
-                    style="background:#FFF0EB; color:#FF5A1F;"
+                    style="background:#FFF0EB; color:#89E900;"
                   >
                     {store.name.charAt(0)}
                   </div>
                 )}
                 <span
                   class="text-xs font-semibold truncate w-full"
-                  style="color:#111418;"
+                  style="color:#F5F5F0;"
                 >
                   {store.name}
                 </span>
                 {store.active_coupons > 0 && (
-                  <span class="text-xs" style="color:#6B7280;">
+                  <span class="text-xs" style="color:#B0B0A8;">
                     {store.active_coupons} deals
                   </span>
                 )}

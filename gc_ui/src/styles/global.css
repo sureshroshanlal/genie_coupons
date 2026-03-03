@@ -1,112 +1,112 @@
 /* ==============================
-   Combined global.css — Genie Coupon
-   Palette: Charcoal #222222 + Lime #89E900
-   Font: Outfit (variable)
+   global.css — Genie Coupon
+   Dark Theme: Layered Charcoal + Electric Lime
+   Body: #181818 | Cards: #222222 | Sidebar: #2a2a2a
+   Accent: #89E900 | Text: #F5F5F0
+   Font: Outfit
    ============================== */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ------------------------------
-   Google Fonts — Outfit
-   Add this in Base.astro <head>:
-   <link rel="preconnect" href="https://fonts.googleapis.com" />
-   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-   ------------------------------ */
-
 /* ==========================
-   CSS Variables — Genie Coupon
-   Charcoal + Electric Lime
+   CSS Variables
 ========================== */
 :root {
-  /* ── Core Foundation ── */
-  --bg-default: #F0F0F0;;
-  --bg-surface: #FFFFFF;
-  --bg-subtle: #EBEBEB;
-  --border-default: #D0D0D0;
+  /* ── Core Surfaces ── */
+  --bg-default: #181818;
+  --bg-surface: #222222;
+  --bg-subtle: #2a2a2a;
+  --bg-elevated: #2e2e2e;
+  --border-default: #333333;
 
-  /* ── Primary Action System ── */
+  /* ── Primary Action ── */
   --brand-primary: #89E900;
-  /* Electric Lime */
   --brand-secondary: #75C900;
-  /* Lime hover */
   --brand-pressed: #5EA300;
-  /* Lime pressed */
-  --brand-primary-text: #222222;
-  /* Dark text on lime */
+  --brand-primary-text: #181818;
 
-  /* ── Secondary Accent ── */
-  --brand-accent: #222222;
-  /* Charcoal */
-  --brand-accent-soft: #2E2E2E;
-  --brand-accent-text: #89E900;
-  /* Lime on charcoal */
+  /* ── Accent ── */
+  --brand-accent: #89E900;
+  --brand-accent-soft: rgba(137, 233, 0, 0.12);
+  --brand-accent-text: #181818;
 
-  /* ── Deal Tag System ── */
-  --tag-verified: #0F766E;
-  --tag-expiring: #F59E0B;
-  --tag-exclusive: #222222;
-  --tag-cashback-bg: #EEFF99;
-  --tag-cashback-text: #2A3300;
+  /* ── Deal Tags ── */
+  --tag-verified: #4ade80;
+  --tag-expiring: #fbbf24;
+  --tag-exclusive: #a78bfa;
+  --tag-cashback-bg: rgba(137, 233, 0, 0.15);
+  --tag-cashback-text: #89E900;
 
   /* ── Typography ── */
-  --text-primary: #222222;
-  --text-secondary: #444444;
-  --text-muted: #666666;
-  --link: #222222;
-  --link-hover: #5EA300;
+  --text-primary: #F5F5F0;
+  --text-secondary: #B0B0A8;
+  --text-muted: #707068;
+  --link: #89E900;
+  --link-hover: #75C900;
 
   /* ── Card System ── */
-  --card-bg: #FFFFFF;
-  --card-border: #E0E0E0;
-  --card-shadow-sm: 0 1px 3px rgba(34, 34, 34, 0.06);
-  --card-shadow-md: 0 8px 24px rgba(34, 34, 34, 0.08);
+  --card-bg: #222222;
+  --card-border: #333333;
+  --card-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --card-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   --card-hover-border: rgba(137, 233, 0, 0.45);
-  --card-hover-shadow: 0 8px 24px rgba(137, 233, 0, 0.18);
+  --card-hover-shadow: 0 8px 32px rgba(137, 233, 0, 0.12);
 
   /* ── Surface tokens ── */
-  --surface: #FFFFFF;
-  --surface-2: rgba(137, 233, 0, 0.04);
-  --on-surface: #222222;
+  --surface: #222222;
+  --surface-2: #2a2a2a;
+  --on-surface: #F5F5F0;
 
   /* ── Legacy aliases ── */
-  --brand-dark: #222222;
-  --brand-navybg: #222222;
+  --brand-dark: #181818;
+  --brand-navybg: #181818;
   --brand-saving: #89E900;
   --brand-harbor: #75C900;
   --brand-anchor: #89E900;
-  --brand-waves: #222222;
-  --brand-tagline: #666666;
-  --brand-tagline-safe: #444444;
+  --brand-waves: #F5F5F0;
+  --brand-tagline: #707068;
+  --brand-tagline-safe: #B0B0A8;
   --brand-primary-contrast: #75C900;
+  --brand-muted: #707068;
 
-  /* ── Aliases used by body/links ── */
+  /* ── Aliases ── */
   --color-bg: var(--bg-default);
   --color-text: var(--text-primary);
   --color-accent: var(--brand-primary);
   --color-accent-hover: var(--brand-secondary);
 
-  /* ── Background gradient washes ── */
-  --bg-grad-start: rgba(137, 233, 0, 0.05);
-  --bg-grad-end: rgba(34, 34, 34, 0.02);
+  /* ── Gradient washes ── */
+  --bg-grad-start: rgba(137, 233, 0, 0.04);
+  --bg-grad-end: rgba(137, 233, 0, 0.01);
 }
 
 /* ==========================
-   Base Styles
+   Base
 ========================== */
 html {
   scroll-behavior: smooth;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 body {
   @apply m-0 p-0 antialiased;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--bg-default);
+  color: var(--text-primary);
   font-family: "Outfit", ui-sans-serif, system-ui, -apple-system, sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(circle at 10% 10%, var(--bg-grad-start) 0%, transparent 25%),
+    radial-gradient(circle at 90% 90%, var(--bg-grad-end) 0%, transparent 30%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 img,
@@ -133,7 +133,7 @@ a:hover {
 }
 
 /* ==========================
-   Layout Helpers
+   Layout
 ========================== */
 .container {
   @apply max-w-7xl mx-auto px-4;
@@ -155,18 +155,17 @@ a:hover {
    Buttons
 ========================== */
 .btn {
-  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200;
   @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   --tw-ring-color: var(--brand-primary);
+  --tw-ring-offset-color: var(--bg-default);
 }
 
 .btn-primary {
   background: var(--brand-primary);
   color: var(--brand-primary-text);
   border: 1px solid var(--brand-primary);
-  font-weight: 600;
-  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-  --tw-ring-color: var(--brand-primary);
+  font-weight: 700;
 }
 
 .btn-primary:hover {
@@ -182,48 +181,53 @@ a:hover {
 }
 
 .btn-outline:hover {
-  background: var(--bg-subtle);
+  background: var(--bg-elevated);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 
 .btn-outline--dark {
-  @apply border border-white text-white;
+  border: 1.5px solid var(--brand-primary);
+  color: var(--brand-primary);
+  background: transparent;
 }
 
 .btn-outline--dark:hover {
-  background: #fff;
-  color: var(--brand-accent);
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
 }
 
 .btn-outline--light {
-  border: 1px solid var(--text-primary);
-  color: var(--text-primary);
+  border: 1px solid var(--text-secondary);
+  color: var(--text-secondary);
 }
 
 .btn-outline--light:hover {
-  background: var(--text-primary);
-  color: var(--brand-primary);
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary-text);
 }
 
 .btn:disabled,
 .btn-disabled {
-  @apply opacity-60 cursor-not-allowed;
+  @apply opacity-40 cursor-not-allowed;
 }
 
 /* ==========================
-   Deal Tag System
+   Deal Tags
 ========================== */
 .tag-verified {
-  background: rgba(15, 118, 110, 0.10);
+  background: rgba(74, 222, 128, 0.12);
   color: var(--tag-verified);
 }
 
 .tag-expiring {
-  background: rgba(245, 158, 11, 0.12);
+  background: rgba(251, 191, 36, 0.12);
   color: var(--tag-expiring);
 }
 
 .tag-exclusive {
-  background: rgba(34, 34, 34, 0.08);
+  background: rgba(167, 139, 250, 0.12);
   color: var(--tag-exclusive);
 }
 
@@ -238,11 +242,12 @@ a:hover {
 
 .pill-green {
   background: rgba(137, 233, 0, 0.15);
-  color: #3a6000;
+  color: #89E900;
 }
 
 .pill-gray {
-  @apply bg-gray-100 text-gray-600;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
 }
 
 /* ==========================
@@ -250,12 +255,12 @@ a:hover {
 ========================== */
 .toast {
   @apply fixed bottom-6 right-6 text-sm px-3 py-2 rounded shadow-lg;
-  background: var(--text-primary);
-  color: #fff;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
 }
 
 .sidebar-box {
-  background: var(--bg-surface);
+  background: var(--bg-subtle);
   border: 1px solid var(--card-border);
   @apply rounded-md p-4;
 }
@@ -263,16 +268,18 @@ a:hover {
 .card-base {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  @apply rounded-lg transition-shadow duration-150;
+  @apply rounded-lg transition-all duration-150;
 }
 
 .card-base:hover {
-  @apply shadow-lg -translate-y-0.5;
+  border-color: var(--card-hover-border);
+  box-shadow: var(--card-hover-shadow);
+  @apply -translate-y-0.5;
 }
 
 .section-heading {
-  @apply text-xl font-semibold mb-4;
-  color: var(--brand-accent);
+  @apply text-xl font-bold mb-4;
+  color: var(--brand-primary);
 }
 
 /* Line-clamp */
@@ -310,7 +317,7 @@ a:hover {
   margin-left: 0.5rem;
   margin-top: 0.25rem;
   font-size: 0.92rem;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   background: transparent;
   border: none;
   padding: 0;
@@ -319,7 +326,7 @@ a:hover {
 }
 
 .expand-toggle:focus {
-  outline: 2px solid rgba(137, 233, 0, 0.30);
+  outline: 2px solid rgba(137, 233, 0, 0.35);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -337,11 +344,13 @@ a:hover {
 
 .prose {
   --tw-prose-links: var(--link);
+  --tw-prose-body: var(--text-secondary);
+  --tw-prose-headings: var(--text-primary);
 }
 
 .prose a {
   @apply underline-offset-2 hover:underline;
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
 }
 
 .prose p {
@@ -353,29 +362,29 @@ a:hover {
    Footer & Social
 ========================== */
 .footer-link {
-  @apply inline-block transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-1;
+  @apply inline-block transition-colors duration-150 focus:outline-none rounded px-1;
   color: var(--text-secondary);
 }
 
 .footer-link:hover {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
 }
 
 .social-btn {
-  @apply p-2 rounded transition-colors duration-150 ease-in-out;
-  color: currentColor;
+  @apply p-2 rounded transition-all duration-150 ease-in-out;
+  color: var(--text-secondary);
   background: transparent;
 }
 
 .social-btn:hover,
 .social-btn:active {
-  color: var(--brand-accent);
-  background: rgba(137, 233, 0, 0.12);
+  color: var(--brand-primary-text);
+  background: var(--brand-primary);
 }
 
 .social-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(137, 233, 0, 0.22);
+  box-shadow: 0 0 0 4px rgba(137, 233, 0, 0.25);
   border-radius: 8px;
 }
 
@@ -393,75 +402,8 @@ a:hover {
 }
 
 /* ==========================
-   Card helpers
+   Cards
 ========================== */
-.card {
-  @apply rounded-md p-4 transition-shadow;
-  background: var(--bg-surface);
-}
-
-.card-surface {
-  background: var(--bg-surface);
-  color: var(--on-surface);
-  @apply rounded-md p-4 border;
-  border-color: var(--card-border);
-}
-
-.accent-blue {
-  border-top: 4px solid var(--link);
-}
-
-.accent-amber {
-  border-top: 4px solid var(--tag-expiring);
-}
-
-.shadow-store-card {
-  box-shadow: 0 6px 20px rgba(34, 34, 34, 0.06);
-}
-
-.site-hero {
-  @apply text-3xl md:text-4xl font-bold tracking-tight;
-  color: var(--text-primary);
-}
-
-.on-brand-contrast {
-  color: var(--brand-primary-text);
-  mix-blend-mode: normal;
-}
-
-.skip-link {
-  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-3 focus:py-2 focus:bg-white rounded;
-  color: var(--brand-secondary);
-}
-
-.footer-col {
-  @apply space-y-3;
-}
-
-.hero-placeholder {
-  width: 100%;
-  aspect-ratio: 16/5;
-  background: var(--bg-subtle);
-}
-
-/* ==========================
-   Visual Polish
-========================== */
-html,
-body {
-  height: 100%;
-}
-
-body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  background-image:
-    radial-gradient(circle at 10% 10%, var(--bg-grad-start) 0%, transparent 20%),
-    radial-gradient(circle at 90% 90%, var(--bg-grad-end) 0%, transparent 25%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
 .card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -477,6 +419,7 @@ body {
   box-shadow: var(--card-shadow-md);
   border-radius: 12px;
   padding: 1.25rem;
+  color: var(--on-surface);
 }
 
 .card:hover,
@@ -490,15 +433,54 @@ body {
 .card .row-sep {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, rgba(34, 34, 34, 0.04), rgba(34, 34, 34, 0.01));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent);
   margin: 0.75rem 0;
 }
 
-/* Inputs */
+.accent-blue {
+  border-top: 4px solid #60a5fa;
+}
+
+.accent-amber {
+  border-top: 4px solid var(--tag-expiring);
+}
+
+.shadow-store-card {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.site-hero {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+
+.on-brand-contrast {
+  color: var(--brand-primary-text);
+}
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-3 focus:py-2 rounded;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+}
+
+.footer-col {
+  @apply space-y-3;
+}
+
+.hero-placeholder {
+  width: 100%;
+  aspect-ratio: 16/5;
+  background: var(--bg-subtle);
+}
+
+/* ==========================
+   Inputs
+========================== */
 input,
 textarea,
 select {
-  background: var(--bg-surface);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
@@ -507,10 +489,15 @@ select {
   transition: box-shadow 120ms ease, border-color 120ms ease;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
 input:focus,
 textarea:focus,
 select:focus {
-  box-shadow: 0 0 0 3px rgba(137, 233, 0, 0.20);
+  box-shadow: 0 0 0 3px rgba(137, 233, 0, 0.18);
   border-color: rgba(137, 233, 0, 0.50);
 }
 
@@ -530,7 +517,9 @@ select:focus {
   color: var(--brand-primary) !important;
 }
 
-/* Carousel — WCAG touch target */
+/* ==========================
+   Carousel WCAG
+========================== */
 button[aria-label^="Go to slide"] {
   width: 44px !important;
   height: 44px !important;
@@ -555,11 +544,6 @@ button[aria-label^="Go to slide"]::before {
   border-radius: 9999px;
   display: block;
   background: currentColor;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
-}
-
-button[aria-label^="Go to slide"].bg-white::before {
-  background: rgba(255, 255, 255, 0.6);
 }
 
 button[aria-label^="Go to slide"].bg-brand-primary::before {
@@ -601,10 +585,11 @@ button[aria-label^="Go to slide"]:focus-visible {
 
 .ql-editor p {
   margin: 0 0 0.8em;
+  color: var(--text-secondary);
 }
 
 .ql-editor a {
-  color: var(--brand-secondary);
+  color: var(--brand-primary);
   text-decoration: underline;
 }
 
@@ -647,6 +632,23 @@ button[aria-label^="Go to slide"]:focus-visible {
   height: auto;
   display: block;
   margin: 1em auto;
+}
+
+/* ==========================
+   Merchant Description
+========================== */
+.merchant-description {
+  color: var(--text-secondary);
+}
+
+.merchant-description h1,
+.merchant-description h2,
+.merchant-description h3 {
+  color: var(--text-primary);
+}
+
+.merchant-description a {
+  color: var(--brand-primary);
 }
 
 /* ==========================

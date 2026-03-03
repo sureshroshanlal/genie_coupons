@@ -206,7 +206,7 @@ export function renderCouponCardHtml(item = {}) {
               ${title}
             </div>
           </div>
-          <p class="text-xs leading-relaxed overflow-hidden" style="color:#6B7280; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;">
+          <p class="text-xs leading-relaxed overflow-hidden" style="color:#B0B0A8; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;">
             ${description}
           </p>
         </div>

@@ -40,7 +40,7 @@ function buildCodeBox(code) {
   box.className =
     "w-full rounded-md px-3 py-2 text-sm font-mono font-bold tracking-widest text-center border border-dashed overflow-x-auto";
   box.style.cssText =
-    "background:#FFF0EB; border-color:#FF5A1F; color:#B93C10;";
+    "background:#FFF0EB; border-color:#89E900; color:#B93C10;";
   box.textContent = code;
 
   wrapper.appendChild(box);
