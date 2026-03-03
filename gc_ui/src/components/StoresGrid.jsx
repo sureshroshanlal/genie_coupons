@@ -212,7 +212,7 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
             {stores.map((store) => (
               <a
                 key={store.id}
-                href={`/stores/${store.slug}`}
+                href={`https://${store.slug}.geniecoupon.com`}
                 className="group block rounded-lg bg-white border border-gray-200 p-3 transition-all hover:shadow-lg hover:border-brand-primary"
               >
                 {/* Logo - Smaller aspect ratio */}

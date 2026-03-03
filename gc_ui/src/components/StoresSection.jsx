@@ -32,7 +32,7 @@ export default function TopStores({ apiUrl }) {
           : stores.map((store) => (
               <a
                 key={store.id}
-                href={`/stores/${store.slug}`}
+                href={`https://${store.slug}.geniecoupon.com`}
                 className="group bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center text-center hover:shadow-md hover:border-brand-primary transition-all"
               >
                 <div className="w-16 h-16 mb-3 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
