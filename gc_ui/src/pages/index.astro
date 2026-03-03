@@ -7,96 +7,378 @@ import HomeSections from "../components/HomeSections.jsx";
 import { SAMPLE_TESTIMONIALS } from "../content/testimonials.sample";
 import banners from "../content/banners.server";
 import BannerCarousel from "../components/BannerCarousel.jsx";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CardStore from "../components/CardStore.astro";
+import MerchantProofsIsland from "../components/islands/MerchantProofsIsland.jsx";
+import CouponRevealIsland from "../components/islands/CouponRevealIsland.astro";
+import SubscribeBox from "../components/SubscribeBox.jsx";
+import FaqAccordion from "../components/FAQAccordion.jsx";
+import RecentActivity from "../components/RecentActivity.jsx";
+import TrendingOffersCompact from "../components/TrendingOffersCompact.jsx";
+import WhyTrustUs from "../components/WhyTrustUs.jsx";
+import ExpandableText from "../components/ExpandableText.jsx";
+import DOMPurify from "isomorphic-dompurify";
+import { api } from "../lib/api";
+import SavingsImpact from "../components/SavingsImpact.astro";
+import FeedbackForm from "../components/islands/FeedbackForm.jsx";
+import VerifiedBadge from "../components/VerifiedBadge.astro";
 
-const firstBanner = banners[0];
+// ── Subdomain detection ──
+const storeSlug = Astro.locals?.storeSlug ?? null;
+const isStoreSubdomain = Astro.locals?.isSubdomain === true;
 
-const pageMeta = {
-  title: "Genie Coupon | Verified Coupons & Discounts",
-  description:
-    "Verified coupons, real savings, no expired junk — handpicked by real humans.",
-  preloadHero: true,
-  heroSrc: firstBanner.variants.avif[2],
-  heroSrcSetAvif: firstBanner.variants.avif
-    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
-    .join(", "),
-  heroSrcSetWebp: firstBanner.variants.webp
-    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
-    .join(", "),
+console.log("🏠 index.astro - isSubdomain:", isStoreSubdomain, "storeSlug:", storeSlug);
+
+// ── Types ──
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  coupon_type?: string | null;
+  ends_at?: string | null;
+  merchant_name?: string | null;
+  discount_type?: string | null;
+  discount_value?: string | null;
+  merchant?: {
+    slug?: string | null;
+    logo_url?: string | null;
+    affl_url?: string | null;
+    web_url?: string | null;
+  };
 };
 
+type StoreDetail = {
+  id: number | string;
+  slug: string;
+  name: string;
+  verifier_id?: number | string | null;
+  logo_url?: string | null;
+  category_names?: string[];
+  side_description_html?: string | null;
+  description_html?: string | null;
+  about_html?: string | null;
+  breadcrumbs?: { name: string; url: string }[];
+  stats?: { active_coupons?: number };
+  coupons?: {
+    items: Coupon[];
+    page?: number;
+    limit?: number;
+    total?: number;
+    prev?: string | null;
+    next?: string | null;
+    total_pages?: number;
+  };
+  related_stores?: { id: string | number; name: string; slug: string; logo_url?: string | null }[];
+  faqs?: { question: string; answer: string }[];
+  trending_offers?: any[];
+  recent_activity?: { total_offers_added_last_30d: number; recent: any[] };
+  trust_text?: string | null;
+  verifier?: {
+    id: number | string;
+    name: string;
+    slug: string;
+    verifying_since?: string;
+    avatar_url?: string | null;
+    designation: string;
+    same_as?: { type: string; url: string }[];
+    created_at: string;
+  };
+};
+
+type StoreDetailResponse = {
+  data: StoreDetail | null;
+  meta?: {
+    canonical?: string;
+    jsonld?: any;
+    title?: string;
+    description?: string;
+  };
+};
+
+// ── Homepage data ──
+const firstBanner = banners[0];
+const pageMeta = {
+  title: "Genie Coupon | Verified Coupons & Discounts",
+  description: "Verified coupons, real savings, no expired junk — handpicked by real humans.",
+  preloadHero: true,
+  heroSrc: firstBanner.variants.avif[2],
+  heroSrcSetAvif: firstBanner.variants.avif.map((src: string, i: number) => `${src} ${[320, 768, 1600][i]}w`).join(", "),
+  heroSrcSetWebp: firstBanner.variants.webp.map((src: string, i: number) => `${src} ${[320, 768, 1600][i]}w`).join(", "),
+};
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
-const avg =
-  SAMPLE_TESTIMONIALS.reduce((s, t) => s + (t.rating || 0), 0) /
-    SAMPLE_TESTIMONIALS.length || null;
+const avg = SAMPLE_TESTIMONIALS.reduce((s: number, t: any) => s + (t.rating || 0), 0) / SAMPLE_TESTIMONIALS.length || null;
+
+// ── Store data (subdomain only) ──
+let store: StoreDetail | null = null;
+let storeMeta: any = {};
+let proofs: any[] = [];
+let breadcrumbs: any[] = [];
+
+if (isStoreSubdomain && storeSlug) {
+  try {
+    const resp = await api.get<StoreDetailResponse>(`/stores/${storeSlug}?limit100`, {}, { retries: 2, timeout: 8000 });
+    store = resp?.data || null;
+    storeMeta = resp?.meta || {};
+
+    if (!store) {
+      return Astro.redirect("/404");
+    }
+
+    breadcrumbs = store.breadcrumbs || [];
+
+    const refType = Astro.url.searchParams.get("ref");
+    const parentSlug = Astro.url.searchParams.get("parent");
+    const subSlug = Astro.url.searchParams.get("sub");
+
+    if (refType === "category" && parentSlug && subSlug) {
+      try {
+        const res = await fetch(`${apiUrl}/categories/${parentSlug}/${subSlug}`);
+        const catData = await res.json();
+        if (catData?.data) {
+          breadcrumbs = [
+            { name: "Home", url: "https://geniecoupon.com" },
+            { name: "Categories", url: "https://geniecoupon.com/categories" },
+            { name: catData.data.parent.name, url: `https://geniecoupon.com/categories/${parentSlug}` },
+            { name: catData.data.subcategory.name, url: `https://geniecoupon.com/categories/${parentSlug}/${subSlug}` },
+            { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
+          ];
+        }
+      } catch (e) {
+        console.error("Breadcrumb category fetch failed:", e);
+      }
+    }
+
+    // Fetch proofs
+    try {
+      const res: any = await api.get(`/stores/${store.id}/proofs`);
+      proofs = res.proofs || [];
+    } catch (e) {
+      console.error("Error fetching proofs:", e);
+    }
+  } catch (e) {
+    console.error("Error fetching store:", e);
+    return Astro.redirect("/404");
+  }
+}
+
+// ── Sanitize HTML ──
+const _ALLOWED_TAGS = ["h1","h2","h3","h4","p","br","strong","b","em","i","u","s","ul","ol","li","a","img","blockquote"];
+const _ALLOWED_ATTR = ["href","title","rel","target","src","alt","width","height","id","class","loading"];
+
+const safeSideHtml = store?.about_html
+  ? DOMPurify.sanitize(store.about_html, { ALLOWED_TAGS: _ALLOWED_TAGS, ALLOWED_ATTR: _ALLOWED_ATTR })
+  : null;
+
+const safeDescriptionHtml = store?.description_html
+  ? DOMPurify.sanitize(store.description_html, { ALLOWED_TAGS: _ALLOWED_TAGS, ALLOWED_ATTR: _ALLOWED_ATTR })
+  : null;
+
+// ── Store page meta ──
+const activeCoupons = store?.stats?.active_coupons || 0;
+const totalSavings = activeCoupons > 0
+  ? Math.floor(Math.random() * ((activeCoupons * 100 + 100) - (activeCoupons * 100) + 1)) + activeCoupons * 100
+  : 0;
+
+const verifier = store?.verifier;
+const lastVerified = verifier ? `${Math.floor(Math.random() * 11) + 2} hours ago` : undefined;
+const successRate = Math.floor(Math.random() * 7) + 92;
+
+// ── Page meta ──
+const pageTitle = isStoreSubdomain
+  ? (storeMeta?.title || (store?.name ? `${store.name} Coupons & Deals - Genie Coupon` : "Store - Genie Coupon"))
+  : pageMeta.title;
+
+const pageDesc = isStoreSubdomain
+  ? (storeMeta?.description || (store?.name ? `Get the latest ${store.name} coupons and deals.` : ""))
+  : pageMeta.description;
+
+const canonical = isStoreSubdomain
+  ? (storeMeta?.canonical || `https://${storeSlug}.geniecoupon.com`)
+  : "https://geniecoupon.com";
+
+const jsonld = storeMeta?.jsonld || null;
 ---
 
-<Base meta={pageMeta}>
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld, preloadHero: !isStoreSubdomain ? pageMeta.preloadHero : false, heroSrc: pageMeta.heroSrc, heroSrcSetAvif: pageMeta.heroSrcSetAvif, heroSrcSetWebp: pageMeta.heroSrcSetWebp }}>
   <Header />
-  <main class="container mx-auto px-4 py-10">
-    <!-- Hero -->
-    <section class="mx-auto max-w-3xl text-center">
-      <h1
-        class="text-5xl md:text-6xl font-bold tracking-tight text-brand-primary"
-      >
-        Genie Coupon...
-      </h1>
-      <h2
-        class="text-2xl md:text-3xl font-bold tracking-tight text-brand-primary"
-      >
-        Your trusted source for verified coupons & discounts.
-      </h2>
-      <p class="mt-3 text-text-secondary text-lg">
-        Save on top brands with codes we test ourselves.
-      </p>
-    </section>
 
-    <!-- New Embla Carousel -->
-    <section class="homepage-hero my-8 mx-auto max-w-6xl">
-      <!-- Preload LCP hero (place directly above BannerCarousel / hero markup) -->
-      <link
-        rel="preload"
-        as="image"
-        href={pageMeta.heroSrc}
-        imagesrcset={pageMeta.heroSrcSetAvif}
-        imagesizes="(max-width:640px) 100vw, 1200px"
-        fetchpriority="high"
-      />
-      <div class="mt-8 relative mx-auto max-w-6xl rounded-lg overflow-hidden">
-        <BannerCarousel client:visible banners={banners} />
+  {isStoreSubdomain && store ? (
+    <!-- STORE PAGE (SUBDOMAIN) -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <Breadcrumbs breadcrumbs={breadcrumbs} />
+
+      <section class="mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-[minmax(220px,420px)_1fr] gap-2 md:gap-6 items-start">
+          <div>
+            <div class="flex items-start gap-4">
+              <div class="w-28 h-28 flex items-center justify-center border border-border-default rounded-lg bg-bg-subtle shadow-sm overflow-hidden flex-shrink-0">
+                {store.logo_url ? (
+                  <img src={store.logo_url} alt={store.name} width="112" height="112" class="object-contain max-h-full max-w-full" loading="lazy" decoding="async" />
+                ) : (
+                  <div class="text-sm text-text-muted">Logo</div>
+                )}
+              </div>
+              <div class="min-w-0">
+                <h1 class="text-2xl font-extrabold text-brand-primary leading-tight">{store.name}</h1>
+                <div class="mt-1 text-sm text-text-secondary">
+                  {store.category_names && store.category_names.length > 0 ? store.category_names.join(", ") : null}
+                </div>
+                {store.stats?.active_coupons !== undefined && (
+                  <div class="mt-2">
+                    <span class="pill pill-green">All {store.coupons?.total || 0} coupons loaded</span>
+                  </div>
+                )}
+                <div class="mt-3">
+                  <a href="#about-section" class="btn btn-outline--light text-sm">About</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="min-w-0">
+            {storeMeta.description && (
+              <ExpandableText client:load html={storeMeta.description} id="store-meta-desc" initialLines={2} className="text-text-primary text-[15px] leading-relaxed mb-3 font-medium" />
+            )}
+            {safeSideHtml && (
+              <ExpandableText client:load html={safeSideHtml} id="store-side-desc" initialLines={2} className="prose max-w-none text-text-secondary" />
+            )}
+          </div>
+        </div>
+      </section>
+
+      <div class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <MerchantProofsIsland client:visible proofs={proofs} />
+
+          <section id="coupons">
+            <h2 class="section-heading">Coupons & Deals</h2>
+            {store.coupons?.items && store.coupons.items.length > 0 ? (
+              <div class="flex flex-col gap-3">
+                {store.coupons.items.map((c) => (
+                  <div class="w-full card-base p-0">
+                    <CouponRevealIsland client:visible coupon={c} storeSlug={store!.slug} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p class="text-text-muted">No active coupons at the moment.</p>
+            )}
+          </section>
+
+          <section id="about-section" class="card-base p-6">
+            <h2 class="section-heading">About this store</h2>
+            {safeDescriptionHtml ? (
+              <div class="prose max-w-none ql-editor merchant-description" set:html={safeDescriptionHtml}></div>
+            ) : store.about_html ? (
+              <div class="prose max-w-none ql-editor merchant-description" set:html={store.about_html}></div>
+            ) : (
+              <p class="text-text-muted">No detailed description available.</p>
+            )}
+          </section>
+
+          {store.faqs && store.faqs.length > 0 && (
+            <section id="faqs-section" class="card-base p-6">
+              <FaqAccordion client:load faqs={store.faqs} />
+            </section>
+          )}
+
+          {store.related_stores && store.related_stores.length > 0 && (
+            <section>
+              <h2 class="section-heading">Similar stores</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {store.related_stores.map((rs) => (
+                  <CardStore store={rs} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <aside class="lg:col-span-1 lg:sticky lg:top-4 lg:self-start space-y-6">
+          {verifier && (
+            <div class="sidebar-box">
+              <VerifiedBadge
+                name={verifier.name}
+                designation={verifier.designation}
+                authorSlug={verifier.slug}
+                avatarUrl={verifier.avatar_url}
+                lastVerified={lastVerified ?? ""}
+                successRate={successRate}
+                verifyingSince={verifier.verifying_since}
+                sameAs={verifier?.same_as ?? []}
+              />
+            </div>
+          )}
+          <div class="sidebar-box">
+            <SavingsImpact totalSavings={totalSavings} activeCoupons={activeCoupons} />
+          </div>
+          <div class="sidebar-box">
+            <WhyTrustUs client:load />
+          </div>
+          <div class="sidebar-box">
+            <RecentActivity client:load data={store.recent_activity} />
+          </div>
+          <div class="sidebar-box">
+            <TrendingOffersCompact client:load offers={store.trending_offers} storeSlug={store.slug} />
+          </div>
+          <div class="sidebar-box">
+            <div class="card-base p-4">
+              <h3 class="text-lg font-semibold text-brand-primary mb-3">Get updates</h3>
+              <SubscribeBox client:load source={store.slug} />
+            </div>
+          </div>
+          <div class="sidebar-box">
+            <FeedbackForm client:load storeSlug={store.slug} />
+          </div>
+          {store.trust_text && (
+            <div class="sidebar-box text-sm text-text-secondary">{store.trust_text}</div>
+          )}
+        </aside>
       </div>
-    </section>
-
-    <HomeSections
-      client:load
-      apiUrl={apiUrl}
-      testimonials={SAMPLE_TESTIMONIALS as {
-        id: number;
-        user_name: string;
-        rating: number;
-        comment: string;
-        avatar_url: string;
-        posted_at: string;
-      }[]}
-      avgRating={avg}
-      totalReviews={SAMPLE_TESTIMONIALS.length}
-    />
-    <!-- Newsletter -->
-    <section class="relative mt-16 rounded-xl overflow-hidden">
-      <div class="absolute inset-0 bg-brand-primary" aria-hidden="true"></div>
-      <div class="absolute inset-0 bg-black/25" aria-hidden="true"></div>
-      <div
-        class="relative z-10 p-6 text-center text-white"
-        aria-labelledby="newsletter-cta-heading"
-      >
-        <h2 id="newsletter-cta-heading" class="text-white font-semibold">
-          Subscribe and stay ahead — no spam, ever.
+    </main>
+  ) : isStoreSubdomain && !store ? (
+    <!-- SUBDOMAIN BUT STORE NOT FOUND -->
+    <main class="max-w-7xl mx-auto px-4 py-20 text-center">
+      <h1 class="text-2xl font-bold text-brand-primary">Store not found</h1>
+      <p class="text-text-secondary mt-2">Please check the URL or browse all stores.</p>
+      <a href="https://geniecoupon.com/stores" class="btn btn-primary mt-4 inline-block">Browse Stores</a>
+    </main>
+  ) : (
+    <!-- HOMEPAGE (MAIN DOMAIN) -->
+    <main class="container mx-auto px-4 py-10">
+      <section class="mx-auto max-w-3xl text-center">
+        <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-brand-primary">Genie Coupon...</h1>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-brand-primary">
+          Your trusted source for verified coupons & discounts.
         </h2>
-        <p class="mt-2 text-white font-medium">
-          Get the best deals delivered weekly.
-        </p>
-        <LandingSubscribeIsland client:visible />
-      </div>
-    </section>
-  </main>
+        <p class="mt-3 text-text-secondary text-lg">Save on top brands with codes we test ourselves.</p>
+      </section>
+
+      <section class="homepage-hero my-8 mx-auto max-w-6xl">
+        <link rel="preload" as="image" href={pageMeta.heroSrc} imagesrcset={pageMeta.heroSrcSetAvif} imagesizes="(max-width:640px) 100vw, 1200px" fetchpriority="high" />
+        <div class="mt-8 relative mx-auto max-w-6xl rounded-lg overflow-hidden">
+          <BannerCarousel client:visible banners={banners} />
+        </div>
+      </section>
+
+      <HomeSections
+        client:load
+        apiUrl={apiUrl}
+        testimonials={SAMPLE_TESTIMONIALS as any[]}
+        avgRating={avg}
+        totalReviews={SAMPLE_TESTIMONIALS.length}
+      />
+
+      <section class="relative mt-16 rounded-xl overflow-hidden">
+        <div class="absolute inset-0 bg-brand-primary" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-black/25" aria-hidden="true"></div>
+        <div class="relative z-10 p-6 text-center" aria-labelledby="newsletter-cta-heading">
+          <h2 id="newsletter-cta-heading" class="font-semibold" style="color:#181818;">Subscribe and stay ahead — no spam, ever.</h2>
+          <p class="mt-2 font-medium" style="color:#181818;">Get the best deals delivered weekly.</p>
+          <LandingSubscribeIsland client:visible />
+        </div>
+      </section>
+    </main>
+  )}
+
   <Footer />
 </Base>

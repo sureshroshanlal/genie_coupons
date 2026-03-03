@@ -1,6 +1,9 @@
 // src/components/islands/MerchantProofsIsland.jsx
 import { useState, useEffect } from "react";
 
+/**
+ * @param {{ proofs: any[] }} props
+ */
 export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
   const proofsArr = Array.isArray(initialProofs) ? initialProofs : [];
   const [startIndex, setStartIndex] = useState(0); // index of first visible thumbnail
