@@ -1,0 +1,299 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { api } from "../../lib/api";
+
+export async function getStaticPaths() {
+  try {
+    const resp = await api.get<{ data: { slug: string }[] }>(
+      `/authors?limit=1000`,
+      {},
+      { retries: 2, timeout: 8000 },
+    );
+    return (resp?.data || []).map((a) => ({ params: { slug: a.slug } }));
+  } catch (e) {
+    console.error("getStaticPaths authors error:", e);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+type SameAs = { type: string; url: string };
+type Store = {
+  id: number;
+  slug: string;
+  name: string;
+  logo_url: string | null;
+  active_coupons: number;
+};
+
+type AuthorDetail = {
+  id: number;
+  slug: string;
+  name: string;
+  designation: string;
+  bioHtml?: string | null;
+  avatar_url?: string | null;
+  verifying_since?: string | null;
+  same_as: SameAs[];
+  stores: Store[];
+  stores_count: number;
+};
+
+type AuthorResponse = {
+  data: AuthorDetail | null;
+  meta: { generated_at?: string };
+};
+
+let resp: AuthorResponse | null = null;
+try {
+  resp = await api.get<AuthorResponse>(
+    `/authors/${slug}`,
+    {},
+    { retries: 2, timeout: 8000 },
+  );
+} catch (e) {
+  console.error("Error fetching author:", e);
+  resp = { data: null, meta: {} };
+}
+
+const author = resp?.data;
+if (!author) return Astro.redirect("/404");
+
+const SITE_URL = "https://geniecoupon.com";
+const pageUrl = `${SITE_URL}/author/${author.slug}`;
+const ORG_ID = `${SITE_URL}/#organization`;
+const AUTHOR_ID = `${SITE_URL}/author/${author.slug}`;
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": ORG_ID,
+      name: "geniecoupon",
+      url: SITE_URL,
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+    },
+    {
+      "@type": "Person",
+      "@id": AUTHOR_ID,
+      name: author.name,
+      jobTitle: author.designation,
+      ...(author.avatar_url
+        ? { image: { "@type": "ImageObject", url: author.avatar_url } }
+        : {}),
+      worksFor: { "@id": ORG_ID },
+      sameAs: (author.same_as || []).map((s) => s.url),
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: `${author.name} — Coupon Verification Expert | geniecoupon`,
+      publisher: { "@id": ORG_ID },
+      about: { "@id": AUTHOR_ID },
+    },
+  ],
+};
+
+const pageTitle = `${author.name} — Coupon Verification Expert | geniecoupon`;
+const pageDesc = `${author.name} is a coupon verification specialist at geniecoupon, personally testing deals across ${author.stores?.length || 0}+ stores.`;
+
+const icons: Record<string, string> = {
+  linkedin: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.48 6S0 4.88 0 3.5 1.12 1 2.48 1s2.5 1.12 2.5 2.5zM.22 8h4.52v14H.22V8zm7.56 0h4.33v1.92h.06c.6-1.14 2.06-2.34 4.24-2.34 4.54 0 5.38 2.99 5.38 6.87V22h-4.52v-6.74c0-1.6-.03-3.66-2.23-3.66-2.24 0-2.58 1.75-2.58 3.55V22H7.78V8z"/></svg>`,
+  facebook: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M22 12a10 10 0 10-11.5 9.87v-6.99H7.9V12h2.6V9.8c0-2.56 1.53-3.97 3.87-3.97 1.12 0 2.3.2 2.3.2v2.53h-1.3c-1.28 0-1.68.8-1.68 1.62V12h2.86l-.46 2.88h-2.4v6.99A10 10 0 0022 12z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M18.244 2H21l-6.54 7.48L22 22h-6.828l-5.35-7.03L3.8 22H1l7.02-8.02L2 2h6.93l4.84 6.41L18.244 2z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm4.25 5.5a4.75 4.75 0 100 9.5 4.75 4.75 0 000-9.5zm6-1.25a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/></svg>`,
+  tiktok: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M12 2v14.5a3.5 3.5 0 11-3.5-3.5c.28 0 .55.03.81.1V9.8a7 7 0 100 13.9A7 7 0 0016 16.7V8.54a8.2 8.2 0 004.5 1.36V6.3A5.7 5.7 0 0116 2h-4z"/></svg>`,
+};
+---
+
+<Base
+  meta={{
+    title: pageTitle,
+    description: pageDesc,
+    canonical: pageUrl,
+    jsonld: graph,
+  }}
+>
+  <Header />
+
+  <main class="container mx-auto px-4 py-10 max-w-4xl">
+    <!-- Breadcrumb -->
+    <nav class="text-xs mb-6 flex items-center gap-1.5" style="color:#6B7280;">
+      <a href="/" class="hover:text-brand-primary transition">Home</a>
+      <span>›</span>
+      <a href="/authors" class="hover:text-brand-primary transition">Authors</a>
+      <span>›</span>
+      <span style="color:#111418;">{author.name}</span>
+    </nav>
+
+    <!-- Author hero -->
+    <div class="card-base p-6 mb-8 flex flex-col sm:flex-row gap-6 items-start">
+      <!-- Avatar -->
+      <div class="flex-shrink-0">
+        {
+          author.avatar_url ? (
+            <img
+              src={author.avatar_url}
+              alt={author.name}
+              class="w-24 h-24 rounded-full object-cover"
+              style="outline: 3px solid #FFF0EB;"
+            />
+          ) : (
+            <div
+              class="w-24 h-24 rounded-full flex items-center justify-center font-bold text-3xl"
+              style="background:#FFF0EB; color:#FF5A1F;"
+            >
+              {author.name.charAt(0)}
+            </div>
+          )
+        }
+      </div>
+
+      <!-- Details -->
+      <div class="flex-1 min-w-0">
+        <h1
+          class="text-2xl font-bold tracking-tight mb-0.5"
+          style="color:#111418;"
+        >
+          {author.name}
+        </h1>
+        <div
+          class="text-sm font-semibold uppercase tracking-wide mb-3"
+          style="color:#FF5A1F;"
+        >
+          {author.designation}
+        </div>
+
+        {
+          author.bioHtml && (
+            <div
+              class="text-sm leading-relaxed mb-4 prose max-w-none"
+              style="color:#4B5563;"
+              set:html={author.bioHtml}
+            />
+          )
+        }
+
+        <!-- Meta -->
+        <div
+          class="flex flex-wrap items-center gap-4 text-xs"
+          style="color:#6B7280;"
+        >
+          {
+            author.verifying_since && (
+              <span class="flex items-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                Verifying since {author.verifying_since}
+              </span>
+            )
+          }
+          {
+            author.stores?.length > 0 && (
+              <span class="flex items-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.6"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
+                Total {author.stores_count} stores verified
+              </span>
+            )
+          }
+        </div>
+
+        <!-- Social -->
+        {
+          author.same_as?.length > 0 && (
+            <div class="flex gap-3 mt-3">
+              {author.same_as.map((item) => (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer me"
+                  aria-label={item.type}
+                  class="text-gray-400 hover:text-brand-primary transition"
+                  set:html={icons[item.type]}
+                />
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+
+    <!-- Verified stores -->
+    {
+      author.stores?.length > 0 && (
+        <section>
+          <h2 class="text-lg font-bold mb-4" style="color:#111418;">
+            Stores Verified by {author.name} Today.
+          </h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {author.stores.map((store) => (
+              <a
+                href={`/stores/${store.slug}`}
+                class="card-base p-3 flex flex-col items-center gap-2 text-center hover:border-brand-primary transition"
+              >
+                {store.logo_url ? (
+                  <img
+                    src={store.logo_url}
+                    alt={store.name}
+                    class="h-10 w-auto object-contain"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div
+                    class="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold"
+                    style="background:#FFF0EB; color:#FF5A1F;"
+                  >
+                    {store.name.charAt(0)}
+                  </div>
+                )}
+                <span
+                  class="text-xs font-semibold truncate w-full"
+                  style="color:#111418;"
+                >
+                  {store.name}
+                </span>
+                {store.active_coupons > 0 && (
+                  <span class="text-xs" style="color:#6B7280;">
+                    {store.active_coupons} deals
+                  </span>
+                )}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </main>
+
+  <Footer />
+</Base>

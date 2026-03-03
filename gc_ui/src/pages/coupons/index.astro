@@ -1,0 +1,285 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { api } from "../../lib/api";
+import CouponRevealIsland from "../../components/islands/CouponRevealIsland.astro";
+
+const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
+
+type merchant = {
+  id: number | null;
+  slug: string | null;
+  logo_url: String | null;
+};
+
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  code?: string | null;
+  ends_at?: string | null;
+  discount_type?: string | null;
+  discount_value?: string | null;
+  merchant_name?: string | null;
+  merchant_id?: number | null;
+  merchant: merchant | null;
+};
+
+type CouponsResponse = {
+  data: Coupon[];
+  meta: {
+    limit?: number;
+    has_more?: boolean;
+    next_cursor?: string | null;
+    prev_cursor?: string | null;
+    next?: string | null;
+    prev?: string | null;
+    canonical?: string | null;
+    total_pages?: number | null;
+    jsonld?: any;
+  };
+};
+
+let resp: CouponsResponse | null = null;
+try {
+  const cleanParams = new URLSearchParams({
+    cursor: "",
+    limit: "50",
+    type: "all",
+    status: "active",
+    sort: "latest",
+    locale: "en",
+  });
+
+  resp = await api.get<CouponsResponse>(
+    `/coupons?${cleanParams}`,
+    {},
+    { retries: 2, timeout: 8000 },
+  );
+} catch (e) {
+  console.error("Error fetching coupons:", e);
+  resp = {
+    data: [],
+    meta: {
+      limit: 0,
+      has_more: false,
+      next_cursor: null,
+      prev: null,
+      next: null,
+      jsonld: undefined,
+    },
+  };
+}
+
+const coupons = resp?.data || [];
+const meta = resp?.meta || {};
+const pageTitle = "Coupons - Genie Coupon";
+const pageDesc = "Browse verified, handpicked coupons and deals.";
+const canonical = `https://geniecoupon.com${Astro.url.pathname}`;
+const jsonld = meta.jsonld;
+const nextUrl = meta.next || null;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold text-brand-primary">Coupons</h1>
+    <p class="mt-2 text-sm text-gray-500 max-w-2xl">{pageDesc}</p>
+
+    {
+      coupons.length > 0 ? (
+        <div
+          id="resource-list"
+          data-resource="coupons"
+          data-next-url={nextUrl}
+          class="mt-6"
+        >
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {coupons.map((c) => (
+              <div
+                class="rounded-md bg-white/5 p-3 transition-shadow hover:shadow-store-card"
+                style="border-top-width: 3px; border-top-style: solid; border-top-color: transparent;"
+              >
+                <CouponRevealIsland
+                  client:visible
+                  coupon={c}
+                  storeSlug={c.merchant?.slug}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <p class="mt-6 text-gray-500">
+          No coupons available right now. Check back soon.
+        </p>
+      )
+    }
+  </main>
+  <Footer />
+
+  <!-- Pass API_BASE to window so the module script can access it -->
+  <script define:vars={{ API_BASE }}>
+    window.__API_BASE__ = API_BASE;
+  </script>
+
+  <script>
+    declare global {
+      interface Window {
+        __API_BASE__: string;
+      }
+    }
+    import { renderCouponCardHtml } from "../../lib/renderers/couponCardHtml.js";
+
+    const API_BASE = window.__API_BASE__ || "";
+
+    let loading = false;
+    let hasMore = true;
+    let nextUrl: string | null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && hasMore && nextUrl) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    async function loadMore() {
+      if (!nextUrl) return;
+      const fullUrl = `${API_BASE}${nextUrl}`;
+      loading = true;
+      try {
+        const res = await fetch(fullUrl);
+        const json = await res.json();
+        if (json.data?.length) {
+          appendCoupons(json.data);
+          nextUrl = json.meta.next || null;
+          hasMore = !!nextUrl;
+        } else {
+          hasMore = false;
+        }
+      } catch (e) {
+        console.error("Load more failed:", e);
+      } finally {
+        loading = false;
+      }
+    }
+
+    function attachRevealHandlers(wrapper: any, coupon: any) {
+      const btn = wrapper.querySelector(".js-reveal-btn");
+      if (!btn) return;
+
+      btn.addEventListener("click", async () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
+
+        try {
+          const base = API_BASE || "";
+          const endpoint = `${base}/offers/${encodeURIComponent(String(coupon.id))}/click`;
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              store_slug: coupon.merchant?.slug || null,
+              referrer: "site",
+              platform: "web",
+            }),
+          });
+
+          let data = null;
+          try {
+            data = await res.json();
+          } catch (_) {}
+
+          const codeToReveal =
+            data?.code ?? (coupon.code ? String(coupon.code).trim() : null);
+          const serverRedirect = data?.redirect_url ?? null;
+
+          if (codeToReveal) {
+            const wrapper2 = document.createElement("div");
+            wrapper2.className = "flex flex-col gap-1.5";
+
+            const box = document.createElement("div");
+            box.className =
+              "w-full rounded-md px-3 py-2 text-sm font-mono text-brand-primary bg-brand-primary/10 border border-dashed border-brand-accent overflow-x-auto text-center";
+            box.textContent = codeToReveal;
+
+            const banner = document.createElement("div");
+            banner.className =
+              "w-full rounded-md px-3 py-1.5 text-xs font-semibold text-center";
+
+            try {
+              await navigator.clipboard.writeText(codeToReveal);
+              banner.className +=
+                " text-green-700 bg-green-50 border border-green-200";
+              banner.textContent = "✓ Code copied to clipboard";
+            } catch (e) {
+              banner.className +=
+                " text-amber-700 bg-amber-50 border border-amber-200";
+              banner.textContent = "⚠ Copy manually — clipboard blocked";
+            }
+
+            wrapper2.appendChild(box);
+            wrapper2.appendChild(banner);
+            btn.replaceWith(wrapper2);
+          } else {
+            const box = document.createElement("div");
+            box.className =
+              "w-full rounded-md px-3 py-2 text-sm font-semibold text-green-700 bg-green-50 border border-green-200 text-center";
+            box.textContent = "Deal Activated";
+            btn.replaceWith(box);
+          }
+
+          if (serverRedirect) {
+            setTimeout(
+              () =>
+                window.open(serverRedirect, "_blank", "noopener,noreferrer"),
+              100,
+            );
+          } else if (!codeToReveal) {
+            const fallback =
+              coupon.merchant?.affl_url || coupon.merchant?.web_url || null;
+            if (fallback)
+              setTimeout(
+                () => window.open(fallback, "_blank", "noopener,noreferrer"),
+                100,
+              );
+          }
+        } catch (err) {
+          console.error("Reveal error:", err);
+          btn.disabled = false;
+        }
+      });
+    }
+
+    function appendCoupons(coupons: any[]) {
+      const grid = document.querySelector("#resource-list .grid");
+      if (!grid) return;
+      coupons.forEach((c: {} | undefined) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "card-base p-0";
+        wrapper.innerHTML = renderCouponCardHtml(c);
+        grid.appendChild(wrapper);
+        attachRevealHandlers(wrapper, c);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const resourceList = document.querySelector(
+        "#resource-list",
+      ) as HTMLElement;
+      if (resourceList?.dataset?.resource === "coupons") {
+        nextUrl = resourceList.dataset.nextUrl || null;
+        hasMore = !!nextUrl;
+
+        const sentinel = document.createElement("div");
+        sentinel.id = "scroll-sentinel";
+        sentinel.style.height = "1px";
+        resourceList.appendChild(sentinel);
+        observer.observe(sentinel);
+      }
+    });
+  </script>
+</Base>

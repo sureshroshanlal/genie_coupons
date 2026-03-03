@@ -1,0 +1,104 @@
+---
+export const prerender = true;
+
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import LandingSubscribeIsland from "../components/islands/LandingSubscribeIsland.jsx";
+import HomeSections from "../components/HomeSections.jsx";
+import { SAMPLE_TESTIMONIALS } from "../content/testimonials.sample";
+import banners from "../content/banners.server";
+import BannerCarousel from "../components/BannerCarousel.jsx";
+
+const firstBanner = banners[0];
+
+const pageMeta = {
+  title: "Genie Coupon | Verified Coupons & Discounts",
+  description:
+    "Verified coupons, real savings, no expired junk — handpicked by real humans.",
+  preloadHero: true,
+  heroSrc: firstBanner.variants.avif[2],
+  heroSrcSetAvif: firstBanner.variants.avif
+    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
+    .join(", "),
+  heroSrcSetWebp: firstBanner.variants.webp
+    .map((src, i) => `${src} ${[320, 768, 1600][i]}w`)
+    .join(", "),
+};
+
+const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
+const avg =
+  SAMPLE_TESTIMONIALS.reduce((s, t) => s + (t.rating || 0), 0) /
+    SAMPLE_TESTIMONIALS.length || null;
+---
+
+<Base meta={pageMeta}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <!-- Hero -->
+    <section class="mx-auto max-w-3xl text-center">
+      <h1
+        class="text-5xl md:text-6xl font-bold tracking-tight text-brand-primary"
+      >
+        Genie Coupon...
+      </h1>
+      <h2
+        class="text-2xl md:text-3xl font-bold tracking-tight text-brand-primary"
+      >
+        Your trusted source for verified coupons & discounts.
+      </h2>
+      <p class="mt-3 text-gray-700">
+        Save on top brands with codes we test ourselves.
+      </p>
+    </section>
+
+    <!-- New Embla Carousel -->
+    <section class="homepage-hero my-8 mx-auto max-w-6xl">
+      <!-- Preload LCP hero (place directly above BannerCarousel / hero markup) -->
+      <link
+        rel="preload"
+        as="image"
+        href={pageMeta.heroSrc}
+        imagesrcset={pageMeta.heroSrcSetAvif}
+        imagesizes="(max-width:640px) 100vw, 1200px"
+        fetchpriority="high"
+      />
+      <div class="mt-8 relative mx-auto max-w-6xl rounded-lg overflow-hidden">
+        <BannerCarousel client:visible banners={banners} />
+      </div>
+    </section>
+
+    <HomeSections
+      client:load
+      apiUrl={apiUrl}
+      testimonials={SAMPLE_TESTIMONIALS as {
+        id: number;
+        user_name: string;
+        rating: number;
+        comment: string;
+        avatar_url: string;
+        posted_at: string;
+      }[]}
+      avgRating={avg}
+      totalReviews={SAMPLE_TESTIMONIALS.length}
+    />
+    <!-- Newsletter -->
+    <section class="relative mt-16 rounded-xl overflow-hidden">
+      <div class="absolute inset-0 bg-brand-primary" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-black/25" aria-hidden="true"></div>
+      <div
+        class="relative z-10 p-6 text-center text-white"
+        aria-labelledby="newsletter-cta-heading"
+      >
+        <h2 id="newsletter-cta-heading" class="text-white font-semibold">
+          Subscribe and stay ahead — no spam, ever.
+        </h2>
+        <p class="mt-2 text-white font-medium">
+          Get the best deals delivered weekly.
+        </p>
+        <LandingSubscribeIsland client:visible />
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>

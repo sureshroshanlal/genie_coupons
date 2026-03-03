@@ -1,0 +1,136 @@
+---
+// src/components/VerifiedBadge.astro
+
+interface Props {
+  name: string;
+  designation: string;
+  lastVerified: string;
+  successRate: number;
+  verifyingSince?: string | null;
+  avatarUrl?: string | null;
+  authorSlug: string;
+  sameAs: { type: string; url: string }[];
+}
+
+const {
+  name,
+  designation,
+  lastVerified,
+  successRate,
+  verifyingSince,
+  avatarUrl,
+  authorSlug,
+  sameAs,
+} = Astro.props;
+
+const icons: Record<string, string> = {
+  linkedin: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.48 6S0 4.88 0 3.5 1.12 1 2.48 1s2.5 1.12 2.5 2.5zM.22 8h4.52v14H.22V8zm7.56 0h4.33v1.92h.06c.6-1.14 2.06-2.34 4.24-2.34 4.54 0 5.38 2.99 5.38 6.87V22h-4.52v-6.74c0-1.6-.03-3.66-2.23-3.66-2.24 0-2.58 1.75-2.58 3.55V22H7.78V8z"/></svg>`,
+  facebook: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M22 12a10 10 0 10-11.5 9.87v-6.99H7.9V12h2.6V9.8c0-2.56 1.53-3.97 3.87-3.97 1.12 0 2.3.2 2.3.2v2.53h-1.3c-1.28 0-1.68.8-1.68 1.62V12h2.86l-.46 2.88h-2.4v6.99A10 10 0 0022 12z"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M18.244 2H21l-6.54 7.48L22 22h-6.828l-5.35-7.03L3.8 22H1l7.02-8.02L2 2h6.93l4.84 6.41L18.244 2z"/></svg>`,
+  instagram: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm4.25 5.5a4.75 4.75 0 100 9.5 4.75 4.75 0 000-9.5zm6-1.25a1.25 1.25 0 11-2.5 0 1.25 1.25 0 012.5 0z"/></svg>`,
+  tiktok: `<svg viewBox="0 0 24 24" class="w-4 h-4 fill-current"><path d="M12 2v14.5a3.5 3.5 0 11-3.5-3.5c.28 0 .55.03.81.1V9.8a7 7 0 100 13.9A7 7 0 0016 16.7V8.54a8.2 8.2 0 004.5 1.36V6.3A5.7 5.7 0 0116 2h-4z"/></svg>`,
+};
+---
+
+<div class="card-base p-4">
+  <!-- Header badge strip -->
+  <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+    <svg viewBox="0 0 24 24" class="w-6 h-6 flex-shrink-0" aria-hidden="true">
+      <path
+        fill="#16a34a"
+        d="M12 2L4 5v6c0 5.25 3.5 10.15 8 11.35C16.5 21.15 20 16.25 20 11V5l-8-3z"
+      ></path>
+      <path
+        fill="white"
+        stroke-width="0"
+        d="M9.5 16.5l-3-3 1.41-1.41L9.5 13.67l6.59-6.58L17.5 8.5z"></path>
+    </svg>
+    <div>
+      <div class="text-sm font-bold text-gray-900 leading-tight">
+        Verified Today
+      </div>
+      <div class="text-xs text-gray-500 uppercase tracking-wider">
+        Personally Tested
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar + name + designation -->
+  <div class="flex items-center gap-3 mb-4">
+    <div class="flex-shrink-0">
+      {
+        avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={name}
+            class="w-14 h-14 rounded-full object-cover"
+            style="outline: 2px solid #FFF0EB;"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            class="w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl"
+            style="background:#FFF0EB; color:#FF5A1F;"
+          >
+            {name.charAt(0)}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <a
+        href={`/author/${authorSlug}`}
+        class="font-bold text-gray-900 text-base leading-snug truncate block hover:underline"
+        style="text-decoration-color:#FF5A1F;"
+      >
+        {name}
+      </a>
+      <div
+        class="text-xs font-semibold uppercase tracking-wide leading-snug mt-0.5 truncate"
+        style="color:#FF5A1F;"
+      >
+        {designation}
+      </div>
+      {
+        sameAs.length > 0 && (
+          <div class="flex gap-2 mt-1.5">
+            {sameAs.map((item) => (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer me"
+                aria-label={item.type}
+                class="text-gray-400 hover:text-brand-primary transition"
+                set:html={icons[item.type]}
+              />
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div
+    class="rounded-lg px-3 py-2 space-y-1.5 text-sm"
+    style="background:#F8F7F4;"
+  >
+    <div class="flex justify-between items-center">
+      <span class="text-gray-500">Last Verified</span>
+      <span class="font-semibold text-gray-800">{lastVerified}</span>
+    </div>
+    <div class="flex justify-between items-center">
+      <span class="text-gray-500">Success Rate</span>
+      <span class="font-semibold" style="color:#FF5A1F;">{successRate}%</span>
+    </div>
+    {
+      verifyingSince && (
+        <div class="flex justify-between items-center">
+          <span class="text-gray-500">Verifying Since</span>
+          <span class="font-semibold text-gray-800">{verifyingSince}</span>
+        </div>
+      )
+    }
+  </div>
+</div>

@@ -1,0 +1,16 @@
+---
+import { renderBlogCardHtml } from "../lib/renderers/blogCardHtml.js";
+
+type Blog = {
+  id: string | number;
+  slug: string;
+  title: string;
+  hero_image_url?: string | null;
+  category?: string | null;
+  created_at?: string | null;
+};
+
+const { blog } = Astro.props as { blog: Blog };
+---
+
+<div set:html={renderBlogCardHtml(blog)} />

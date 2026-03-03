@@ -1,0 +1,28 @@
+---
+// src/pages/stores/index.astro
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import StoresGrid from "../../components/StoresGrid.jsx";
+
+const pageTitle = "Stores - Genie Coupon";
+const pageDesc = "Explore verified stores with handpicked coupons.";
+const canonical = "https://geniecoupon.com/stores";
+
+// Get API URL from environment or use default
+const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-brand-primary">Stores</h1>
+      <p class="mt-2 text-base text-gray-600 max-w-2xl">{pageDesc}</p>
+    </div>
+
+    <!-- React component handles all filtering, infinite scroll, and store display -->
+    <StoresGrid client:load apiUrl={apiUrl} categorySlug={null} />
+  </main>
+  <Footer />
+</Base>

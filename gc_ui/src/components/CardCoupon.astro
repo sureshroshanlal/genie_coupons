@@ -1,0 +1,17 @@
+---
+import { renderCouponCardHtml } from "../lib/renderers/couponCardHtml.js";
+
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  code?: string | null;
+  ends_at?: string | null;
+  merchant_name?: string | null;
+  merchant?: { slug: string | null; logo_url?: string | null };
+  coupon_type?: string;
+};
+
+const { coupon } = Astro.props as { coupon: Coupon };
+---
+
+<div set:html={renderCouponCardHtml(coupon)} />

@@ -1,0 +1,135 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { api } from "../../lib/api";
+
+type SameAs = {
+  type: string;
+  url: string;
+};
+
+type Author = {
+  id: number;
+  slug: string;
+  name: string;
+  designation: string;
+  bioHtml?: string | null;
+  avatar_url?: string | null;
+  verifying_since?: string | null;
+  same_as: SameAs[];
+};
+
+type AuthorsResponse = {
+  data: Author[];
+  meta: { total: number };
+};
+
+let resp: AuthorsResponse | null = null;
+try {
+  resp = await api.get<AuthorsResponse>(
+    `/authors?limit=100`,
+    {},
+    { retries: 2, timeout: 8000 },
+  );
+} catch (e) {
+  console.error("Error fetching authors:", e);
+  resp = { data: [], meta: { total: 0 } };
+}
+
+const authors = resp?.data || [];
+
+const SITE_URL   = "https://geniecoupon.com";
+const pageUrl    = `${SITE_URL}/authors`;
+const pageTitle  = "Coupon Verification Experts | geniecoupon";
+const pageDesc   = "Meet the team of coupon verification specialists who personally test every deal on geniecoupon.";
+const canonical  = pageUrl;
+
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "geniecoupon Coupon Verification Experts",
+  "url": pageUrl,
+  "numberOfItems": authors.length,
+  "itemListElement": authors.map((a, i) => ({
+    "@type": "ListItem",
+    "position": i + 1,
+    "url": `${SITE_URL}/author/${a.slug}`,
+    "name": a.name,
+  })),
+};
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld: itemListSchema }}>
+  <Header />
+
+  <main class="container mx-auto px-4 py-10">
+
+    <!-- Page header -->
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-2" style="color:#111418;">
+        Our Verification Experts
+      </h1>
+      <p class="text-sm max-w-2xl" style="color:#6B7280;">{pageDesc}</p>
+    </div>
+
+    {authors.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {authors.map((author) => (
+          <a
+            href={`/authors/${author.slug}`}
+            class="card-base p-4 flex items-start gap-4 hover:border-brand-primary transition group"
+          >
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+              {author.avatar_url ? (
+                <img
+                  src={author.avatar_url}
+                  alt={author.name}
+                  class="w-14 h-14 rounded-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  class="w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl"
+                  style="background:#FFF0EB; color:#FF5A1F;"
+                >
+                  {author.name.charAt(0)}
+                </div>
+              )}
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <div
+                class="font-bold text-base leading-snug truncate group-hover:underline"
+                style="color:#111418; text-decoration-color:#FF5A1F;"
+              >
+                {author.name}
+              </div>
+              <div
+                class="text-xs font-semibold uppercase tracking-wide mt-0.5 truncate"
+                style="color:#FF5A1F;"
+              >
+                {author.designation}
+              </div>
+              {author.verifying_since && (
+                <div class="text-xs mt-1.5 flex items-center gap-1" style="color:#6B7280;">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  Since {author.verifying_since}
+                </div>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="text-gray-500 mt-6">No authors found.</p>
+    )}
+
+  </main>
+
+  <Footer />
+</Base>

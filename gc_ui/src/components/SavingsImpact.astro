@@ -1,0 +1,36 @@
+---
+interface Props {
+  totalSavings: number;
+  activeCoupons: number;
+}
+const { totalSavings, activeCoupons } = Astro.props;
+---
+
+<div class="card-base p-4">
+  <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+    ⚡ Savings Impact
+  </h3>
+
+  <div
+    class="rounded-lg px-4 py-3 mb-4 text-center"
+    style="background: linear-gradient(135deg,#334155,#4f46e5);"
+  >
+    <div class="text-xs text-white/80 uppercase tracking-widest mb-1">
+      Total Savings Generated
+    </div>
+    <div class="text-3xl font-extrabold text-white tracking-tight">
+      ${totalSavings.toLocaleString()}+
+    </div>
+  </div>
+
+  <div class="mt-4 text-sm text-gray-700 space-y-2">
+    <div class="flex justify-between">
+      <span>Active Coupons</span>
+      <span class="font-medium">{activeCoupons}</span>
+    </div>
+    <div class="flex justify-between">
+      <span>Updated</span>
+      <span class="font-medium">Today</span>
+    </div>
+  </div>
+</div>

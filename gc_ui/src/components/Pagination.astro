@@ -1,0 +1,180 @@
+---
+import ChevronLeft from "./icons/ChevronLeft.astro";
+import ChevronRight from "./icons/ChevronRight.astro";
+
+const {
+  prev = null,
+  next = null,
+  total_pages = undefined,
+} = Astro.props as {
+  prev?: string | null;
+  next?: string | null;
+  total_pages?: number;
+};
+
+// Read the public env var at build-time and expose to the template
+const BACKEND = (import.meta.env.PUBLIC_API_BASE_URL || "").toString().trim().replace(/\/+$/, "");
+---
+
+<div class="flex items-center justify-between mt-6" data-backend={BACKEND}>
+  <div class="text-sm text-gray-500">
+    {
+      typeof total_pages === "number" && total_pages > 0
+        ? `Total pages: ${total_pages}`
+        : ""
+    }
+  </div>
+  <div class="flex items-center gap-2">
+    {
+      prev ? (
+        <a
+          href={prev}
+          class="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition"
+        >
+          <ChevronLeft size={18} /> Prev
+        </a>
+      ) : (
+        <span class="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed">
+          <ChevronLeft size={18} /> Prev
+        </span>
+      )
+    }
+    {
+      next ? (
+        <a
+          href={next}
+          class="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white transition"
+        >
+          Next <ChevronRight size={18} />
+        </a>
+      ) : (
+        <span class="flex items-center gap-1 px-3 py-1.5 text-sm rounded border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed">
+          Next <ChevronRight size={18} />
+        </span>
+      )
+    }
+  </div>
+</div>
+
+<script is:inline>
+(function () {
+  if (typeof window === 'undefined') return;
+
+  // Helper: escape text to avoid XSS when injecting HTML
+  function escapeHtml(s){ return String(s || '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // Find the coupons list container (adjust selector if your list lives elsewhere)
+  const couponsContainer = document.getElementById('coupons-list') || document.querySelector('.coupons-list') || null;
+
+  // Utility to render a coupon item to HTML. Adjust fields to match your real markup if needed.
+  function renderCoupon(item) {
+    const merchant = item.merchant || {};
+    const endsAt = item.ends_at ? `<div class="text-xs text-gray-500">Expires: ${escapeHtml(new Date(item.ends_at).toLocaleDateString())}</div>` : '';
+    const code = item.code ? `<div class="text-sm font-mono bg-gray-100 px-2 py-1 inline-block rounded">${escapeHtml(item.code)}</div>` : '';
+    return `
+      <article class="coupon-card border p-4 rounded mb-3" data-id="${escapeHtml(item.id)}">
+        <div class="flex items-start gap-3">
+          <div class="flex-1">
+            <h3 class="text-base font-semibold">${escapeHtml(item.title)}</h3>
+            <div class="text-sm text-gray-600">${escapeHtml(item.description || '')}</div>
+            <div class="mt-2">${code} ${endsAt}</div>
+            <div class="mt-2 text-xs text-gray-500">Merchant: ${escapeHtml(merchant.name || item.merchant_name || '')}</div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  // Utility to build query params: keep filters present in address bar but use page from link
+  function buildApiUrlFromAnchor(a) {
+    try {
+      const anchorUrl = new URL(a.href, location.origin);
+      // preserve current address-bar search (filters) but override page with anchor's page if present
+      const params = new URLSearchParams(location.search || '');
+      // copy any params from anchor if we want anchor to decide (anchor may already have filters)
+      anchorUrl.searchParams.forEach((v,k)=> params.set(k,v));
+      // final API base: either the anchor already points to backend (absolute) or we assume anchor path is fine
+      const apiHref = a.href;
+      // prefer absolute anchor href if it points to your backend; otherwise construct from current origin + path
+      return apiHref;
+    } catch (err) {
+      return a.href;
+    }
+  }
+
+  async function handlePaginationClick(e){
+    const a = e.target.closest && e.target.closest('a');
+    if (!a) return;
+    // we only intercept anchors inside pagination area; narrow selector by class/name if needed
+    // if anchor points to a JSON/API endpoint (we expect it), intercept
+    // allow ctrl/meta/shift/new-tab behavior:
+    if (e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+
+    // Only intercept if href contains /public/v1/ or backend host OR path /coupons (you can fine-tune)
+    const href = a.getAttribute('href') || '';
+    if (!href.includes('/public/v1/') && !href.includes('/coupons')) return;
+
+    e.preventDefault();
+
+    const apiUrl = buildApiUrlFromAnchor(a);
+
+    try {
+      const res = await fetch(apiUrl, { credentials: 'include' });
+      if (!res.ok) {
+        // fallback to full navigation if API returns non-OK
+        location.assign(a.href);
+        return;
+      }
+      const json = await res.json();
+
+      // find container
+      if (!couponsContainer) {
+        // no place to render: fallback to navigation
+        location.assign(a.href);
+        return;
+      }
+
+      // replace list HTML
+      const rows = Array.isArray(json.data) ? json.data : (json.items || []);
+      couponsContainer.innerHTML = rows.map(renderCoupon).join('') || '<div class="py-6 text-center text-gray-600">No coupons found</div>';
+
+      // update prev/next anchors on the page if meta.prev/meta.next present
+      const prevAnchor = document.querySelector('a[href*="page="][rel="prev"]') || document.querySelector('a[href*="page="]:contains("Prev")') || null;
+      const nextAnchor = document.querySelector('a[href*="page="][rel="next"]') || document.querySelector('a[href*="page="]:contains("Next")') || null;
+
+      // more robust: find anchors inside pagination area by index
+      const paginationAnchors = Array.from(document.querySelectorAll('.flex.items-center a'));
+      const prevA = paginationAnchors.find(el=> /prev/i.test(el.textContent||'')) || paginationAnchors[0] || null;
+      const nextA = paginationAnchors.find(el=> /next/i.test(el.textContent||'')) || paginationAnchors[paginationAnchors.length-1] || null;
+
+      // Update anchors using meta.prev / meta.next (they should point to frontend or backend URL)
+      if (json.meta) {
+        if (prevA) prevA.href = json.meta.prev || '#';
+        if (nextA) nextA.href = json.meta.next || '#';
+      }
+
+      // push state to update address bar and allow bookmarking/back
+      try {
+        const newUrl = new URL(a.href, location.origin);
+        // Keep filters from current location, but update page param to that of apiUrl/newUrl
+        const pageParam = new URL(a.href, location.origin).searchParams.get('page');
+        const params = new URLSearchParams(location.search);
+        if (pageParam) params.set('page', pageParam);
+        else params.delete('page');
+        history.pushState({}, '', location.pathname + '?' + params.toString());
+      } catch (err) { /* ignore push errors */ }
+
+      // done
+    } catch (err) {
+      console.error('Pagination fetch failed', err);
+      location.assign(a.href);
+    }
+  }
+
+  // attach delegated click listener to pagination container only (assume pagination is near the coupons list)
+  // find the pagination wrapper (closest to container)
+  const paginationWrapper = document.querySelector('.flex.items-center.justify-between') || document.querySelector('.flex.items-center') || document;
+  paginationWrapper.addEventListener('click', handlePaginationClick, { passive: false });
+})();
+</script>
+

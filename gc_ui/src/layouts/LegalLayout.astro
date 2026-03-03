@@ -1,0 +1,28 @@
+---
+import Base from "./Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+export interface Props {
+  meta: {
+    title: string;
+    description: string;
+  };
+  children: any;
+}
+const { meta, children } = Astro.props;
+---
+
+<Base meta={meta}>
+  <Header />
+  <main class="container mx-auto px-4 py-10">
+    <article class="prose max-w-none lg:prose-lg text-on-surface">
+      <h1>{meta.title}</h1>
+      <p class="text-sm text-gray-400">
+        Last updated: {new Date().toLocaleDateString()}
+      </p>
+      {children}
+    </article>
+  </main>
+  <Footer />
+</Base>

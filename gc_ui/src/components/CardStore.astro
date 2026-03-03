@@ -1,0 +1,15 @@
+---
+import { renderStoreCardHtml } from "../lib/renderers/storeCardHtml.js";
+
+type Store = {
+  id: string | number;
+  slug: string;
+  name: string;
+  logo_url?: string | null;
+  stats?: { active_coupons?: number };
+};
+
+const { store } = Astro.props as { store: Store };
+---
+
+<div set:html={renderStoreCardHtml(store)} />

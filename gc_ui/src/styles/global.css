@@ -1,0 +1,667 @@
+/* ==============================
+   Combined global.css — Genie Coupon
+   Palette: Charcoal #222222 + Lime #89E900
+   Font: Outfit (variable)
+   ============================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------
+   Google Fonts — Outfit
+   Add this in Base.astro <head>:
+   <link rel="preconnect" href="https://fonts.googleapis.com" />
+   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+   ------------------------------ */
+
+/* ==========================
+   CSS Variables — Genie Coupon
+   Charcoal + Electric Lime
+========================== */
+:root {
+  /* ── Core Foundation ── */
+  --bg-default: #F5F5F5;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #EBEBEB;
+  --border-default: #D0D0D0;
+
+  /* ── Primary Action System ── */
+  --brand-primary: #89E900;
+  /* Electric Lime */
+  --brand-secondary: #75C900;
+  /* Lime hover */
+  --brand-pressed: #5EA300;
+  /* Lime pressed */
+  --brand-primary-text: #222222;
+  /* Dark text on lime */
+
+  /* ── Secondary Accent ── */
+  --brand-accent: #222222;
+  /* Charcoal */
+  --brand-accent-soft: #2E2E2E;
+  --brand-accent-text: #89E900;
+  /* Lime on charcoal */
+
+  /* ── Deal Tag System ── */
+  --tag-verified: #0F766E;
+  --tag-expiring: #F59E0B;
+  --tag-exclusive: #222222;
+  --tag-cashback-bg: #EEFF99;
+  --tag-cashback-text: #2A3300;
+
+  /* ── Typography ── */
+  --text-primary: #222222;
+  --text-secondary: #444444;
+  --text-muted: #666666;
+  --link: #222222;
+  --link-hover: #5EA300;
+
+  /* ── Card System ── */
+  --card-bg: #FFFFFF;
+  --card-border: #E0E0E0;
+  --card-shadow-sm: 0 1px 3px rgba(34, 34, 34, 0.06);
+  --card-shadow-md: 0 8px 24px rgba(34, 34, 34, 0.08);
+  --card-hover-border: rgba(137, 233, 0, 0.45);
+  --card-hover-shadow: 0 8px 24px rgba(137, 233, 0, 0.18);
+
+  /* ── Surface tokens ── */
+  --surface: #FFFFFF;
+  --surface-2: rgba(137, 233, 0, 0.04);
+  --on-surface: #222222;
+
+  /* ── Legacy aliases ── */
+  --brand-dark: #222222;
+  --brand-navybg: #222222;
+  --brand-saving: #89E900;
+  --brand-harbor: #75C900;
+  --brand-anchor: #89E900;
+  --brand-waves: #222222;
+  --brand-tagline: #666666;
+  --brand-tagline-safe: #444444;
+  --brand-primary-contrast: #75C900;
+
+  /* ── Aliases used by body/links ── */
+  --color-bg: var(--bg-default);
+  --color-text: var(--text-primary);
+  --color-accent: var(--brand-primary);
+  --color-accent-hover: var(--brand-secondary);
+
+  /* ── Background gradient washes ── */
+  --bg-grad-start: rgba(137, 233, 0, 0.05);
+  --bg-grad-end: rgba(34, 34, 34, 0.02);
+}
+
+/* ==========================
+   Base Styles
+========================== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply m-0 p-0 antialiased;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: "Outfit", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  @apply block max-w-full;
+}
+
+a {
+  color: var(--link);
+  @apply no-underline transition-colors duration-200;
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+*,
+*::before,
+*::after {
+  @apply box-border;
+}
+
+/* ==========================
+   Layout Helpers
+========================== */
+.container {
+  @apply max-w-7xl mx-auto px-4;
+}
+
+.section {
+  @apply py-12;
+}
+
+.section-sm {
+  @apply py-6;
+}
+
+.card-accent-top {
+  border-top: 3px solid var(--brand-accent);
+}
+
+/* ==========================
+   Buttons
+========================== */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--brand-primary);
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  border: 1px solid var(--brand-primary);
+  font-weight: 600;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: var(--brand-primary);
+}
+
+.btn-primary:hover {
+  background: var(--brand-secondary);
+  border-color: var(--brand-secondary);
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center px-4 py-2 min-w-[96px] rounded font-semibold transition;
+  border: 1.5px solid var(--border-default);
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: var(--bg-subtle);
+}
+
+.btn-outline--dark {
+  @apply border border-white text-white;
+}
+
+.btn-outline--dark:hover {
+  background: #fff;
+  color: var(--brand-accent);
+}
+
+.btn-outline--light {
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+}
+
+.btn-outline--light:hover {
+  background: var(--text-primary);
+  color: var(--brand-primary);
+}
+
+.btn:disabled,
+.btn-disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+/* ==========================
+   Deal Tag System
+========================== */
+.tag-verified {
+  background: rgba(15, 118, 110, 0.10);
+  color: var(--tag-verified);
+}
+
+.tag-expiring {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--tag-expiring);
+}
+
+.tag-exclusive {
+  background: rgba(34, 34, 34, 0.08);
+  color: var(--tag-exclusive);
+}
+
+.tag-cashback {
+  background: var(--tag-cashback-bg);
+  color: var(--tag-cashback-text);
+}
+
+.pill {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.pill-green {
+  background: rgba(137, 233, 0, 0.15);
+  color: #3a6000;
+}
+
+.pill-gray {
+  @apply bg-gray-100 text-gray-600;
+}
+
+/* ==========================
+   Components
+========================== */
+.toast {
+  @apply fixed bottom-6 right-6 text-sm px-3 py-2 rounded shadow-lg;
+  background: var(--text-primary);
+  color: #fff;
+}
+
+.sidebar-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  @apply rounded-md p-4;
+}
+
+.card-base {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  @apply rounded-lg transition-shadow duration-150;
+}
+
+.card-base:hover {
+  @apply shadow-lg -translate-y-0.5;
+}
+
+.section-heading {
+  @apply text-xl font-semibold mb-4;
+  color: var(--brand-accent);
+}
+
+/* Line-clamp */
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+/* Expandable */
+.expandable {
+  position: relative;
+}
+
+.expandable .expandable-content {
+  transition: max-height 180ms ease;
+}
+
+.expand-toggle {
+  display: inline-block;
+  margin-left: 0.5rem;
+  margin-top: 0.25rem;
+  font-size: 0.92rem;
+  color: var(--brand-secondary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.expand-toggle:focus {
+  outline: 2px solid rgba(137, 233, 0, 0.30);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.expandable p {
+  margin: 0;
+}
+
+/* ==========================
+   Typography / Prose
+========================== */
+.prose :where(h1, h2, h3, h4) {
+  color: var(--text-primary);
+}
+
+.prose {
+  --tw-prose-links: var(--link);
+}
+
+.prose a {
+  @apply underline-offset-2 hover:underline;
+  color: var(--brand-secondary);
+}
+
+.prose p {
+  @apply text-base leading-7 mb-4;
+  color: var(--text-secondary);
+}
+
+/* ==========================
+   Footer & Social
+========================== */
+.footer-link {
+  @apply inline-block transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-1;
+  color: var(--text-secondary);
+}
+
+.footer-link:hover {
+  color: var(--brand-secondary);
+}
+
+.social-btn {
+  @apply p-2 rounded transition-colors duration-150 ease-in-out;
+  color: currentColor;
+  background: transparent;
+}
+
+.social-btn:hover,
+.social-btn:active {
+  color: var(--brand-accent);
+  background: rgba(137, 233, 0, 0.12);
+}
+
+.social-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(137, 233, 0, 0.22);
+  border-radius: 8px;
+}
+
+.social-btn.small {
+  @apply p-1;
+}
+
+.detail-summary {
+  @apply cursor-pointer font-medium;
+}
+
+.details-panel {
+  @apply mt-2 text-sm;
+  color: var(--text-muted);
+}
+
+/* ==========================
+   Card helpers
+========================== */
+.card {
+  @apply rounded-md p-4 transition-shadow;
+  background: var(--bg-surface);
+}
+
+.card-surface {
+  background: var(--bg-surface);
+  color: var(--on-surface);
+  @apply rounded-md p-4 border;
+  border-color: var(--card-border);
+}
+
+.accent-blue {
+  border-top: 4px solid var(--link);
+}
+
+.accent-amber {
+  border-top: 4px solid var(--tag-expiring);
+}
+
+.shadow-store-card {
+  box-shadow: 0 6px 20px rgba(34, 34, 34, 0.06);
+}
+
+.site-hero {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+  color: var(--text-primary);
+}
+
+.on-brand-contrast {
+  color: var(--brand-primary-text);
+  mix-blend-mode: normal;
+}
+
+.skip-link {
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-3 focus:py-2 focus:bg-white rounded;
+  color: var(--brand-secondary);
+}
+
+.footer-col {
+  @apply space-y-3;
+}
+
+.hero-placeholder {
+  width: 100%;
+  aspect-ratio: 16/5;
+  background: var(--bg-subtle);
+}
+
+/* ==========================
+   Visual Polish
+========================== */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  background-image:
+    radial-gradient(circle at 10% 10%, var(--bg-grad-start) 0%, transparent 20%),
+    radial-gradient(circle at 90% 90%, var(--bg-grad-end) 0%, transparent 25%);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-sm);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: box-shadow 180ms ease, transform 120ms ease, border-color 180ms ease;
+}
+
+.card-surface {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-md);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-3px);
+  box-shadow: var(--card-hover-shadow);
+  border-color: var(--card-hover-border);
+}
+
+.card hr,
+.card .row-sep {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(34, 34, 34, 0.04), rgba(34, 34, 34, 0.01));
+  margin: 0.75rem 0;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  color: var(--text-primary);
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(137, 233, 0, 0.20);
+  border-color: rgba(137, 233, 0, 0.50);
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  .card-surface {
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+}
+
+.on-canvas-strong {
+  color: var(--brand-primary) !important;
+}
+
+/* Carousel — WCAG touch target */
+button[aria-label^="Go to slide"] {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  margin: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: relative !important;
+  box-shadow: none !important;
+}
+
+button[aria-label^="Go to slide"]::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  display: block;
+  background: currentColor;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+button[aria-label^="Go to slide"].bg-white::before {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+button[aria-label^="Go to slide"].bg-brand-primary::before {
+  background: var(--brand-primary);
+}
+
+button[aria-label^="Go to slide"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 6px rgba(137, 233, 0, 0.22);
+  border-radius: 9999px;
+}
+
+/* ==========================
+   Quill Editor
+========================== */
+.ql-editor {
+  line-height: 1.6;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.ql-editor h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1.2em 0 0.6em;
+}
+
+.ql-editor h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1em 0 0.5em;
+}
+
+.ql-editor h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.8em 0 0.4em;
+}
+
+.ql-editor p {
+  margin: 0 0 0.8em;
+}
+
+.ql-editor a {
+  color: var(--brand-secondary);
+  text-decoration: underline;
+}
+
+.ql-editor strong,
+.ql-editor b {
+  font-weight: 700;
+}
+
+.ql-editor em,
+.ql-editor i {
+  font-style: italic;
+}
+
+.ql-editor u {
+  text-decoration: underline;
+}
+
+.ql-editor s {
+  text-decoration: line-through;
+}
+
+.ql-editor ul {
+  list-style-type: disc;
+  margin: 0.8em 0 0.8em 1.5em;
+  padding: 0;
+}
+
+.ql-editor ol {
+  list-style-type: decimal;
+  margin: 0.8em 0 0.8em 1.5em;
+  padding: 0;
+}
+
+.ql-editor li {
+  margin-bottom: 0.3em;
+}
+
+.ql-editor img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+}
+
+/* ==========================
+   Animations
+========================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}

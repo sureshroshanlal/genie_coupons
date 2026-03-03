@@ -1,0 +1,88 @@
+---
+// src/pages/affiliate-disclosure.astro
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+const pageMeta = {
+  title: "Affiliate Disclosure | Genie Coupon",
+  description:
+    "Learn how Genie Coupon earns commissions through affiliate partnerships while maintaining transparency, editorial integrity, and user trust.",
+};
+
+const affiliateSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Affiliate Disclosure",
+  url: "https://geniecoupon.com/affiliate-disclosure",
+  description:
+    "Official affiliate disclosure explaining how Genie Coupon earns commissions and maintains editorial integrity.",
+  publisher: {
+    "@type": "Organization",
+    name: "Genie Coupon",
+    url: "https://geniecoupon.com",
+  },
+};
+---
+
+<Base meta={pageMeta}>
+  <Header />
+
+  <main
+    role="main"
+    aria-labelledby="affiliate-heading"
+    class="container mx-auto px-4 py-10"
+  >
+    <header id="affiliate-heading" class="mb-6">
+      <h1 class="site-hero text-on-surface">Affiliate Disclosure</h1>
+      <p class="mt-2 text-gray-400">
+        Transparency is important to us. This page explains how affiliate
+        relationships support Genie Coupon.
+      </p>
+    </header>
+
+    <section class="card card-surface p-6 space-y-6">
+      <p>
+        Genie Coupon participates in affiliate marketing programs and may earn
+        a commission when users click on certain links or complete qualifying
+        purchases through links available on this website, at no additional
+        cost to the user. When a visitor clicks an affiliate link, any purchase
+        or transaction is completed directly with the respective merchant, and
+        the merchant may compensate Genie Coupon for the referral. These
+        partnerships support the continued operation, development, and
+        maintenance of the platform, allowing us to provide curated coupons,
+        promotional offers, and savings resources free of charge.
+      </p>
+
+      <p>
+        Compensation received from merchants may influence the placement,
+        visibility, or positioning of certain offers on the site. However, such
+        compensation does not determine our commitment to transparency,
+        accuracy, or user-first standards. We aim to present relevant and timely
+        promotional information based on availability, merchant data, seasonal
+        trends, and overall user experience. While we make reasonable efforts to
+        ensure listed coupons and offers are current, final pricing,
+        eligibility, availability, and promotional terms are determined solely
+        by the merchant and may change without notice.
+      </p>
+
+      <p>
+        Genie Coupon does not directly sell, ship, manufacture, or provide
+        warranties for any products or services featured on this website. All
+        purchases, returns, exchanges, customer service inquiries, and product
+        guarantees are handled exclusively by the respective third-party
+        merchants. Users are encouraged to review the merchant’s individual
+        terms and conditions, privacy policies, and return policies before
+        completing any transaction. By using this website, you acknowledge that
+        affiliate relationships may exist and that commissions earned through
+        these relationships help sustain our ability to continue delivering
+        reliable savings opportunities and consumer-focused content.
+      </p>
+    </section>
+
+    <!-- JSON-LD for SEO -->
+    <script type="application/ld+json" set:html={JSON.stringify(affiliateSchema)} />
+  </main>
+
+  <Footer />
+</Base>

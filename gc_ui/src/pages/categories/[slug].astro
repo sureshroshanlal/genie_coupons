@@ -1,0 +1,108 @@
+---
+// src/pages/categories/[slug].astro
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ParentCategorySubcategories from "../../components/ParentCategorySubcategories.jsx"; // Reuse stores grid w/ category filter
+import { api } from "../../lib/api";
+
+interface Breadcrumb {
+  name: string;
+  url: string;
+}
+
+const { slug } = Astro.params;
+let category = null;
+let breadcrumbs: Breadcrumb[] = [];
+
+try {
+  const resp = await api.get(`/categories/${slug}`);
+  const responseData = resp as { data: any; meta?: any };
+  category = responseData.data;
+  if (category) {
+    breadcrumbs = [
+      { name: "Home", url: "/" },
+      { name: "Categories", url: "/categories" },
+      { name: category.name, url: `/categories/${slug}` },
+    ];
+  }
+} catch (e) {
+  console.error("Category fetch error:", e);
+}
+
+const pageTitle =
+  category?.meta_title || `${category?.name || "Category"} - Genie Coupon`;
+const pageDesc =
+  category?.meta_description ||
+  `Best ${category?.name || ""} coupons and deals.`;
+const canonical = category?.meta?.canonical;
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+  <Header />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    {
+      category ? (
+        <>
+          <Breadcrumbs breadcrumbs={breadcrumbs} />
+
+          {/* Category Hero */}
+          <section class="mt-8">
+            {category.thumb_url && (
+              <div class="w-full h-48 md:h-64 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl overflow-hidden mb-6">
+                <img
+                  src={category.thumb_url}
+                  alt={category.name}
+                  class="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <div class="text-center md:text-left">
+              <h1 class="text-4xl md:text-5xl font-extrabold text-brand-primary leading-tight mb-4">
+                {category.name}
+              </h1>
+              <div class="max-w-2xl mx-auto md:ml-0 text-lg text-gray-600 mb-8">
+                {category.description ||
+                  `Discover the best deals from ${category.stats?.stores || 0} stores in ${category.name}.`}
+              </div>
+              <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                <span class="pill pill-green">
+                  {category.stats?.stores || 0} stores
+                </span>
+                {category.stats?.children > 0 && (
+                  <span class="pill pill-blue">
+                    {category.stats.children} sub-categories
+                  </span>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Stores Grid - filtered by this category */}
+          <div class="mt-12">
+            <ParentCategorySubcategories
+              client:load
+              apiUrl={import.meta.env.PUBLIC_API_BASE_URL}
+              categorySlug={slug}
+            />
+          </div>
+        </>
+      ) : (
+        <section class="py-20 text-center">
+          <h1 class="text-3xl font-bold text-brand-primary">
+            Category not found
+          </h1>
+          <p class="text-gray-600 mt-2 max-w-md mx-auto">
+            Please check the URL or browse all{" "}
+            <a href="/categories" class="text-brand-primary hover:underline">
+              categories
+            </a>
+            .
+          </p>
+        </section>
+      )
+    }
+  </main>
+  <Footer />
+</Base>
