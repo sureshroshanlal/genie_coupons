@@ -131,9 +131,9 @@ export function renderCouponCardHtml(item = {}) {
   } else {
     badgeTop = "DEAL";
     badgeBottom = "";
-    badgeBg = "background:#FFF0EB;";
-    badgeBorder = "border-color:#FFCBB8;";
-    badgeTextColor = "color:#B93C10;";
+    badgeBg = "background:#EEFF99;";
+    badgeBorder = "border-color:#89E900;";
+    badgeTextColor = "color:#2A3300;";
   }
 
   const discountBadgeHtml = `
@@ -197,7 +197,7 @@ export function renderCouponCardHtml(item = {}) {
         ${discountBadgeHtml}
         <div class="flex-1 min-w-0 flex flex-col gap-0.5">
           <div class="relative group" tabindex="0" aria-describedby="title-tip-${id}">
-            <h3 class="font-semibold text-sm leading-snug truncate block" style="color:#111418;">
+            <h3 class="font-semibold text-sm leading-snug truncate block" style="color:#222222;">
               ${title}
             </h3>
             <div id="title-tip-${id}" role="tooltip"
@@ -223,9 +223,9 @@ export function renderCouponCardHtml(item = {}) {
           <button
             type="button"
             class="js-reveal-btn flex-shrink-0 inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-bold text-white transition disabled:opacity-60 disabled:cursor-not-allowed"
-            style="background:#FF5A1F;"
-            onmouseover="this.style.background='#E14A15'"
-            onmouseout="this.style.background='#FF5A1F'"
+            style="background:#89E900; color:#222222;"
+            onmouseover="this.style.background='#75C900'"
+            onmouseout="this.style.background='#89E900'"
             data-offer-id="${id}"
             data-code="${rawCode}"
             data-coupon-type="${couponType}"
