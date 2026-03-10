@@ -19,5 +19,24 @@ Disallow: /public/v1/
 # Sitemap reference
 Sitemap: https://geniecoupon.com/sitemap-index.xml
 
-# Host directive (optional, some crawlers honor this)
-Host: geniecoupon.com
+# AI crawlers - explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
