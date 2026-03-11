@@ -104,20 +104,21 @@ export async function list(req, res) {
           };
         } catch (err) {
           console.error("Failed to fetch coupons:", err);
-          return {
-            data: [],
-            meta: {
-              limit,
-              has_more: false,
-              next_cursor: null,
-              prev_cursor: null,
-              canonical: null,
-              prev: null,
-              next: null,
-              total_pages: null,
-              jsonld: { offers: [] },
-            },
-          };
+          throw err;
+          // return {
+          //   data: [],
+          //   meta: {
+          //     limit,
+          //     has_more: false,
+          //     next_cursor: null,
+          //     prev_cursor: null,
+          //     canonical: null,
+          //     prev: null,
+          //     next: null,
+          //     total_pages: null,
+          //     jsonld: { offers: [] },
+          //   },
+          // };
         }
       },
       { ttlSeconds, keyExtra: cacheKey },
