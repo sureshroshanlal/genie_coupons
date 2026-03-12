@@ -19,7 +19,7 @@ export async function list({
   try {
     // Build base query - ROOT CATEGORIES ONLY (parent_id IS NULL)
     let query = supabase
-      .from("merchant_categories_v2")
+      .from("merchant_categories")
       .select(
         `
         id, name, slug, description, thumb_url, 
@@ -91,7 +91,7 @@ export async function list({
           let childrenCount = 0;
           try {
             const { count: cc } = await supabase
-              .from("merchant_categories_v2")
+              .from("merchant_categories")
               .select("id", { count: "exact", head: true })
               .eq("parent_id", row.id)
               .eq("is_publish", true);
@@ -140,7 +140,7 @@ export async function getBySlug(slug) {
 
   try {
     const { data, error } = await supabase
-      .from("merchant_categories_v2")
+      .from("merchant_categories")
       .select(
         `
         id, name, slug, description, thumb_url, top_banner_url, side_banner_url,
@@ -172,7 +172,7 @@ export async function getBySlug(slug) {
     let subcategories = [];
     try {
       const { data: subData } = await supabase
-        .from("merchant_categories_v2")
+        .from("merchant_categories")
         .select("id, name, slug, thumb_url")
         .eq("parent_id", data.id)
         .eq("is_publish", true)
@@ -237,7 +237,7 @@ export async function getSubcategoryBySlug(
   try {
     // Get parent category
     const { data: parent } = await supabase
-      .from("merchant_categories_v2")
+      .from("merchant_categories")
       .select("id, name, slug")
       .eq("slug", parentSlug)
       .eq("is_publish", true)
@@ -248,7 +248,7 @@ export async function getSubcategoryBySlug(
 
     // Get subcategory
     const { data: subcategory } = await supabase
-      .from("merchant_categories_v2")
+      .from("merchant_categories")
       .select(
         `
         id, name, slug, description, thumb_url,
