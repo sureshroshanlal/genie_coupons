@@ -18,26 +18,27 @@ const app = express();
 app.use(express.json({ limit: process.env.JSON_LIMIT || "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// CORS
 const allowedOrigins = [
-  'https://geniecoupon.com',
-  'https://www.geniecoupon.com',
-  'https://dev.geniecoupon.com',
+  "https://geniecoupon.com",
+  "https://www.geniecoupon.com",
+  "https://dev.geniecoupon.com",
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow all *.geniecoupon.com subdomains
+      if (/^https:\/\/[a-z0-9-]+\.geniecoupon\.com$/.test(origin))
         return callback(null, true);
-      }
       return callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization",'X-Requested-With'],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
     optionsSuccessStatus: 204,
-  })
+  }),
 );
 
 // Logging
@@ -58,7 +59,7 @@ app.use(
   helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false,
-  })
+  }),
 );
 
 // Health check
@@ -91,7 +92,7 @@ const PORT = process.env.PORT;
 console.log("Render PORT =", process.env.PORT);
 if (!PORT) {
   console.error(
-    "🚨 PORT environment variable not set. Render requires this to bind."
+    "🚨 PORT environment variable not set. Render requires this to bind.",
   );
   process.exit(1);
 }
