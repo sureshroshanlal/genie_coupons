@@ -2,11 +2,16 @@
 import { useState, useEffect } from "react";
 
 /**
- * @param {{ proofs: any[] }} props
+ * @param {{ proofs: any[], mode?: "strip" | "grid" }} props
+ * mode="strip" → compact horizontal scroll row (for hero section)
+ * mode="grid"  → 2×4 grid with lightbox (original behaviour)
  */
-export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
+export default function MerchantProofsIsland({
+  proofs: initialProofs = [],
+  mode = "grid",
+}) {
   const proofsArr = Array.isArray(initialProofs) ? initialProofs : [];
-  const [startIndex, setStartIndex] = useState(0); // index of first visible thumbnail
+  const [startIndex, setStartIndex] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState(null);
 
   const VISIBLE_COUNT = 4;
@@ -14,7 +19,6 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
   const visibleProofs = proofsArr.slice(startIndex, startIndex + VISIBLE_COUNT);
 
   useEffect(() => {
-    // Reset start index if proofs change (e.g., navigation to different store)
     setStartIndex(0);
   }, [proofsArr.length]);
 
@@ -33,24 +37,7 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
 
   if (proofsArr.length === 0) return null;
 
-  const canPrev = startIndex > 0;
-  const canNext = startIndex < maxStart;
-
-  const goPrev = (e) => {
-    e?.stopPropagation();
-    if (!canPrev) return;
-    setStartIndex((s) => Math.max(0, s - 1));
-  };
-  const goNext = (e) => {
-    e?.stopPropagation();
-    if (!canNext) return;
-    setStartIndex((s) => Math.min(maxStart, s + 1));
-  };
-
-  const openLightbox = (visibleIdx) => {
-    // map visible index to global index
-    setLightboxIndex(startIndex + visibleIdx);
-  };
+  const openLightbox = (idx) => setLightboxIndex(idx);
   const closeLightbox = () => setLightboxIndex(null);
   const lbPrev = (e) => {
     e?.stopPropagation();
@@ -61,19 +48,67 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
     setLightboxIndex((i) => (i + 1) % proofsArr.length);
   };
 
+  // ── STRIP MODE (hero) ─────────────────────────────────────────────────────
+  if (mode === "strip") {
+    return (
+      <>
+        <div className="proof-strip" aria-label="Coupon proof images">
+          {proofsArr.map((p, idx) => (
+            <button
+              key={p.id ?? idx}
+              onClick={() => openLightbox(idx)}
+              className="proof-strip-thumb"
+              aria-label={`View proof: ${p.filename}`}
+              title={p.filename}
+            >
+              <img
+                src={p.image_url}
+                alt={p.filename}
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="proof-strip-label">{p.filename}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Lightbox */}
+        {lightboxIndex !== null && (
+          <Lightbox
+            proofs={proofsArr}
+            index={lightboxIndex}
+            onClose={closeLightbox}
+            onPrev={lbPrev}
+            onNext={lbNext}
+          />
+        )}
+      </>
+    );
+  }
+
+  // ── GRID MODE (original) ───────────────────────────────────────────────────
+  const canPrev = startIndex > 0;
+  const canNext = startIndex < maxStart;
+  const goPrev = (e) => {
+    e?.stopPropagation();
+    if (canPrev) setStartIndex((s) => Math.max(0, s - 1));
+  };
+  const goNext = (e) => {
+    e?.stopPropagation();
+    if (canNext) setStartIndex((s) => Math.min(maxStart, s + 1));
+  };
+
   return (
     <section className="mt-8" aria-labelledby="merchant-proofs-heading">
       <h2 id="merchant-proofs-heading" className="section-heading">
         Coupon Proof Images
       </h2>
-
       <div className="relative mt-4">
-        {/* Grid of visible thumbnails */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {visibleProofs.map((p, idx) => (
             <button
               key={p.id}
-              onClick={() => openLightbox(idx)}
+              onClick={() => openLightbox(startIndex + idx)}
               className="relative block rounded-xl p-[2px] bg-gradient-to-br from-[rgba(255,90,31,0.4)] via-transparent to-[rgba(184,242,0,0.5)] hover:shadow-md hover:scale-[1.02] transition-all duration-300"
               aria-label={`Open proof ${p.filename}`}
             >
@@ -89,7 +124,6 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
                   {p.filename}
                 </div>
               </div>
-              {/* Right-arrow overlay on the rightmost visible thumbnail when more images exist */}
               {idx === visibleProofs.length - 1 &&
                 startIndex + idx < proofsArr.length - 1 && (
                   <button
@@ -115,9 +149,6 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
                     </svg>
                   </button>
                 )}
-
-              {/* Left-arrow overlay on the leftmost visible thumbnail when not at start
-                  (shown on first visible item if startIndex > 0) */}
               {idx === 0 && startIndex > 0 && (
                 <button
                   onClick={(e) => {
@@ -146,61 +177,66 @@ export default function MerchantProofsIsland({ proofs: initialProofs = [] }) {
           ))}
         </div>
       </div>
-
-      {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
-          onClick={() => closeLightbox()}
-          role="dialog"
-          aria-modal="true"
-        >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              lbPrev(e);
-            }}
-            className="absolute left-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
-            aria-label="Previous image"
-          >
-            ‹
-          </button>
-
-          <img
-            src={proofsArr[lightboxIndex].image_url}
-            alt={proofsArr[lightboxIndex].filename}
-            className="max-h-full max-w-full rounded shadow-lg animate-fadeIn"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              lbNext(e);
-            }}
-            className="absolute right-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
-            aria-label="Next image"
-          >
-            ›
-          </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              closeLightbox();
-            }}
-            className="absolute top-4 right-4 text-white text-2xl font-bold opacity-80 hover:opacity-100 transition-opacity"
-            aria-label="Close"
-          >
-            ×
-          </button>
-
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/90 bg-black/40 px-3 py-1 rounded">
-            {proofsArr[lightboxIndex].filename} — {lightboxIndex + 1}/
-            {proofsArr.length}
-          </div>
-        </div>
+        <Lightbox
+          proofs={proofsArr}
+          index={lightboxIndex}
+          onClose={closeLightbox}
+          onPrev={lbPrev}
+          onNext={lbNext}
+        />
       )}
     </section>
+  );
+}
+
+function Lightbox({ proofs, index, onClose, onPrev, onNext }) {
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onPrev(e);
+        }}
+        className="absolute left-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
+        aria-label="Previous image"
+      >
+        ‹
+      </button>
+      <img
+        src={proofs[index].image_url}
+        alt={proofs[index].filename}
+        className="max-h-full max-w-full rounded shadow-lg animate-fadeIn"
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onNext(e);
+        }}
+        className="absolute right-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
+        aria-label="Next image"
+      >
+        ›
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="absolute top-4 right-4 text-white text-2xl font-bold opacity-80 hover:opacity-100 transition-opacity"
+        aria-label="Close"
+      >
+        ×
+      </button>
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/90 bg-black/40 px-3 py-1 rounded">
+        {proofs[index].filename} — {index + 1}/{proofs.length}
+      </div>
+    </div>
   );
 }

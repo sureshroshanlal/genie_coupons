@@ -667,3 +667,269 @@ button[aria-label^="Go to slide"]:focus-visible {
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* ==========================
+   Store Hero
+========================== */
+.store-hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+}
+
+.store-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.store-hero-logo {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.store-hero-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.store-hero-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+
+.store-hero-desc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.625rem;
+  line-height: 1.5;
+}
+
+.store-hero-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.store-hero-about-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 150ms ease;
+  margin-left: 0.25rem;
+}
+
+.store-hero-about-link:hover {
+  color: var(--brand-primary);
+}
+
+/* ── Proof strip ── */
+.store-hero-proofs {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.store-hero-proofs-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brand-primary);
+  margin-bottom: 0.625rem;
+}
+
+.proof-strip {
+  display: flex;
+  gap: 0.625rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.proof-strip::-webkit-scrollbar {
+  height: 4px;
+}
+
+.proof-strip::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.proof-strip::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 999px;
+}
+
+.proof-strip-thumb {
+  flex-shrink: 0;
+  width: 96px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  padding: 0;
+  text-align: left;
+}
+
+.proof-strip-thumb:hover {
+  border-color: var(--brand-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(137, 233, 0, 0.15);
+}
+
+.proof-strip-thumb img {
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  display: block;
+}
+
+.proof-strip-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  padding: 0.2rem 0.375rem 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================
+   Filter Tabs
+========================== */
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  border-color: rgba(137, 233, 0, 0.4);
+  color: var(--text-primary);
+}
+
+.filter-tab[data-active="true"] {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary-text);
+}
+
+.filter-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0 4px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.filter-tab[data-active="true"] .filter-tab-count {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--brand-primary-text);
+}
+
+/* ==========================
+   About Expand
+========================== */
+.about-expand-wrapper {
+  position: relative;
+}
+
+.about-expand-content {
+  max-height: 320px;
+  overflow: hidden;
+  transition: max-height 300ms ease;
+}
+
+.about-expand-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--card-bg));
+  pointer-events: none;
+}
+
+.about-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--brand-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.about-expand-btn:hover {
+  color: var(--brand-secondary);
+}
+
+/* ==========================
+   Sidebar refinements
+========================== */
+.sidebar-box {
+  background: var(--bg-subtle);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Override the old p-4 since we wrap content in child components */
+.sidebar-box>* {
+  border-radius: 0;
+}
+
+/* Coupon card type accent strip */
+.coupon-card-strip {
+  width: 3px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.coupon-card-strip--coupon {
+  background: var(--brand-primary);
+}
+
+.coupon-card-strip--deal {
+  background: #60a5fa;
+}

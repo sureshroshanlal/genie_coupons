@@ -15,7 +15,6 @@ export default function FeedbackForm({ storeSlug }) {
     setLoading(true);
     setSuccess(false);
     setErrorMsg(null);
-
     try {
       const base = import.meta.env.PUBLIC_API_BASE_URL || "";
       const res = await fetch(`${base}/stores/${storeSlug}/feedback`, {
@@ -27,12 +26,9 @@ export default function FeedbackForm({ storeSlug }) {
           message: form.message.trim(),
         }),
       });
-
       const json = await res.json();
-      if (!res.ok || json?.error) {
+      if (!res.ok || json?.error)
         throw new Error(json?.error?.message || "Submission failed");
-      }
-
       setSuccess(true);
       setForm({ name: "", email: "", message: "" });
     } catch (err) {
@@ -43,28 +39,45 @@ export default function FeedbackForm({ storeSlug }) {
   };
 
   const inputClass =
-    "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition";
+    "w-full rounded-lg px-3 py-2 text-sm placeholder-[#707068] focus:outline-none transition";
 
   return (
     <div className="card-base p-4">
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-        <svg
-          viewBox="0 0 24 24"
-          className="w-6 h-6 flex-shrink-0"
-          aria-hidden="true"
+      <div
+        className="flex items-center gap-2 mb-4 pb-3"
+        style={{ borderBottom: "1px solid #333333" }}
+      >
+        <div
+          className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+          style={{ background: "rgba(137,233,0,0.15)" }}
         >
-          <circle cx="12" cy="12" r="12" fill="#4f46e5" />
-          <path
-            fill="white"
-            d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-          />
-        </svg>
+          <svg
+            viewBox="0 0 24 24"
+            className="w-4 h-4"
+            aria-hidden="true"
+            fill="none"
+            stroke="#89E900"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 3H3a2 2 0 00-2 2v13a2 2 0 002 2h4l4 4 4-4h6a2 2 0 002-2V5a2 2 0 00-2-2z"
+            />
+          </svg>
+        </div>
         <div>
-          <div className="text-sm font-bold text-gray-900 leading-tight">
+          <div
+            className="text-sm font-bold leading-tight"
+            style={{ color: "#F5F5F0" }}
+          >
             Leave Feedback
           </div>
-          <div className="text-xs text-gray-500 uppercase tracking-wider">
+          <div
+            className="text-xs uppercase tracking-wider"
+            style={{ color: "#707068" }}
+          >
             We read every message
           </div>
         </div>
@@ -79,8 +92,12 @@ export default function FeedbackForm({ storeSlug }) {
           value={form.name}
           onChange={handleChange}
           className={inputClass}
+          style={{
+            background: "#2e2e2e",
+            border: "1px solid #333333",
+            color: "#F5F5F0",
+          }}
         />
-
         <input
           name="email"
           type="email"
@@ -88,8 +105,12 @@ export default function FeedbackForm({ storeSlug }) {
           value={form.email}
           onChange={handleChange}
           className={inputClass}
+          style={{
+            background: "#2e2e2e",
+            border: "1px solid #333333",
+            color: "#F5F5F0",
+          }}
         />
-
         <textarea
           name="message"
           placeholder="Your message..."
@@ -98,25 +119,47 @@ export default function FeedbackForm({ storeSlug }) {
           value={form.message}
           onChange={handleChange}
           className={`${inputClass} resize-none`}
+          style={{
+            background: "#2e2e2e",
+            border: "1px solid #333333",
+            color: "#F5F5F0",
+          }}
         />
-
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-lg text-sm font-semibold text-white transition disabled:opacity-60"
-          style={{ background: "linear-gradient(135deg,#334155,#4f46e5)" }}
+          className="w-full py-2 rounded-lg text-sm font-bold transition disabled:opacity-60"
+          style={{
+            background: loading
+              ? "#2d5200"
+              : "linear-gradient(135deg, #2d5200, #89E900)",
+            color: "#181818",
+          }}
         >
           {loading ? "Submitting…" : "Submit Feedback"}
         </button>
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 text-sm text-green-700">
-            Thank you for your feedback!
+          <div
+            className="rounded-lg px-3 py-2 text-sm"
+            style={{
+              background: "rgba(137,233,0,0.1)",
+              border: "1px solid rgba(137,233,0,0.3)",
+              color: "#89E900",
+            }}
+          >
+            ✓ Thank you for your feedback!
           </div>
         )}
-
         {errorMsg && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-600">
+          <div
+            className="rounded-lg px-3 py-2 text-sm"
+            style={{
+              background: "rgba(239,68,68,0.1)",
+              border: "1px solid rgba(239,68,68,0.3)",
+              color: "#f87171",
+            }}
+          >
             {errorMsg}
           </div>
         )}

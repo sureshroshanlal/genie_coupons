@@ -7,30 +7,49 @@ const { totalSavings, activeCoupons } = Astro.props;
 ---
 
 <div class="card-base p-4">
-  <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-    ⚡ Savings Impact
+  <h3
+    class="text-sm font-bold uppercase tracking-widest mb-3 flex items-center gap-2"
+    style="color:#89E900;"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      class="w-4 h-4"
+      fill="none"
+      stroke="#89E900"
+      stroke-width="2.5"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+    </svg>
+    Savings Impact
   </h3>
 
   <div
-    class="rounded-lg px-4 py-3 mb-4 text-center"
-    style="background: linear-gradient(135deg,#334155,#4f46e5);"
+    class="rounded-xl px-4 py-4 mb-4 text-center"
+    style="background: linear-gradient(135deg, #1a2e00, #2d5200); border: 1px solid rgba(137,233,0,0.2);"
   >
-    <div class="text-xs text-white/80 uppercase tracking-widest mb-1">
+    <div
+      class="text-xs uppercase tracking-widest mb-1"
+      style="color:rgba(137,233,0,0.7);"
+    >
       Total Savings Generated
     </div>
-    <div class="text-3xl font-extrabold text-white tracking-tight">
+    <div class="text-3xl font-extrabold tracking-tight" style="color:#89E900;">
       ${totalSavings.toLocaleString()}+
     </div>
   </div>
 
-  <div class="mt-4 text-sm text-gray-700 space-y-2">
-    <div class="flex justify-between">
+  <div class="space-y-2 text-sm" style="color:#B0B0A8;">
+    <div class="flex justify-between items-center">
       <span>Active Coupons</span>
-      <span class="font-medium">{activeCoupons}</span>
+      <span class="font-semibold" style="color:#F5F5F0;">{activeCoupons}</span>
     </div>
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
       <span>Updated</span>
-      <span class="font-medium">Today</span>
+      <span class="font-semibold" style="color:#89E900;">Today</span>
     </div>
   </div>
 </div>
