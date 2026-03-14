@@ -802,11 +802,6 @@ button[aria-label^="Go to slide"]:focus-visible {
 
 /* Mobile: full width horizontal strip below meta */
 @media (max-width: 767px) {
-  .store-hero-logo {
-    width: 64px;
-    height: 64px;
-  }
-
   .store-hero-layout {
     flex-direction: column;
   }
@@ -978,17 +973,65 @@ button[aria-label^="Go to slide"]:focus-visible {
 }
 
 /* ==========================
-   Homepage Hero
+   Homepage Hero — 2 column
 ========================== */
-.homepage-hero-section {
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 2rem 0 1rem;
+.homepage-hero-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem 0 1.5rem;
+}
+
+.homepage-hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.homepage-hero-right {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  aspect-ratio: 3/4;
+}
+
+/* Portrait coverflow inside right column */
+.homepage-hero-right .coverflow-root {
+  position: absolute;
+  inset: 0;
+  padding: 0.75rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-hero-right .coverflow-stage {
+  flex: 1;
+  height: auto;
+  perspective: 900px;
+}
+
+.homepage-hero-right .coverflow-card {
+  width: 72%;
+}
+
+.homepage-hero-right .coverflow-card-inner {
+  aspect-ratio: 3/4;
+}
+
+.homepage-hero-right .coverflow-arrow--left {
+  left: 0.375rem;
+}
+
+.homepage-hero-right .coverflow-arrow--right {
+  right: 0.375rem;
 }
 
 .homepage-hero-headline {
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
   font-weight: 900;
   line-height: 1.15;
   color: var(--text-primary);
@@ -997,7 +1040,7 @@ button[aria-label^="Go to slide"]:focus-visible {
 }
 
 .homepage-hero-sub {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   color: var(--text-secondary);
   margin: 0 0 1.25rem;
   line-height: 1.6;
@@ -1006,18 +1049,54 @@ button[aria-label^="Go to slide"]:focus-visible {
 .homepage-hero-stats {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .homepage-hero-ctas {
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 0.625rem;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 767px) {
+  .homepage-hero-2col {
+    grid-template-columns: 1fr;
+    padding: 1.25rem 0 1rem;
+    gap: 1.25rem;
+  }
+
+  .homepage-hero-right {
+    aspect-ratio: 4/3;
+  }
+
+  .homepage-hero-right .coverflow-card {
+    width: 80%;
+  }
+
+  .homepage-hero-right .coverflow-card-inner {
+    aspect-ratio: 4/3;
+  }
+
+  .homepage-hero-headline {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+
+  .homepage-hero-sub {
+    text-align: center;
+  }
+
+  .homepage-hero-stats {
+    justify-content: center;
+  }
+
+  .homepage-hero-ctas {
+    justify-content: center;
+  }
 }
 
 /* ==========================
