@@ -675,7 +675,19 @@ button[aria-label^="Go to slide"]:focus-visible {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: 16px;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
+}
+
+/* Desktop: left meta + right proofs side by side */
+.store-hero-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+.store-hero-left {
+  flex: 1;
+  min-width: 0;
 }
 
 .store-hero-inner {
@@ -686,9 +698,9 @@ button[aria-label^="Go to slide"]:focus-visible {
 
 .store-hero-logo {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
   border: 1px solid var(--border-default);
   background: var(--bg-elevated);
   display: flex;
@@ -703,7 +715,7 @@ button[aria-label^="Go to slide"]:focus-visible {
 }
 
 .store-hero-name {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 800;
   line-height: 1.2;
   color: var(--text-primary);
@@ -711,9 +723,9 @@ button[aria-label^="Go to slide"]:focus-visible {
 }
 
 .store-hero-desc {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
-  margin: 0 0 0.625rem;
+  margin: 0 0 0.5rem;
   line-height: 1.5;
 }
 
@@ -721,7 +733,7 @@ button[aria-label^="Go to slide"]:focus-visible {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .store-hero-about-link {
@@ -737,23 +749,81 @@ button[aria-label^="Go to slide"]:focus-visible {
   color: var(--brand-primary);
 }
 
-/* ── Proof strip ── */
-.store-hero-proofs {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-default);
+/* ── Right: proofs column (desktop) ── */
+.store-hero-proofs-col {
+  flex-shrink: 0;
+  width: 120px;
+  border-left: 1px solid var(--border-default);
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .store-hero-proofs-label {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
-  font-size: 0.7rem;
+  gap: 0.3rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--brand-primary);
-  margin-bottom: 0.625rem;
+  white-space: nowrap;
+}
+
+/* Desktop: vertical scroll in the proofs column */
+.store-hero-proofs-col .proof-strip {
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 180px;
+  padding-bottom: 0;
+  padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
+
+.store-hero-proofs-col .proof-strip-thumb {
+  width: 100%;
+}
+
+.store-hero-proofs-col .proof-strip-thumb img {
+  width: 100%;
+  height: 56px;
+  object-fit: cover;
+}
+
+/* Mobile: collapse proofs below meta as horizontal strip */
+@media (max-width: 767px) {
+  .store-hero-layout {
+    flex-direction: column;
+  }
+
+  .store-hero-proofs-col {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border-default);
+    padding-left: 0;
+    padding-top: 0.75rem;
+  }
+
+  .store-hero-proofs-col .proof-strip {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+  }
+
+  .store-hero-proofs-col .proof-strip-thumb {
+    width: 88px;
+    flex-shrink: 0;
+  }
+
+  .store-hero-proofs-col .proof-strip-thumb img {
+    width: 88px;
+    height: 56px;
+  }
 }
 
 .proof-strip {
