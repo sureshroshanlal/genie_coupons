@@ -197,7 +197,7 @@ export function renderCouponCardHtml(item = {}) {
         ${discountBadgeHtml}
         <div class="flex-1 min-w-0 flex flex-col gap-0.5">
           <div class="relative group" tabindex="0" aria-describedby="title-tip-${id}">
-            <h3 class="font-semibold text-sm leading-snug truncate block" style="color:#222222;">
+            <h3 class="font-semibold text-sm leading-snug truncate block" style="color:#B0B0A8;">
               ${title}
             </h3>
             <div id="title-tip-${id}" role="tooltip"
