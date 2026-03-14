@@ -6,7 +6,11 @@ import * as publicBlogs from "../controllers/publicBlogs.js";
 import * as publicSearch from "../controllers/publicSearch.js";
 import * as publicHealth from "../controllers/publicHealth.js";
 import * as publicAuthors from "../controllers/publicAuthors.js";
-import { stores as sitemapStores, blogs as sitemapBlogs } from "../controllers/publicSitemaps.js";
+import * as publicBanners from "../controllers/publicBanners.js";
+import {
+  stores as sitemapStores,
+  blogs as sitemapBlogs,
+} from "../controllers/publicSitemaps.js";
 import { click } from "../controllers/offers.js";
 import { subscribe } from "../controllers/subscribe.js";
 
@@ -33,6 +37,9 @@ publicRouter.get("/blogs/:slug", publicBlogs.detail);
 
 // Search
 // publicRouter.get("/search", publicSearch.search);
+
+//Banners
+publicRouter.get("/banners", publicBanners.list);
 
 // Authors
 publicRouter.get("/authors", publicAuthors.list);
