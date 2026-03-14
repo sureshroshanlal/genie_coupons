@@ -34,7 +34,7 @@ export async function list(req, res) {
     const categorySlug = String(req.query.category || "").trim();
     const letter = String(req.query.letter || "All").trim();
     const cursor = String(req.query.cursor || null);
-    
+
     const seasonSlug = req.query.season
       ? String(req.query.season).trim().toLowerCase()
       : null;
@@ -42,7 +42,7 @@ export async function list(req, res) {
     const origin = await Promise.resolve(getOrigin(req, { trustProxy: false }));
     const path = await Promise.resolve(getPath(req));
     const mode = req.query.mode || "default";
-    
+
     const params = {
       q: q.trim(),
       categorySlug,
@@ -56,7 +56,7 @@ export async function list(req, res) {
       mode,
       cursor,
     };
-0
+    0;
     const cacheKey = makeListCacheKey("stores", {
       limit,
       q: params.q || "",
@@ -583,5 +583,49 @@ export async function saveStoreFeedback(req, res) {
       data: null,
       error: { message: "Error submitting feedback" },
     });
+  }
+}
+
+/**
+ * GET /public/v1/stats
+ * Returns total active coupons and total active stores.
+ * Cache TTL: 5 minutes — data changes slowly.
+ */
+export async function getStats(req, res) {
+  try {
+    const result = await withCache(
+      req,
+      async () => {
+        const { supabase } = await import("../dbhelper/dbclient.js");
+
+        const [couponsRes, storesRes] = await Promise.all([
+          supabase
+            .from("coupons")
+            .select("id", { count: "exact", head: true })
+            .eq("is_publish", true),
+          supabase
+            .from("merchants")
+            .select("id", { count: "exact", head: true })
+            .eq("is_publish", true),
+        ]);
+
+        if (couponsRes.error) throw couponsRes.error;
+        if (storesRes.error) throw storesRes.error;
+
+        return {
+          data: {
+            total_coupons: couponsRes.count ?? 0,
+            total_stores: storesRes.count ?? 0,
+          },
+          meta: { generated_at: new Date().toISOString() },
+        };
+      },
+      { ttlSeconds: 300, keyExtra: "site-stats" },
+    );
+
+    return ok(res, result);
+  } catch (e) {
+    console.error("getStats error:", e);
+    return fail(res, "Failed to fetch stats", e);
   }
 }
