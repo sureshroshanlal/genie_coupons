@@ -1,5 +1,4 @@
 ---
-// src/pages/terms-and-conditions.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -7,8 +6,14 @@ import Footer from "../components/Footer.astro";
 const pageMeta = {
   title: "Terms & Conditions | Genie Coupon",
   description:
-    "Review the official Terms and Conditions governing the use of geniecoupon.com, including user responsibilities, affiliate disclosures, and legal limitations.",
+    "The rules for using Genie Coupon. Plain language, no surprises.",
 };
+
+const effectiveDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 
 const termsSchema = {
   "@context": "https://schema.org",
@@ -21,100 +26,120 @@ const termsSchema = {
     url: "https://geniecoupon.com",
   },
 };
+
+const sections = [
+  {
+    title: "Using the Site",
+    body: "Genie Coupon is a coupon discovery platform — we publish deals, codes, and affiliate links to third-party merchants. You can use it for personal, non-commercial purposes. Don't scrape it, don't try to game it, don't use it for anything unlawful.",
+  },
+  {
+    title: "Affiliate Links",
+    body: "Some links on this site are affiliate links. When you click them and make a purchase, we may earn a commission from the merchant. This costs you nothing extra. We're transparent about it — see our Affiliate Disclosure for details.",
+  },
+  {
+    title: "Coupon Accuracy",
+    body: "We verify coupons before publishing and update them regularly. That said, merchants can expire or change deals at any time without telling us. We can't guarantee every code works in every cart at every moment. If something's broken, let us know.",
+  },
+  {
+    title: "Third-Party Merchants",
+    body: "We link to stores — we don't sell, fulfill, or service anything ourselves. Your purchase is between you and the merchant. Their terms, pricing, return policy, and customer service govern that transaction, not ours.",
+  },
+  {
+    title: "Intellectual Property",
+    body: "Everything on geniecoupon.com — content, branding, design, copy — belongs to Genie Coupon or its licensors. Don't copy, reproduce, or redistribute it without permission.",
+  },
+  {
+    title: "Limitation of Liability",
+    body: "The site is provided as-is. We don't guarantee it'll be error-free or always available. To the extent permitted by law, Genie Coupon isn't liable for indirect, incidental, or consequential damages arising from your use of the site or reliance on its content.",
+  },
+  {
+    title: "Indemnification",
+    body: "If your misuse of this site causes claims or damages against us, you agree to cover those costs. That means don't misuse it.",
+  },
+  {
+    title: "Access & Termination",
+    body: "We reserve the right to restrict or terminate access to the site at our discretion for conduct that violates these terms or harms the platform or its users.",
+  },
+  {
+    title: "Governing Law",
+    body: "These terms are governed by the laws of the jurisdiction where Genie Coupon operates.",
+  },
+  {
+    title: "Updates to These Terms",
+    body: "We'll update these terms when needed. The effective date at the top reflects the current version. Continued use of the site after updates means you accept the changes.",
+  },
+];
 ---
 
 <Base meta={pageMeta}>
   <Header />
 
-  <main role="main" aria-labelledby="terms-heading" class="container mx-auto px-4 py-10">
-    <header id="terms-heading" class="mb-6">
-      <h1 class="site-hero text-on-surface">Terms & Conditions</h1>
-      <p class="mt-2 text-gray-400">
-        Effective Date: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-      </p>
-    </header>
+  <main
+    role="main"
+    aria-labelledby="terms-heading"
+    class="container mx-auto px-4 py-10"
+  >
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8">
+        <h1
+          id="terms-heading"
+          class="text-3xl font-extrabold text-brand-primary"
+        >
+          Terms & Conditions
+        </h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--text-muted);">
+          Effective Date: {effectiveDate}
+        </p>
+      </div>
 
-    <section class="card card-surface p-6 space-y-6">
+      <div
+        class="card-base p-6 sm:p-8 space-y-6"
+        style="color: var(--text-secondary); line-height: 1.75;"
+      >
+        <p class="text-sm">
+          By using geniecoupon.com you agree to these terms. They're written to
+          be readable — here's what they actually say.
+        </p>
 
-      <p>
-        These Terms and Conditions govern your access to and use of geniecoupon.com. By accessing or using this website, you agree to be bound by these terms. If you do not agree with any part of these Terms, you should discontinue use of the website.
-      </p>
+        {
+          sections.map((s) => (
+            <section>
+              <h2 class="about-h2">{s.title}</h2>
+              <p class="mt-2 text-sm">{s.body}</p>
+            </section>
+          ))
+        }
 
-      <h2 class="section-heading">Use of the Website</h2>
-
-      <p>
-        Genie Coupon provides informational content, promotional offers, and affiliate links to third-party merchants. You agree to use the website only for lawful purposes and in a manner that does not violate applicable laws or infringe upon the rights of others.
-      </p>
-
-      <h2 class="section-heading">Affiliate Relationships</h2>
-
-      <p>
-        Genie Coupon participates in affiliate marketing programs and may earn commissions when users click on links or make qualifying purchases. Transactions are completed directly with third-party merchants, and Genie Coupon is not a party to those transactions.
-      </p>
-
-      <h2 class="section-heading">Accuracy of Information</h2>
-
-      <p>
-        While we strive to ensure that coupon codes, discounts, and promotional details are accurate and current, we do not guarantee their validity, availability, or effectiveness. Merchants may modify or terminate offers at any time without notice.
-      </p>
-
-      <h2 class="section-heading">Third-Party Websites</h2>
-
-      <p>
-        The website contains links to third-party websites and services. Genie Coupon does not control and is not responsible for the content, policies, pricing, fulfillment, or practices of third-party merchants. Your interactions with those merchants are governed by their own terms and policies.
-      </p>
-
-      <h2 class="section-heading">Intellectual Property</h2>
-
-      <p>
-        All content on geniecoupon.com, including text, design, graphics, branding, and logos, is the property of Genie Coupon or its licensors and is protected by applicable intellectual property laws. Unauthorized reproduction or distribution is prohibited.
-      </p>
-
-      <h2 class="section-heading">Limitation of Liability</h2>
-
-      <p>
-        Genie Coupon provides the website and its content on an “as is” and “as available” basis. To the fullest extent permitted by law, we disclaim all warranties, express or implied. Genie Coupon shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the website or reliance on its content.
-      </p>
-
-      <h2 class="section-heading">Indemnification</h2>
-
-      <p>
-        You agree to indemnify and hold harmless Genie Coupon, its affiliates, and partners from any claims, liabilities, damages, or expenses arising from your misuse of the website or violation of these Terms.
-      </p>
-
-      <h2 class="section-heading">Termination</h2>
-
-      <p>
-        We reserve the right to restrict or terminate access to the website at our discretion, without notice, for conduct that we believe violates these Terms or is otherwise harmful to the website or its users.
-      </p>
-
-      <h2 class="section-heading">Governing Law</h2>
-
-      <p>
-        These Terms shall be governed and interpreted in accordance with the laws applicable in the jurisdiction where Genie Coupon operates, without regard to conflict of law principles.
-      </p>
-
-      <h2 class="section-heading">Changes to Terms</h2>
-
-      <p>
-        Genie Coupon may update these Terms and Conditions periodically. Continued use of the website after changes are posted constitutes acceptance of the revised Terms.
-      </p>
-
-      <h2 class="section-heading">Contact</h2>
-
-      <p>
-        For questions regarding these Terms and Conditions, please contact:
-        <br />
-        <strong>Email:</strong>
-        <a href="mailto:support.geniecoupon@gmail.com" class="text-brand-primary hover:underline">
-          support.geniecoupon@gmail.com
-        </a>
-      </p>
-
-    </section>
-
-    <script type="application/ld+json" set:html={JSON.stringify(termsSchema)} />
+        <section>
+          <h2 class="about-h2">Contact</h2>
+          <p class="mt-2 text-sm">
+            Questions about these terms?
+            <a
+              href="mailto:support.geniecoupon@gmail.com"
+              style="color:#89E900;"
+              class="hover:underline ml-1">support.geniecoupon@gmail.com</a
+            >
+          </p>
+        </section>
+      </div>
+    </div>
   </main>
 
+  <script type="application/ld+json" set:html={JSON.stringify(termsSchema)} />
   <Footer />
 </Base>
+
+<style>
+  .about-h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-left: 0.75rem;
+    border-left: 3px solid #89e900;
+  }
+</style>

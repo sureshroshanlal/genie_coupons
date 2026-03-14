@@ -1,5 +1,4 @@
 ---
-// src/pages/privacy-policy.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -7,8 +6,14 @@ import Footer from "../components/Footer.astro";
 const pageMeta = {
   title: "Privacy Policy | Genie Coupon",
   description:
-    "Official Privacy Policy explaining how Genie Coupon collects, uses, stores, and protects personal information.",
+    "How Genie Coupon collects, uses, and protects your information. Plain language, no legalese.",
 };
+
+const effectiveDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 
 const privacySchema = {
   "@context": "https://schema.org",
@@ -21,100 +26,121 @@ const privacySchema = {
     url: "https://geniecoupon.com",
   },
 };
+
+const sections = [
+  {
+    title: "What We Collect",
+    body: "We collect two types of information. First, what you give us directly — email addresses submitted for newsletter sign-ups, contact requests, or support. Second, what your browser sends automatically — device type, IP address, approximate location, referral source, and how you interact with the site (pages viewed, time on page). We don't ask for more than we need.",
+  },
+  {
+    title: "How We Use It",
+    body: "To run the site, fix things that break, understand what's useful to you, and deliver relevant coupons and deals. We may use anonymized, aggregated data to measure content performance and affiliate partner effectiveness. We don't use your data to build profiles for third-party advertising.",
+  },
+  {
+    title: "Affiliate & Advertising",
+    body: "Genie Coupon earns commissions through affiliate links. Third-party partners may use cookies to measure ad performance. We do not sell your personal information — ever. See our Affiliate Disclosure for more on how commissions work.",
+  },
+  {
+    title: "Cookies",
+    body: "We use cookies to keep the site functional and to understand how people use it. You can turn off cookies in your browser settings — some site features may not work perfectly if you do, but the coupons will still be there.",
+  },
+  {
+    title: "How Long We Keep It",
+    body: "Only as long as necessary. We retain information to fulfill the purposes in this policy, meet legal obligations, and resolve any disputes. When it's no longer needed, it goes.",
+  },
+  {
+    title: "Your Rights",
+    body: "Depending on where you are, you may have the right to access, correct, or delete your personal information, or to object to how we process it. To make a request, contact us at the email below.",
+  },
+  {
+    title: "Children",
+    body: "Genie Coupon is not directed at children under 13. We don't knowingly collect information from them. If we discover we have, we'll delete it promptly.",
+  },
+  {
+    title: "Third-Party Links",
+    body: "Our site links to merchant and partner websites. Once you leave geniecoupon.com, this policy doesn't apply. Check the privacy policy of any external site before sharing your information with them.",
+  },
+  {
+    title: "Security",
+    body: "We use reasonable technical measures to protect your information. No system online is 100% secure, but we take it seriously and work to keep things locked down.",
+  },
+  {
+    title: "Policy Updates",
+    body: "We'll update this policy when our practices change. The effective date at the top will reflect the latest version. Continued use of the site after an update means you accept the revised terms.",
+  },
+];
 ---
 
 <Base meta={pageMeta}>
   <Header />
 
-  <main role="main" aria-labelledby="privacy-heading" class="container mx-auto px-4 py-10">
-    <header id="privacy-heading" class="mb-6">
-      <h1 class="site-hero text-on-surface">Privacy Policy</h1>
-      <p class="mt-2 text-gray-400">
-        Effective Date: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-      </p>
-    </header>
+  <main
+    role="main"
+    aria-labelledby="privacy-heading"
+    class="container mx-auto px-4 py-10"
+  >
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8">
+        <h1
+          id="privacy-heading"
+          class="text-3xl font-extrabold text-brand-primary"
+        >
+          Privacy Policy
+        </h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--text-muted);">
+          Effective Date: {effectiveDate}
+        </p>
+      </div>
 
-    <section class="card card-surface p-6 space-y-6">
+      <div
+        class="card-base p-6 sm:p-8 space-y-6"
+        style="color: var(--text-secondary); line-height: 1.75;"
+      >
+        <p>
+          We'll keep this simple. Genie Coupon collects minimal data, uses it
+          only to run the platform, and doesn't sell it. Here's the full
+          picture.
+        </p>
 
-      <p>
-        Genie Coupon respects your privacy and is committed to protecting the information you share with us. This Privacy Policy explains how we collect, use, store, and safeguard information when you access or use geniecoupon.com and related services.
-      </p>
+        {
+          sections.map((s) => (
+            <section>
+              <h2 class="about-h2">{s.title}</h2>
+              <p class="mt-2 text-sm">{s.body}</p>
+            </section>
+          ))
+        }
 
-      <h2 class="section-heading">Information We Collect</h2>
-
-      <p>
-        We may collect information that you voluntarily provide, such as email addresses submitted for inquiries, support, or partnerships. We also collect certain technical and usage information automatically, including browser type, device information, IP address, approximate geographic location, referral source, and interaction data such as pages viewed and time spent on the site.
-      </p>
-
-      <h2 class="section-heading">How We Use Information</h2>
-
-      <p>
-        Information collected is used to operate and improve our website, enhance user experience, analyze site performance, prevent misuse, and deliver relevant promotional content. We may use aggregated and anonymized data to evaluate trends and measure the effectiveness of our content and affiliate partnerships.
-      </p>
-
-      <h2 class="section-heading">Affiliate & Advertising Disclosure</h2>
-
-      <p>
-        Genie Coupon participates in affiliate programs and may earn commissions from qualifying purchases. Third-party advertising partners may use cookies or similar technologies to deliver relevant advertisements and measure performance. We do not sell personal information to third parties.
-      </p>
-
-      <h2 class="section-heading">Cookies & Tracking Technologies</h2>
-
-      <p>
-        We use cookies and similar technologies to enhance website functionality, understand user behavior, and improve overall performance. You may control cookies through your browser settings. Disabling cookies may impact certain features of the site.
-      </p>
-
-      <h2 class="section-heading">Data Retention</h2>
-
-      <p>
-        We retain personal information only as long as necessary to fulfill the purposes described in this policy, comply with legal obligations, resolve disputes, and enforce agreements.
-      </p>
-
-      <h2 class="section-heading">User Rights</h2>
-
-      <p>
-        Depending on your jurisdiction, you may have the right to request access to, correction of, or deletion of your personal information. You may also have the right to object to certain data processing activities. Requests can be submitted using the contact information below.
-      </p>
-
-      <h2 class="section-heading">Children’s Privacy</h2>
-
-      <p>
-        Genie Coupon does not knowingly collect personal information from children under the age of 13. If we become aware that such information has been collected, we will take appropriate steps to delete it.
-      </p>
-
-      <h2 class="section-heading">Third-Party Links</h2>
-
-      <p>
-        Our website may contain links to third-party websites. We are not responsible for the privacy practices or content of those sites. Users should review the privacy policies of any external websites visited.
-      </p>
-
-      <h2 class="section-heading">Security</h2>
-
-      <p>
-        We implement reasonable technical and organizational measures to protect information against unauthorized access, disclosure, or misuse. While no online system can guarantee absolute security, we strive to maintain a secure environment.
-      </p>
-
-      <h2 class="section-heading">Policy Updates</h2>
-
-      <p>
-        This Privacy Policy may be updated periodically to reflect changes in practices, technology, or legal requirements. Continued use of the website after updates constitutes acceptance of the revised policy.
-      </p>
-
-      <h2 class="section-heading">Contact</h2>
-
-      <p>
-        For questions regarding this Privacy Policy, please contact:
-        <br />
-        <strong>Email:</strong>
-        <a href="mailto:support.geniecoupon@gmail.com" class="text-brand-primary hover:underline">
-          support.geniecoupon@gmail.com
-        </a>
-      </p>
-
-    </section>
-
-    <script type="application/ld+json" set:html={JSON.stringify(privacySchema)} />
+        <section>
+          <h2 class="about-h2">Contact</h2>
+          <p class="mt-2 text-sm">
+            Questions about this policy? Reach out:
+            <a
+              href="mailto:support.geniecoupon@gmail.com"
+              style="color:#89E900;"
+              class="hover:underline ml-1">support.geniecoupon@gmail.com</a
+            >
+          </p>
+        </section>
+      </div>
+    </div>
   </main>
 
+  <script type="application/ld+json" set:html={JSON.stringify(privacySchema)} />
   <Footer />
 </Base>
+
+<style>
+  .about-h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-left: 0.75rem;
+    border-left: 3px solid #89e900;
+  }
+</style>

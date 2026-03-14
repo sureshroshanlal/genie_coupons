@@ -1,5 +1,4 @@
 ---
-// src/pages/contact.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -9,6 +8,7 @@ const pageMeta = {
   description:
     "Get in touch with the Genie Coupon team for questions, partnerships, and support.",
 };
+
 const contactOrg = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
@@ -30,6 +30,33 @@ const contactOrg = {
     ],
   },
 };
+
+const contacts = [
+  {
+    id: "general",
+    title: "General Inquiries",
+    desc: "Questions about Genie Coupon, how it works, or anything else.",
+    email: "hello.geniecoupon@gmail.com",
+  },
+  {
+    id: "partnerships",
+    title: "Partnerships",
+    desc: "Want to list your store or explore co-marketing opportunities?",
+    email: "partnerships.geniecoupon@gmail.com",
+  },
+  {
+    id: "support",
+    title: "Support",
+    desc: "Having trouble with a code or your account? We're here.",
+    email: "support.geniecoupon@gmail.com",
+  },
+  {
+    id: "feedback",
+    title: "Feedback",
+    desc: "Spotted an expired code or want to suggest a store? Tell us and we'll review it fast.",
+    email: "hello.geniecoupon@gmail.com",
+  },
+];
 ---
 
 <Base meta={pageMeta}>
@@ -40,72 +67,66 @@ const contactOrg = {
     aria-labelledby="contact-heading"
     class="container mx-auto px-4 py-10"
   >
-    <header id="contact-heading" class="mb-6">
-      <h1 class="site-hero text-on-surface">Contact</h1>
-      <p class="mt-2 text-gray-400">
-        We’d love to hear from you. Use the details below and we’ll get back as
-        soon as possible.
-      </p>
-    </header>
-
-    <section class="grid gap-6 sm:grid-cols-2" aria-label="Contact options">
-      <!-- General -->
-      <article class="card card-surface" aria-labelledby="contact-general">
-        <h2 id="contact-general" class="section-heading">General inquiries</h2>
-        <address class="not-italic">
-          Email:
-          <a
-            href="mailto:hello.geniecoupon@gmail.com"
-            class="text-brand-primary hover:underline"
-          >
-            hello.geniecoupon@gmail.com
-          </a>
-        </address>
-      </article>
-
-      <!-- Partnerships -->
-      <article class="card card-surface" aria-labelledby="contact-partnerships">
-        <h2 id="contact-partnerships" class="section-heading">Partnerships</h2>
-        <address class="not-italic">
-          Email:
-          <a
-            href="mailto:partnerships.geniecoupon@gmail.com"
-            class="text-brand-primary hover:underline"
-          >
-            partnerships.geniecoupon@gmail.com
-          </a>
-        </address>
-      </article>
-
-      <!-- Support -->
-      <article class="card card-surface" aria-labelledby="contact-support">
-        <h2 id="contact-support" class="section-heading">Support</h2>
-        <address class="not-italic">
-          Email:
-          <a
-            href="mailto:support.geniecoupon@gmail.com"
-            class="text-brand-primary hover:underline"
-          >
-            support.geniecoupon@gmail.com
-          </a>
-          <!-- optional phone fallback -->
-          <!-- <div class="mt-1">Phone: <a href="tel:+911234567890" class="text-brand-primary hover:underline">+91 12345 67890</a></div> -->
-        </address>
-      </article>
-
-      <!-- Feedback -->
-      <article class="card card-surface" aria-labelledby="contact-feedback">
-        <h2 id="contact-feedback" class="section-heading">Feedback</h2>
-        <p>
-          Found an expired code or want to suggest a new store? Send details and
-          we’ll review promptly.
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8">
+        <h1
+          id="contact-heading"
+          class="text-3xl font-extrabold text-brand-primary"
+        >
+          Get in Touch
+        </h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-sm" style="color: var(--text-muted);">
+          We're a small team and we actually read every email. Pick the right
+          channel below.
         </p>
-      </article>
-    </section>
+      </div>
 
-    <!-- JSON-LD for ContactPage (search engines) -->
-    <script type="application/ld+json" set:html={JSON.stringify(contactOrg)} />
+      <div class="grid gap-4 sm:grid-cols-2">
+        {
+          contacts.map((c) => (
+            <article
+              class="card-base p-5 flex flex-col gap-3"
+              aria-labelledby={`contact-${c.id}`}
+            >
+              <h2
+                id={`contact-${c.id}`}
+                class="text-sm font-bold"
+                style="color: var(--text-primary);"
+              >
+                {c.title}
+              </h2>
+              <p class="text-sm flex-1" style="color: var(--text-secondary);">
+                {c.desc}
+              </p>
+              <address class="not-italic">
+                <a
+                  href={`mailto:${c.email}`}
+                  class="text-sm font-semibold hover:underline"
+                  style="color: #89E900;"
+                >
+                  {c.email}
+                </a>
+              </address>
+            </article>
+          ))
+        }
+      </div>
+
+      <div
+        class="mt-6 rounded-lg px-4 py-3 text-sm text-center"
+        style="background: rgba(137,233,0,0.05); border: 1px solid rgba(137,233,0,0.12); color: var(--text-muted);"
+      >
+        We typically respond within 1–2 business days. For urgent coupon issues,
+        email support directly.
+      </div>
+    </div>
   </main>
 
+  <script type="application/ld+json" set:html={JSON.stringify(contactOrg)} />
   <Footer />
 </Base>

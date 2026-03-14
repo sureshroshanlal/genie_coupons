@@ -1,5 +1,4 @@
 ---
-// src/pages/how-it-works.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -7,55 +6,154 @@ import Footer from "../components/Footer.astro";
 const pageMeta = {
   title: "How Genie Coupon Works",
   description:
-    "Simple, transparent, and built for your convenience—learn how geniecoupon helps you save.",
+    "Find a store, grab a verified code, save money. Here's exactly how Genie Coupon works.",
 };
+
+const steps = [
+  {
+    num: "01",
+    title: "Find Your Store",
+    desc: "Search by store name, browse by category, or check Today's Top Deals on the homepage. We cover 100+ stores across every major shopping category.",
+  },
+  {
+    num: "02",
+    title: "Pick a Coupon",
+    desc: "Every coupon shows you the discount upfront — percentage off, flat dollar amount, or a deal with no code needed. Filter by Coupons, Deals, or Editor Picks to narrow it down fast.",
+  },
+  {
+    num: "03",
+    title: "Reveal & Copy",
+    desc: "Click 'Get Code' and the coupon code is revealed and copied to your clipboard instantly. No pop-ups, no redirects through five pages, no nonsense.",
+  },
+  {
+    num: "04",
+    title: "Apply at Checkout",
+    desc: "Paste the code at the store's checkout. Done. The discount applies and you've saved money in under 60 seconds.",
+  },
+];
+
+const social = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/profile.php?id=61580887157989",
+  },
+  { label: "Instagram", href: "https://www.instagram.com/geniecoupon/" },
+  { label: "YouTube", href: "https://www.youtube.com/@geniecoupon" },
+  { label: "Twitter (X)", href: "https://x.com/geniecoupon" },
+];
 ---
 
 <Base meta={pageMeta}>
   <Header />
   <main class="container mx-auto px-4 py-10">
-    <article class="prose max-w-none lg:prose-lg text-on-surface">
-      <h1>How it works</h1>
-      <p>
-        Getting the best deals with <strong>geniecoupon</strong> is simple, transparent,
-        and built for your convenience. Here’s how we do it:
-      </p>
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-10">
+        <h1 class="text-3xl font-extrabold text-brand-primary">How It Works</h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-sm" style="color: var(--text-muted);">
+          Find a store. Grab a verified code. Save money. That's it.
+        </p>
+      </div>
 
-      <h2>Offer curation</h2>
-      <p>
-        Each deal or coupon is handpicked and verified for quality and value. We
-        partner directly with trusted brands so you always get authentic
-        savings.
-      </p>
+      <!-- Steps -->
+      <div class="space-y-4 mb-10">
+        {
+          steps.map((step) => (
+            <div class="card-base p-5 flex items-start gap-5">
+              <div
+                class="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-extrabold text-sm"
+                style="background: rgba(137,233,0,0.1); border: 1px solid rgba(137,233,0,0.2); color: #89E900;"
+              >
+                {step.num}
+              </div>
+              <div>
+                <h2
+                  class="text-base font-bold mb-1"
+                  style="color: var(--text-primary);"
+                >
+                  {step.title}
+                </h2>
+                <p
+                  class="text-sm leading-relaxed"
+                  style="color: var(--text-secondary);"
+                >
+                  {step.desc}
+                </p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
 
-      <h2>Real-time updates</h2>
-      <p>
-        Offers can change quickly. That’s why we maintain active social channels where we share fresh deals daily:  
-      </p>
-      <ul>
-        <li><a href="https://www.facebook.com/profile.php?id=61580887157989" class="text-brand-primary hover:underline">Facebook</a></li>
-        <li><a href="https://www.instagram.com/geniecoupon/" class="text-brand-primary hover:underline">Instagram</a></li>
-        <li><a href="https://www.youtube.com/@geniecoupon" class="text-brand-primary hover:underline">YouTube</a></li>
-        <li><a href="https://x.com/geniecoupon" class="text-brand-primary hover:underline">Twitter (X)</a></li>
-      </ul>
+      <!-- How we keep it fresh -->
+      <div class="card-base p-6 mb-6">
+        <h2 class="about-h2 mb-3">How We Keep Coupons Fresh</h2>
+        <p
+          class="text-sm leading-relaxed mb-3"
+          style="color: var(--text-secondary);"
+        >
+          Coupon codes expire. Deals end. Merchants change their promotions
+          without warning. Our team verifies codes before publishing and
+          re-checks high-traffic stores daily. When something stops working, it
+          comes down — we don't keep expired codes live to pad our numbers.
+        </p>
+        <p
+          class="text-sm leading-relaxed"
+          style="color: var(--text-secondary);"
+        >
+          For real-time deal alerts and early access to the best offers, follow
+          us:
+        </p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          {
+            social.map((s) => (
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all"
+                style="background: rgba(137,233,0,0.1); color: #89E900; border: 1px solid rgba(137,233,0,0.2);"
+                onmouseover="this.style.background='rgba(137,233,0,0.2)'"
+                onmouseout="this.style.background='rgba(137,233,0,0.1)'"
+              >
+                {s.label}
+              </a>
+            ))
+          }
+        </div>
+      </div>
 
-      <h2>Easy navigation</h2>
-      <p>
-        Browse by category, popularity, or brand. Use filters such as “Coupons,”
-        “Discount Codes,” or “Flash Deals” to find what you need—fast.
-      </p>
-
-      <h2>Notifications & alerts</h2>
-      <p>
-        Subscribe to our updates on social media and get early access to premier deals.  
-      </p>
-
-      <h2>Redemption made easy</h2>
-      <p>
-        When you see an offer you like, just click, copy the code, and use it at
-        the seller’s site. We streamline the journey so you save time and money.
-      </p>
-    </article>
+      <!-- CTA -->
+      <div
+        class="text-center p-6 rounded-xl"
+        style="background: rgba(137,233,0,0.06); border: 1px solid rgba(137,233,0,0.15);"
+      >
+        <p
+          class="text-sm font-semibold mb-3"
+          style="color: var(--text-primary);"
+        >
+          Ready to start saving?
+        </p>
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+          <a href="/stores" class="btn btn-primary">Browse Stores</a>
+          <a href="/coupons" class="btn btn-outline--dark">Today's Deals</a>
+        </div>
+      </div>
+    </div>
   </main>
   <Footer />
 </Base>
+
+<style>
+  .about-h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-left: 0.75rem;
+    border-left: 3px solid #89e900;
+  }
+</style>

@@ -1,5 +1,4 @@
 ---
-// src/pages/affiliate-disclosure.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -33,56 +32,104 @@ const affiliateSchema = {
     aria-labelledby="affiliate-heading"
     class="container mx-auto px-4 py-10"
   >
-    <header id="affiliate-heading" class="mb-6">
-      <h1 class="site-hero text-on-surface">Affiliate Disclosure</h1>
-      <p class="mt-2 text-gray-400">
-        Transparency is important to us. This page explains how affiliate
-        relationships support Genie Coupon.
-      </p>
-    </header>
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8">
+        <h1
+          id="affiliate-heading"
+          class="text-3xl font-extrabold text-brand-primary"
+        >
+          Affiliate Disclosure
+        </h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-sm" style="color: var(--text-muted);">
+          We believe in being upfront. Here's exactly how affiliate
+          relationships work on Genie Coupon.
+        </p>
+      </div>
 
-    <section class="card card-surface p-6 space-y-6">
-      <p>
-        Genie Coupon participates in affiliate marketing programs and may earn
-        a commission when users click on certain links or complete qualifying
-        purchases through links available on this website, at no additional
-        cost to the user. When a visitor clicks an affiliate link, any purchase
-        or transaction is completed directly with the respective merchant, and
-        the merchant may compensate Genie Coupon for the referral. These
-        partnerships support the continued operation, development, and
-        maintenance of the platform, allowing us to provide curated coupons,
-        promotional offers, and savings resources free of charge.
-      </p>
+      <div
+        class="card-base p-6 sm:p-8 space-y-6"
+        style="color: var(--text-secondary); line-height: 1.75;"
+      >
+        <section>
+          <h2 class="about-h2">We Earn Commissions on Some Links</h2>
+          <p>
+            Genie Coupon participates in affiliate marketing programs. When you
+            click certain links on our site and complete a purchase, we may earn
+            a commission from the merchant — at absolutely no extra cost to you.
+            These commissions help keep the platform free, funded, and
+            operational so we can continue curating verified coupons and deals.
+          </p>
+        </section>
 
-      <p>
-        Compensation received from merchants may influence the placement,
-        visibility, or positioning of certain offers on the site. However, such
-        compensation does not determine our commitment to transparency,
-        accuracy, or user-first standards. We aim to present relevant and timely
-        promotional information based on availability, merchant data, seasonal
-        trends, and overall user experience. While we make reasonable efforts to
-        ensure listed coupons and offers are current, final pricing,
-        eligibility, availability, and promotional terms are determined solely
-        by the merchant and may change without notice.
-      </p>
+        <section>
+          <h2 class="about-h2">Commissions Don't Buy Placement</h2>
+          <p>
+            Affiliate compensation may influence where certain offers appear on
+            the page, but it never determines whether a coupon gets listed. A
+            code that doesn't work doesn't get published — regardless of the
+            merchant relationship. Our editorial decisions are based on whether
+            a deal is real, current, and genuinely useful to you. Full stop.
+          </p>
+        </section>
 
-      <p>
-        Genie Coupon does not directly sell, ship, manufacture, or provide
-        warranties for any products or services featured on this website. All
-        purchases, returns, exchanges, customer service inquiries, and product
-        guarantees are handled exclusively by the respective third-party
-        merchants. Users are encouraged to review the merchant’s individual
-        terms and conditions, privacy policies, and return policies before
-        completing any transaction. By using this website, you acknowledge that
-        affiliate relationships may exist and that commissions earned through
-        these relationships help sustain our ability to continue delivering
-        reliable savings opportunities and consumer-focused content.
-      </p>
-    </section>
+        <section>
+          <h2 class="about-h2">We Don't Sell, Ship, or Warrant Anything</h2>
+          <p>
+            Genie Coupon is a discovery platform. We don't sell products,
+            process orders, or handle returns. Every transaction happens
+            directly between you and the merchant. Before completing any
+            purchase, we encourage you to review the merchant's own terms,
+            return policy, and privacy policy — those govern your order, not us.
+          </p>
+        </section>
 
-    <!-- JSON-LD for SEO -->
-    <script type="application/ld+json" set:html={JSON.stringify(affiliateSchema)} />
+        <section>
+          <h2 class="about-h2">Offers Can Change Without Notice</h2>
+          <p>
+            We work hard to keep coupons accurate and current, but final
+            pricing, eligibility, and promotional terms are set by merchants and
+            can change at any time. We verify aggressively, but we can't
+            guarantee every code works in every cart at every moment. If
+            something looks off, <a
+              href="/contact"
+              style="color:#89E900;"
+              class="hover:underline">let us know</a
+            >.
+          </p>
+        </section>
+
+        <div
+          class="rounded-lg px-4 py-3 text-sm"
+          style="background: rgba(137,233,0,0.06); border: 1px solid rgba(137,233,0,0.15); color: var(--text-secondary);"
+        >
+          By using Genie Coupon, you acknowledge that affiliate relationships
+          may exist between us and certain merchants. These relationships
+          support the platform but do not compromise the integrity of what we
+          publish.
+        </div>
+      </div>
+    </div>
   </main>
 
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(affiliateSchema)}
+  />
   <Footer />
 </Base>
+
+<style>
+  .about-h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    border-left: 3px solid #89e900;
+  }
+</style>

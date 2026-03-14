@@ -1,5 +1,4 @@
 ---
-// src/pages/careers.astro
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -7,57 +6,152 @@ import Footer from "../components/Footer.astro";
 const pageMeta = {
   title: "Careers at Genie Coupon",
   description:
-    "Careers at Genie Coupon — we’re not hiring right now. Check back for future openings or reach out with your CV.",
+    "No open roles right now — but we're always interested in sharp people. Send us your CV.",
 };
 ---
+
 <Base meta={pageMeta}>
   <Header />
 
-  <main role="main" aria-labelledby="careers-heading" class="container mx-auto px-4 py-10">
-    <header id="careers-heading" class="mb-6">
-      <h1 class="site-hero text-on-surface">Careers</h1>
-      <p class="mt-2 text-gray-400">
-        We’re a small, fast-moving team building trust-first coupon experiences.
-      </p>
-    </header>
-
-    <section class="card card-surface max-w-3xl mx-auto text-center py-12">
-      <h2 class="text-xl font-semibold mb-3">No open roles right now</h2>
-      <p class="text-gray-500 mb-6">
-        We don’t have active job openings at the moment. We update this page when roles become available — please check back soon.
-      </p>
-
-      <p class="text-sm text-gray-500 mb-6">
-        Prefer to be considered proactively? Send your CV and a short note to:
-      </p>
-
-      <div class="flex items-center justify-center gap-3">
-        <a
-          href="mailto:jobs.geniecoupon@gmail.com"
-          class="btn btn-primary"
-          aria-label="Email jobs at Genie Coupon"
+  <main
+    role="main"
+    aria-labelledby="careers-heading"
+    class="container mx-auto px-4 py-10"
+  >
+    <div class="max-w-3xl mx-auto">
+      <div class="mb-8">
+        <h1
+          id="careers-heading"
+          class="text-3xl font-extrabold text-brand-primary"
         >
-          Email us your CV
-        </a>
-        <a href="/contact" class="btn btn-outline--light" aria-label="Contact page">
-          Contact page
-        </a>
+          Careers
+        </h1>
+        <div
+          class="mt-2 h-1 w-16 rounded-full"
+          style="background: linear-gradient(90deg,#89E900,#2d5200);"
+        >
+        </div>
+        <p class="mt-3 text-sm" style="color: var(--text-muted);">
+          Small team. High ownership. We move fast and build things that matter.
+        </p>
       </div>
 
-      <p class="text-xs text-gray-400 mt-6">
-        We respect your privacy — submitted CVs are used only for recruitment purposes.
-      </p>
-    </section>
+      <!-- No openings card -->
+      <div class="card-base p-8 text-center mb-8">
+        <div
+          class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+          style="background: rgba(137,233,0,0.1); border: 1px solid rgba(137,233,0,0.2);"
+        >
+          <svg
+            class="w-7 h-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#89E900"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            ></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-bold mb-2" style="color: var(--text-primary);">
+          No open roles right now
+        </h2>
+        <p
+          class="text-sm mb-6 max-w-md mx-auto"
+          style="color: var(--text-secondary);"
+        >
+          We don't have active openings at the moment, but we're always
+          interested in sharp people who give a damn about their work. If that's
+          you, don't wait for a job post.
+        </p>
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+          <a
+            href="mailto:jobs.geniecoupon@gmail.com"
+            class="btn btn-primary"
+            aria-label="Email your CV"
+          >
+            Email us your CV
+          </a>
+          <a
+            href="/contact"
+            class="btn btn-outline--dark"
+            aria-label="Contact page"
+          >
+            Contact page
+          </a>
+        </div>
+        <p class="text-xs mt-5" style="color: var(--text-muted);">
+          CVs are used only for recruitment — we don't share or sell your
+          information.
+        </p>
+      </div>
 
-    <section class="mt-10">
-      <h2 class="section-heading">Why work with us</h2>
-      <ul class="prose text-on-surface max-w-none">
-        <li>Remote-first, flexible hours.</li>
-        <li>Meaningful equity and competitive compensation.</li>
-        <li>Small team — high ownership and fast decision-making.</li>
-      </ul>
-    </section>
+      <!-- Why work with us -->
+      <div class="card-base p-6">
+        <h2 class="about-h2 mb-4">Why work with us</h2>
+        <div class="space-y-3">
+          {
+            [
+              {
+                icon: "🌍",
+                title: "Remote-first",
+                desc: "Work from wherever you do your best thinking. Flexible hours, no micromanagement.",
+              },
+              {
+                icon: "⚡",
+                title: "High ownership",
+                desc: "Small team means your work ships fast and has real impact — no endless approval chains.",
+              },
+              {
+                icon: "💰",
+                title: "Competitive compensation",
+                desc: "Meaningful equity and fair pay. We value the people who build with us.",
+              },
+              {
+                icon: "🚀",
+                title: "Fast-moving",
+                desc: "We make decisions quickly and ship often. No bureaucracy, no politics.",
+              },
+            ].map((item) => (
+              <div
+                class="flex items-start gap-4 p-3 rounded-lg"
+                style="border: 1px solid var(--border-default);"
+              >
+                <span class="text-2xl flex-shrink-0">{item.icon}</span>
+                <div>
+                  <div
+                    class="text-sm font-semibold"
+                    style="color: var(--text-primary);"
+                  >
+                    {item.title}
+                  </div>
+                  <div
+                    class="text-sm mt-0.5"
+                    style="color: var(--text-secondary);"
+                  >
+                    {item.desc}
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </main>
 
   <Footer />
 </Base>
+
+<style>
+  .about-h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    padding-left: 0.75rem;
+    border-left: 3px solid #89e900;
+  }
+</style>
