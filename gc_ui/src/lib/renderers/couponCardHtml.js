@@ -124,7 +124,7 @@ export function renderCouponCardHtml(item = {}) {
     badgeTextColor = "color:#2A3300;";
   } else if (discountType === "flat" && discountValue) {
     badgeTop = `$${discountValue}`;
-    badgeBottom = "OFF";
+    badgeBottom = null;
     badgeBg = "background:#fef3c7;";
     badgeBorder = "border-color:#fcd34d;";
     badgeTextColor = "color:#92400e;";
