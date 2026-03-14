@@ -1,12 +1,17 @@
-// src/components/TopStores.jsx
+// src/components/StoresSection.jsx
 import { useState, useEffect } from "react";
 
 function SkeletonCard() {
-  return <div className="animate-pulse bg-gray-100 rounded-xl h-36" />;
+  return (
+    <div
+      className="animate-pulse rounded-xl h-36"
+      style={{ background: "#2a2a2a" }}
+    />
+  );
 }
 
 /** @param {{ apiUrl: string }} props */
-export default function TopStores({ apiUrl }) {
+export default function StoresSection({ apiUrl }) {
   const [stores, setStores] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,22 +25,22 @@ export default function TopStores({ apiUrl }) {
 
   return (
     <section className="mt-10">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-brand-secondary">Top Stores</h2>
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="section-heading mb-0">Top Stores</h2>
         <a href="/stores" className="btn btn-outline--light text-sm">
           All stores →
         </a>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {loading
           ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           : stores.map((store) => (
               <a
                 key={store.id}
                 href={`https://${store.slug}.geniecoupon.com`}
-                className="group bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center text-center hover:shadow-md hover:border-brand-primary transition-all"
+                className="store-card-home"
               >
-                <div className="w-16 h-16 mb-3 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
+                <div className="store-card-home-logo">
                   {store.logo_url ? (
                     <img
                       src={store.logo_url}
@@ -44,19 +49,20 @@ export default function TopStores({ apiUrl }) {
                       loading="lazy"
                     />
                   ) : (
-                    <span className="text-2xl font-bold text-gray-300">
+                    <span
+                      className="text-xl font-bold"
+                      style={{ color: "#707068" }}
+                    >
                       {store.name?.charAt(0)}
                     </span>
                   )}
                 </div>
-                <h3 className="text-sm font-semibold text-gray-900 group-hover:text-brand-primary transition-colors line-clamp-2">
-                  {store.name}
-                </h3>
-                {store.stats?.active_coupons > 0 && (
-                  <span className="mt-2 text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
-                    {store.stats.active_coupons} coupons
-                  </span>
-                )}
+                <h3 className="store-card-home-name">{store.name}</h3>
+                <span className="store-card-home-count">
+                  {store.stats?.active_coupons > 0
+                    ? `${store.stats.active_coupons} coupons`
+                    : "View deals"}
+                </span>
               </a>
             ))}
       </div>
