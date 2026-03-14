@@ -208,7 +208,7 @@ export default function CouponFilterTabs({ coupons = [], storeSlug = "" }) {
       {filtered.length > 0 ? (
         <div className="flex flex-col gap-3" role="tabpanel">
           {filtered.map((c) => (
-            <div key={c.id} className="w-full card-base p-0">
+            <div key={c.id}>
               <CouponCard coupon={c} storeSlug={storeSlug} />
             </div>
           ))}
