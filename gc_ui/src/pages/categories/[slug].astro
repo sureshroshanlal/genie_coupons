@@ -1,10 +1,9 @@
 ---
-// src/pages/categories/[slug].astro
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
-import ParentCategorySubcategories from "../../components/ParentCategorySubcategories.jsx"; // Reuse stores grid w/ category filter
+import ParentCategorySubcategories from "../../components/ParentCategorySubcategories.jsx";
 import { api } from "../../lib/api";
 
 interface Breadcrumb {
@@ -47,14 +46,16 @@ const canonical = category?.meta?.canonical;
         <>
           <Breadcrumbs breadcrumbs={breadcrumbs} />
 
-          {/* Category Hero */}
           <section class="mt-8">
             {category.thumb_url && (
-              <div class="w-full h-48 md:h-64 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-2xl overflow-hidden mb-6">
+              <div
+                class="w-full h-48 md:h-64 rounded-2xl overflow-hidden mb-6"
+                style="background: var(--bg-subtle); border: 1px solid var(--border-default);"
+              >
                 <img
                   src={category.thumb_url}
                   alt={category.name}
-                  class="w-full h-full object-contain"
+                  class="w-full h-full object-contain p-4"
                 />
               </div>
             )}
@@ -62,16 +63,19 @@ const canonical = category?.meta?.canonical;
               <h1 class="text-4xl md:text-5xl font-extrabold text-brand-primary leading-tight mb-4">
                 {category.name}
               </h1>
-              <div class="max-w-2xl mx-auto md:ml-0 text-lg text-gray-600 mb-8">
+              <p
+                class="max-w-2xl mx-auto md:ml-0 text-lg mb-8"
+                style="color: var(--text-secondary);"
+              >
                 {category.description ||
                   `Discover the best deals from ${category.stats?.stores || 0} stores in ${category.name}.`}
-              </div>
-              <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+              </p>
+              <div class="flex flex-wrap gap-3 justify-center md:justify-start">
                 <span class="pill pill-green">
                   {category.stats?.stores || 0} stores
                 </span>
                 {category.stats?.children > 0 && (
-                  <span class="pill pill-blue">
+                  <span class="pill pill-gray">
                     {category.stats.children} sub-categories
                   </span>
                 )}
@@ -79,7 +83,6 @@ const canonical = category?.meta?.canonical;
             </div>
           </section>
 
-          {/* Stores Grid - filtered by this category */}
           <div class="mt-12">
             <ParentCategorySubcategories
               client:load
@@ -93,7 +96,10 @@ const canonical = category?.meta?.canonical;
           <h1 class="text-3xl font-bold text-brand-primary">
             Category not found
           </h1>
-          <p class="text-gray-600 mt-2 max-w-md mx-auto">
+          <p
+            class="mt-2 max-w-md mx-auto"
+            style="color: var(--text-secondary);"
+          >
             Please check the URL or browse all{" "}
             <a href="/categories" class="text-brand-primary hover:underline">
               categories

@@ -1,3 +1,4 @@
+// src/components/SubcategoryMerchants.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
 
 export default function SubcategoryMerchants({
@@ -38,7 +39,6 @@ export default function SubcategoryMerchants({
     }
   }, [loading, hasMore, nextCursor, apiUrl, parentSlug, subSlug]);
 
-  // IntersectionObserver to trigger load when sentinel is visible
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
     observerRef.current = new IntersectionObserver(
@@ -51,87 +51,120 @@ export default function SubcategoryMerchants({
     return () => observerRef.current?.disconnect();
   }, [fetchMore]);
 
-  if (merchants.length === 0 && !loading) {
+  if (merchants.length === 0 && !loading)
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">
+        <p className="mb-4 text-sm" style={{ color: "var(--text-muted)" }}>
           No stores found in this category
         </p>
-        <a
-          href="/categories"
-          className="mt-4 inline-block px-6 py-2 bg-brand-primary text-white rounded-lg"
-        >
+        <a href="/categories" className="btn btn-primary">
           Browse All Categories
         </a>
       </div>
     );
-  }
 
   return (
     <div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {merchants.map((merchant) => (
           <a
             key={merchant.id}
-            href={`/stores/${merchant.slug}?ref=category&parent=${parentSlug}&sub=${subSlug}`}
-            className="group bg-white rounded-lg border border-gray-200 p-4 hover:shadow-lg hover:border-brand-primary transition-all"
+            href={`https://${merchant.slug}.geniecoupon.com?ref=category&parent=${parentSlug}&sub=${subSlug}`}
+            className="group block rounded-xl p-3 transition-all"
+            style={{
+              background: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.borderColor = "rgba(137,233,0,0.4)";
+              e.currentTarget.style.boxShadow =
+                "0 4px 16px rgba(137,233,0,0.08)";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.borderColor = "var(--border-default)";
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.transform = "none";
+            }}
           >
-            <div className="aspect-square mb-3 flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
+            <div
+              className="aspect-square mb-2 flex items-center justify-center rounded-lg overflow-hidden"
+              style={{ background: "var(--bg-elevated)" }}
+            >
               {merchant.logo_url ? (
                 <img
                   src={merchant.logo_url}
                   alt={merchant.name}
-                  className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform"
+                  className="w-full h-full object-contain p-2"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                  <span className="text-3xl font-bold text-gray-400">
-                    {merchant.name.charAt(0)}
-                  </span>
-                </div>
+                <span
+                  className="text-2xl font-bold"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  {merchant.name.charAt(0)}
+                </span>
               )}
             </div>
-            <h3 className="text-sm font-semibold text-gray-900 text-center mb-2 group-hover:text-brand-primary line-clamp-2 min-h-[2.5rem]">
+            <h3
+              className="text-xs font-semibold text-center mb-1.5 line-clamp-2 transition-colors"
+              style={{ color: "var(--text-primary)", minHeight: "2.5rem" }}
+            >
               {merchant.name}
             </h3>
-            <div className="text-xs text-center">
+            <div className="text-center">
               {merchant.active_coupons_count > 0 ? (
-                <span className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                <span
+                  className="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                  style={{
+                    background: "rgba(137,233,0,0.12)",
+                    color: "#89E900",
+                  }}
+                >
                   {merchant.active_coupons_count}{" "}
                   {merchant.active_coupons_count === 1 ? "coupon" : "coupons"}
                 </span>
               ) : (
-                <span className="text-gray-400">No active coupons</span>
+                <span
+                  className="text-[10px]"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  No active coupons
+                </span>
               )}
             </div>
           </a>
         ))}
       </div>
 
-      {/* Sentinel for infinite scroll */}
       <div ref={sentinelRef} className="h-10 mt-4" />
 
       {loading && (
         <div className="flex justify-center py-6">
-          <div className="w-6 h-6 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
+          <div
+            className="w-5 h-5 border-2 border-t-transparent rounded-full animate-spin"
+            style={{ borderColor: "#89E900", borderTopColor: "transparent" }}
+          />
         </div>
       )}
 
       {error && (
         <div className="text-center py-4">
-          <p className="text-red-600 mb-2">Failed to load more stores</p>
-          <button
-            onClick={fetchMore}
-            className="px-4 py-2 bg-brand-primary text-white rounded-lg"
-          >
+          <p className="text-sm mb-2" style={{ color: "#f87171" }}>
+            Failed to load more stores
+          </p>
+          <button onClick={fetchMore} className="btn btn-primary text-sm">
             Retry
           </button>
         </div>
       )}
 
       {!hasMore && merchants.length > 0 && (
-        <p className="text-center text-sm text-gray-400 py-6">
+        <p
+          className="text-center text-xs py-6"
+          style={{ color: "var(--text-muted)" }}
+        >
           All {merchants.length} stores loaded
         </p>
       )}

@@ -1,3 +1,4 @@
+// src/components/ParentCategorySubcategories.jsx
 import { useState, useEffect } from "react";
 
 export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
@@ -6,7 +7,7 @@ export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetch_ = async () => {
+    (async () => {
       try {
         const res = await fetch(`${apiUrl}/categories/${categorySlug}`);
         if (!res.ok) throw new Error(`API error: ${res.status}`);
@@ -17,41 +18,46 @@ export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
       } finally {
         setLoading(false);
       }
-    };
-    fetch_();
+    })();
   }, [categorySlug]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="bg-gray-200 rounded-lg h-40" />
-          </div>
+          <div
+            key={i}
+            className="animate-pulse rounded-xl h-36"
+            style={{ background: "var(--bg-subtle)" }}
+          />
         ))}
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 mb-4">Failed to load subcategories</p>
+        <p className="mb-4 text-sm" style={{ color: "#f87171" }}>
+          Failed to load subcategories
+        </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-brand-primary text-white rounded-lg"
+          className="btn btn-primary"
         >
           Try Again
         </button>
       </div>
     );
-  }
 
-  if (subcategories.length === 0) {
+  if (!subcategories.length)
     return (
-      <p className="text-center py-12 text-gray-500">No subcategories found.</p>
+      <p
+        className="text-center py-12 text-sm"
+        style={{ color: "var(--text-muted)" }}
+      >
+        No subcategories found.
+      </p>
     );
-  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -59,24 +65,45 @@ export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
         <a
           key={subcat.id}
           href={`/categories/${categorySlug}/${subcat.slug}`}
-          className="group bg-white rounded-lg border border-gray-200 p-5 hover:shadow-lg hover:border-brand-primary transition-all"
+          className="group block rounded-xl p-4 transition-all"
+          style={{
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-default)",
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.borderColor = "rgba(137,233,0,0.4)";
+            e.currentTarget.style.boxShadow = "0 4px 16px rgba(137,233,0,0.08)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.borderColor = "var(--border-default)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
-          <div className="w-12 h-12 mb-3 bg-gradient-to-br from-brand-primary/10 to-brand-primary/20 rounded-lg flex items-center justify-center">
+          <div
+            className="w-10 h-10 mb-3 rounded-lg flex items-center justify-center overflow-hidden"
+            style={{
+              background: "rgba(137,233,0,0.08)",
+              border: "1px solid rgba(137,233,0,0.15)",
+            }}
+          >
             {subcat.thumb_url ? (
               <img
                 src={subcat.thumb_url}
                 alt={subcat.name}
-                className="w-full h-full object-contain rounded-lg"
+                className="w-full h-full object-contain"
                 loading="lazy"
               />
             ) : (
-              <span className="text-2xl">📦</span>
+              <span className="text-xl">📦</span>
             )}
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-brand-primary transition-colors line-clamp-2">
+          <h3
+            className="text-sm font-semibold mb-1 line-clamp-2 transition-colors"
+            style={{ color: "var(--text-primary)" }}
+          >
             {subcat.name}
           </h3>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             {subcat.merchant_count || 0}{" "}
             {subcat.merchant_count === 1 ? "store" : "stores"}
           </p>

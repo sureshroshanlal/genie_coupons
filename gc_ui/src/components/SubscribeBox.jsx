@@ -2,49 +2,39 @@ import React, { useState, useRef, useEffect } from "react";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
-/** shared helper for all pages */
 export async function doSubscribe(email, source = null) {
   const val = (email || "").trim().toLowerCase();
-  if (!val || !EMAIL_REGEX.test(val)) {
+  if (!val || !EMAIL_REGEX.test(val))
     return { ok: false, message: "Please enter a valid email address." };
-  }
-
   try {
     const base = import.meta.env.PUBLIC_API_BASE_URL || "";
-    const endpoint = base + "/subscribe";
-    const res = await fetch(endpoint, {
+    const res = await fetch(base + "/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: val, source, honeypot: "" }),
     });
-
-    if (res.status === 429) {
+    if (res.status === 429)
       return {
         ok: false,
         message: "Too many requests. Please try again later.",
       };
-    }
-
     const data = await res.json().catch(() => null);
-    if (!res.ok || !data?.ok) {
-      const msg = data?.message || "Subscription failed. Try again.";
-      return { ok: false, message: msg, data };
-    }
-
+    if (!res.ok || !data?.ok)
+      return {
+        ok: false,
+        message: data?.message || "Subscription failed. Try again.",
+      };
     return { ok: true, message: "Subscribed — thank you!", data };
-  } catch (err) {
-    console.error("subscribe error:", err);
+  } catch {
     return { ok: false, message: "An error occurred. Please try again." };
   }
 }
 
-/* -------------------- Component (refined + debounce) -------------------- */
 function Toast({ message, onClose }) {
   useEffect(() => {
     const t = setTimeout(onClose, 3000);
     return () => clearTimeout(t);
   }, [onClose]);
-
   return (
     <div role="status" aria-live="polite" className="toast">
       {message}
@@ -61,10 +51,7 @@ export default function SubscribeBox({ source }) {
   const [success, setSuccess] = useState(false);
   const mountedRef = useRef(true);
   const inputRef = useRef(null);
-
-  // Debounce: timestamp of last submit
   const lastSubmitTsRef = useRef(0);
-  const DEBOUNCE_MS = 2000; // 2 seconds
 
   useEffect(() => {
     mountedRef.current = true;
@@ -72,47 +59,34 @@ export default function SubscribeBox({ source }) {
       mountedRef.current = false;
     };
   }, []);
-
   useEffect(() => {
-    if (success && inputRef.current) {
-      inputRef.current.blur();
-    }
+    if (success && inputRef.current) inputRef.current.blur();
   }, [success]);
 
   const pushToast = (msg) => {
     const id = Date.now() + Math.random();
     setToasts((t) => [...t, { id, message: msg }]);
   };
-  const removeToast = (id) => setToasts((t) => t.filter((x) => x.id !== id));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-
-    // debounce guard: ignore if called again within DEBOUNCE_MS
     const now = Date.now();
-    if (now - lastSubmitTsRef.current < DEBOUNCE_MS) {
-      // optional: show a subtle toast to indicate rate limit
-      pushToast("Please wait a moment before trying again.");
+    if (now - lastSubmitTsRef.current < 2000) {
+      pushToast("Please wait a moment.");
       return;
     }
     lastSubmitTsRef.current = now;
-
-    // basic honeypot check
     if (honeypot) {
-      pushToast("Subscribed");
-      setEmail("");
       setSuccess(true);
+      setEmail("");
       return;
     }
-
     if (!EMAIL_REGEX.test((email || "").trim())) {
       setError("Please enter a valid email address.");
-      pushToast("Please enter a valid email address.");
       return;
     }
-
     setLoading(true);
     try {
       const result = await doSubscribe(email, source);
@@ -132,15 +106,15 @@ export default function SubscribeBox({ source }) {
 
   return (
     <>
-      <form className="w-full max-w-md" onSubmit={handleSubmit} noValidate>
+      <form className="w-full" onSubmit={handleSubmit} noValidate>
         <label
           htmlFor="subscribe-email"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-xs font-semibold uppercase tracking-widest mb-2"
+          style={{ color: "#89E900" }}
         >
-          Get updates
+          Get Updates
         </label>
-
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <input
             id="subscribe-email"
             ref={inputRef}
@@ -148,23 +122,29 @@ export default function SubscribeBox({ source }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring focus:ring-indigo-200"
             required
             aria-invalid={!!error}
-            aria-describedby={error ? "subscribe-error" : undefined}
+            style={{
+              background: "#2e2e2e",
+              border: "1px solid #333333",
+              color: "#F5F5F0",
+              borderRadius: "8px",
+              padding: "0.5rem 0.75rem",
+              fontSize: "0.875rem",
+              flex: 1,
+              outline: "none",
+            }}
           />
-
           <button
             type="submit"
-            className="btn btn-primary"
+            className="btn btn-primary text-sm"
             disabled={loading}
-            aria-disabled={loading}
+            style={{ whiteSpace: "nowrap" }}
           >
-            {loading ? "Please wait…" : "Subscribe"}
+            {loading ? "…" : "Subscribe"}
           </button>
         </div>
 
-        {/* honeypot hidden field */}
         <label
           style={{ position: "absolute", left: "-9999px" }}
           aria-hidden="true"
@@ -181,18 +161,17 @@ export default function SubscribeBox({ source }) {
         </label>
 
         {error && (
-          <p
-            id="subscribe-error"
-            className="text-xs text-red-600 mt-2"
-            role="alert"
-          >
+          <p className="text-xs mt-2" style={{ color: "#f87171" }} role="alert">
             {error}
           </p>
         )}
-
         {success && (
-          <p className="text-sm text-green-700 mt-2" role="status">
-            Subscribed — thank you!
+          <p
+            className="text-xs mt-2"
+            style={{ color: "#89E900" }}
+            role="status"
+          >
+            ✓ Subscribed — thank you!
           </p>
         )}
       </form>
@@ -201,7 +180,7 @@ export default function SubscribeBox({ source }) {
         <Toast
           key={t.id}
           message={t.message}
-          onClose={() => removeToast(t.id)}
+          onClose={() => setToasts((x) => x.filter((i) => i.id !== t.id))}
         />
       ))}
     </>
