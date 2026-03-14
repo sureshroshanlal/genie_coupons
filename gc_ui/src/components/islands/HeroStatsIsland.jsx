@@ -1,7 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
 
-const API = import.meta.env.PUBLIC_API_BASE_URL;
-
 const PILL_ICON_TAG = (
   <svg
     class="w-3 h-3 mr-1"
@@ -61,11 +59,11 @@ function fmt(n) {
 // Fallback values shown before fetch resolves or on error
 const FALLBACK = { total_coupons: 1000, total_stores: 100 };
 
-export default function HeroStatsIsland() {
+export default function HeroStatsIsland({ apiUrl }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch(`${API}/stats`)
+    fetch(`${apiUrl}/stats`)
       .then((r) => {
         if (!r.ok) throw new Error("stats fetch failed");
         return r.json();

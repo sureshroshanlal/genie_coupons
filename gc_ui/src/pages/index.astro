@@ -531,7 +531,7 @@ const totalCoupons = store?.coupons?.total || 0;
               Verified coupons, real savings — handpicked and tested by real
               humans.
             </p>
-            <HeroStatsIsland client:visible />
+            <HeroStatsIsland client:visible apiUrl={apiUrl} />
             <div class="homepage-hero-ctas">
               <a href="/stores" class="btn btn-primary">
                 Browse Stores
