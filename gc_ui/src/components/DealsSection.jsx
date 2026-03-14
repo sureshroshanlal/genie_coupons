@@ -41,7 +41,7 @@ export default function DealsSection({ apiUrl }) {
           </p>
         ) : (
           coupons.map((c) => (
-            <div key={c.id} className="card-base p-0">
+            <div key={c.id}>
               <CouponReveal
                 coupon={c}
                 storeSlug={c.merchant?.slug || c.merchant_name}
