@@ -92,7 +92,7 @@ const sections = [
     count: editorCoupons.length,
   },
   {
-    id: "coupons",
+    id: "coupon-codes",
     label: "Coupons",
     icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>`,
     count: couponsCoupons.length,
@@ -262,7 +262,7 @@ const canonical = "https://geniecoupon.com/todays-deals";
 
       {
         couponsCoupons.length > 0 && (
-          <section id="coupons" aria-labelledby="heading-coupons">
+          <section id="coupon-codes" aria-labelledby="heading-coupons">
             <div class="deals-section-heading">
               <div class="deals-section-heading-left">
                 <span class="deals-section-icon">
@@ -361,15 +361,15 @@ const canonical = "https://geniecoupon.com/todays-deals";
 
   .deals-hero-glow {
     position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 380px;
-    height: 380px;
+    top: -80px;
+    right: -120px;
+    width: 360px;
+    height: 360px;
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(137, 233, 0, 0.1) 0%,
-      transparent 70%
+      rgba(137, 233, 0, 0.07) 0%,
+      transparent 65%
     );
   }
 
@@ -408,12 +408,13 @@ const canonical = "https://geniecoupon.com/todays-deals";
   .deals-hero-right {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
     gap: 0.625rem;
     flex-shrink: 0;
-    width: 220px;
+    width: 240px;
   }
 
-  /* Stat cards */
+  /* Stat cards — strict 2x2, no spanning */
   .deals-stat-card {
     display: flex;
     flex-direction: column;
@@ -425,14 +426,15 @@ const canonical = "https://geniecoupon.com/todays-deals";
     border: 1px solid var(--border-default);
     border-radius: 0.75rem;
     text-align: center;
+    min-width: 0;
   }
 
   .deals-stat-card--time {
-    grid-column: span 2;
+    grid-column: span 1;
   }
 
   .deals-stat-value {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     font-weight: 800;
     color: #89e900;
     line-height: 1;
@@ -440,7 +442,7 @@ const canonical = "https://geniecoupon.com/todays-deals";
   }
 
   .deals-stat-value--sm {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .deals-stat-label {
@@ -643,19 +645,11 @@ const canonical = "https://geniecoupon.com/todays-deals";
       width: 100%;
       grid-template-columns: repeat(4, 1fr);
     }
-
-    .deals-stat-card--time {
-      grid-column: span 1;
-    }
   }
 
   @media (max-width: 480px) {
     .deals-hero-right {
       grid-template-columns: 1fr 1fr;
-    }
-
-    .deals-stat-card--time {
-      grid-column: span 2;
     }
   }
 </style>
