@@ -1,0 +1,469 @@
+---
+import Base from "../../layouts/Base.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import CouponFilterTabs from "../../components/islands/CouponFilterTabs.jsx";
+import { api } from "../../lib/api";
+
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  code?: string | null;
+  ends_at?: string | null;
+  coupon_type?: string | null;
+  discount_type?: string | null;
+  discount_value?: string | null;
+  merchant_name?: string | null;
+  is_editor?: boolean | null;
+  merchant?: {
+    id?: number | null;
+    slug?: string | null;
+    logo_url?: string | null;
+    affl_url?: string | null;
+    web_url?: string | null;
+  } | null;
+};
+
+type CouponsResponse = {
+  data: Coupon[];
+  meta: {
+    limit?: number;
+    has_more?: boolean;
+    next_cursor?: string | null;
+    next?: string | null;
+  };
+};
+
+const fetchSection = async (sort: string, type: string): Promise<Coupon[]> => {
+  try {
+    const params = new URLSearchParams({
+      cursor: "",
+      limit: "8",
+      type,
+      status: "active",
+      sort,
+      locale: "en",
+    });
+    const resp = await api.get<CouponsResponse>(
+      `/coupons?${params}`,
+      {},
+      { retries: 2, timeout: 8000 },
+    );
+    return resp?.data || [];
+  } catch (e) {
+    console.error(`Failed to fetch coupons [sort=${sort}, type=${type}]:`, e);
+    return [];
+  }
+};
+
+const [latestCoupons, editorCoupons, couponsCoupons, dealsCoupons] =
+  await Promise.all([
+    fetchSection("latest", "all"),
+    fetchSection("editor", "all"),
+    fetchSection("latest", "coupon"),
+    fetchSection("latest", "deal"),
+  ]);
+
+const sections = [
+  {
+    id: "latest",
+    label: "Latest Deals",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    count: latestCoupons.length,
+  },
+  {
+    id: "editor",
+    label: "Editor's Picks",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`,
+    count: editorCoupons.length,
+  },
+  {
+    id: "coupons",
+    label: "Coupons",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>`,
+    count: couponsCoupons.length,
+  },
+  {
+    id: "deals",
+    label: "Deals",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    count: dealsCoupons.length,
+  },
+];
+
+const pageTitle = "Today's Deals — Genie Coupon";
+const pageDesc =
+  "Hand-picked coupons, editor favourites, and the freshest deals — all in one place.";
+const canonical = "https://geniecoupon.com/todays-deals";
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+  <Header />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {/* ── HERO ── */}
+    <section class="deals-hero" aria-label="Today's Deals">
+      <div class="deals-hero-inner">
+        <div class="deals-hero-badge">
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#89E900"
+            stroke-width="2.5"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Live & Verified
+        </div>
+        <h1 class="deals-hero-title">Today's Deals</h1>
+        <p class="deals-hero-sub">{pageDesc}</p>
+
+        {/* Section anchors */}
+        <nav class="deals-hero-nav" aria-label="Jump to section">
+          {
+            sections.map((s) => (
+              <a href={`#${s.id}`} class="deals-hero-anchor">
+                <span set:html={s.icon} />
+                {s.label}
+                {s.count > 0 && (
+                  <span class="deals-hero-anchor-count">{s.count}</span>
+                )}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </section>
+
+    {/* ── SECTIONS ── */}
+    <div class="mt-12 space-y-16">
+      {/* Latest Deals */}
+      {
+        latestCoupons.length > 0 && (
+          <section id="latest" aria-labelledby="heading-latest">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon" aria-hidden="true">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-latest" class="section-heading">
+                  Latest Deals
+                </h2>
+                <span class="deals-section-count">{latestCoupons.length}</span>
+              </div>
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
+            {/* @ts-ignore */}
+            <CouponFilterTabs
+              client:load
+              coupons={latestCoupons}
+              storeSlug=""
+            />
+          </section>
+        )
+      }
+
+      {/* Editor's Picks */}
+      {
+        editorCoupons.length > 0 && (
+          <section id="editor" aria-labelledby="heading-editor">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon" aria-hidden="true">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-editor" class="section-heading">
+                  Editor's Picks
+                </h2>
+                <span class="deals-section-count">{editorCoupons.length}</span>
+              </div>
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
+            {/* @ts-ignore */}
+            <CouponFilterTabs
+              client:load
+              coupons={editorCoupons}
+              storeSlug=""
+            />
+          </section>
+        )
+      }
+
+      {/* Coupons */}
+      {
+        couponsCoupons.length > 0 && (
+          <section id="coupons" aria-labelledby="heading-coupons">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon" aria-hidden="true">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-coupons" class="section-heading">
+                  Coupons
+                </h2>
+                <span class="deals-section-count">{couponsCoupons.length}</span>
+              </div>
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
+            {/* @ts-ignore */}
+            <CouponFilterTabs
+              client:load
+              coupons={couponsCoupons}
+              storeSlug=""
+            />
+          </section>
+        )
+      }
+
+      {/* Deals */}
+      {
+        dealsCoupons.length > 0 && (
+          <section id="deals" aria-labelledby="heading-deals">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon" aria-hidden="true">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-deals" class="section-heading">
+                  Deals
+                </h2>
+                <span class="deals-section-count">{dealsCoupons.length}</span>
+              </div>
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
+            {/* @ts-ignore */}
+            <CouponFilterTabs client:load coupons={dealsCoupons} storeSlug="" />
+          </section>
+        )
+      }
+    </div>
+  </main>
+
+  <Footer />
+</Base>
+
+<style>
+  /* ── Hero ── */
+  .deals-hero {
+    margin-top: 1rem;
+    padding: 2.5rem 2rem;
+    border-radius: 1.25rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .deals-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 60% 0%,
+      rgba(137, 233, 0, 0.07) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .deals-hero-inner {
+    position: relative;
+    max-width: 640px;
+  }
+
+  .deals-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #89e900;
+    background: rgba(137, 233, 0, 0.1);
+    border: 1px solid rgba(137, 233, 0, 0.2);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .deals-hero-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .deals-hero-sub {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+
+  .deals-hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  .deals-hero-anchor {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.4rem 0.875rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    text-decoration: none;
+    transition:
+      background 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .deals-hero-anchor:hover {
+    background: rgba(137, 233, 0, 0.1);
+    color: #89e900;
+    border-color: rgba(137, 233, 0, 0.3);
+  }
+
+  .deals-hero-anchor-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.3rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(137, 233, 0, 0.15);
+    color: #89e900;
+  }
+
+  /* ── Section headings ── */
+  .deals-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.875rem;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .deals-section-heading-left {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .deals-section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: rgba(137, 233, 0, 0.08);
+    border: 1px solid rgba(137, 233, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .deals-section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(137, 233, 0, 0.1);
+    color: #89e900;
+  }
+
+  .deals-back-top {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 150ms ease;
+  }
+
+  .deals-back-top:hover {
+    color: #89e900;
+  }
+
+  @media (max-width: 640px) {
+    .deals-hero {
+      padding: 1.5rem 1.25rem;
+    }
+  }
+</style>
