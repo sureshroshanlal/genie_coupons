@@ -156,6 +156,12 @@ if (isStoreSubdomain && storeSlug) {
             },
             { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
           ];
+        } else {
+          breadcrumbs = [
+            { name: "Home", url: "https://geniecoupon.com" },
+            { name: "Stores", url: "https://geniecoupon.com/stores" },
+            { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
+          ];
         }
       } catch (e) {
         console.error("Breadcrumb category fetch failed:", e);
