@@ -130,7 +130,12 @@ if (isStoreSubdomain && storeSlug) {
 
     if (!store) return Astro.redirect("/404");
 
-    breadcrumbs = store.breadcrumbs || [];
+    // breadcrumbs = store.breadcrumbs || [];
+    breadcrumbs = [
+      { name: "Home", url: "https://geniecoupon.com" },
+      { name: "Stores", url: "https://geniecoupon.com/stores" },
+      { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
+    ];
 
     const refType = Astro.url.searchParams.get("ref");
     const parentSlug = Astro.url.searchParams.get("parent");
@@ -154,12 +159,6 @@ if (isStoreSubdomain && storeSlug) {
               name: catData.data.subcategory.name,
               url: `https://geniecoupon.com/categories/${parentSlug}/${subSlug}`,
             },
-            { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
-          ];
-        } else {
-          breadcrumbs = [
-            { name: "Home", url: "https://geniecoupon.com" },
-            { name: "Stores", url: "https://geniecoupon.com/stores" },
             { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
           ];
         }
