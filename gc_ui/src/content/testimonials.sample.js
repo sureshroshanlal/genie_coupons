@@ -20,7 +20,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Priya N. – Saved 15%",
     rating: 4,
     comment: "Found a 15% discount on a winter jacket I was about to pay full price for. geniecoupon is now a permanent step in my shopping routine. Reliable and straightforward.",
-    avatar_url: "/images/avatars/user-3.webp",
+    avatar_url: "/images/avatars/user-4.webp",
     posted_at: "2025-10-02T14:20:00Z",
   },
   {
@@ -28,7 +28,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Carlos M. – Saved 28%",
     rating: 5,
     comment: "28% off on a smart air purifier? I nearly fell off my chair! geniecoupon consistently finds deals I'd never stumble upon on my own. This platform is genuinely a game-changer.",
-    avatar_url: "/images/avatars/user-4.webp",
+    avatar_url: "/images/avatars/user-3.webp",
     posted_at: "2025-09-25T17:00:00Z",
   },
   {
@@ -36,7 +36,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Mei W. – Saved 12%",
     rating: 4,
     comment: "Not every coupon is a massive discount, but a solid 12% off my skincare order adds up over time. geniecoupon makes saving effortless and I appreciate the simplicity.",
-    avatar_url: "/images/avatars/user-5.webp",
+    avatar_url: "/images/avatars/user-1.webp",
     posted_at: "2025-09-10T11:30:00Z",
   },
   {
@@ -44,7 +44,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "David O. – Saved 20%",
     rating: 5,
     comment: "I saved 20% on a new set of bed sheets and the coupon worked on the first try — no expired codes, no fine print nonsense. That's why I keep coming back to geniecoupon.",
-    avatar_url: "/images/avatars/user-6.webp",
+    avatar_url: "/images/avatars/user-5.webp",
     posted_at: "2025-08-30T09:00:00Z",
   },
   {
@@ -52,7 +52,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Rachel B. – Saved 25%",
     rating: 5,
     comment: "Scored 25% off a pair of sneakers I'd been watching for weeks. The deals on geniecoupon are legit and the site is super easy to navigate. Absolutely recommending this to everyone!",
-    avatar_url: "/images/avatars/user-7.webp",
+    avatar_url: "/images/avatars/user-4.webp",
     posted_at: "2025-08-14T13:45:00Z",
   },
   {
@@ -60,7 +60,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Tom H. – Saved 17%",
     rating: 4,
     comment: "Needed a new blender and found a 17% coupon within minutes on geniecoupon. I've used other coupon sites before but this one feels curated and current. Very impressed.",
-    avatar_url: "/images/avatars/user-8.webp",
+    avatar_url: "/images/avatars/user-2.webp",
     posted_at: "2025-07-28T16:10:00Z",
   },
   {
@@ -68,7 +68,7 @@ export const SAMPLE_TESTIMONIALS = [
     user_name: "Aisha F. – Saved 30%",
     rating: 5,
     comment: "30% off on a denim jacket I almost bought at full price — that's a proper win! geniecoupon is fun to browse and the savings are real. It genuinely feels like shopping smarter.",
-    avatar_url: "/images/avatars/user-9.webp",
+    avatar_url: "/images/avatars/user-1.webp",
     posted_at: "2025-07-10T10:00:00Z",
   },
 ];
