@@ -249,6 +249,15 @@ const jsonld = storeMeta?.jsonld || null;
 
 const couponItems = store?.coupons?.items || [];
 const totalCoupons = store?.coupons?.total || 0;
+
+let siteStats = { total_coupons: 0, total_stores: 0 };
+try {
+  const res = await fetch(`${apiUrl}/stats`);
+  const json = await res.json();
+  siteStats = json?.data || siteStats;
+} catch (e) {
+  console.error("Failed to fetch stats:", e);
+}
 ---
 
 <Base
@@ -541,7 +550,7 @@ const totalCoupons = store?.coupons?.total || 0;
                     d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
                   />
                 </svg>
-                1000+ verified coupons
+                {siteStats.total_coupons}+ verified coupons
               </span>
               <span class="pill pill-gray">
                 <svg
@@ -557,7 +566,7 @@ const totalCoupons = store?.coupons?.total || 0;
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                   />
                 </svg>
-                100+ stores
+                {siteStats.total_stores}+ stores
               </span>
               <span class="pill pill-gray">
                 <svg
@@ -575,7 +584,7 @@ const totalCoupons = store?.coupons?.total || 0;
                 </svg>
                 Updated daily
               </span>
-            </div>
+            </div>{" "}
             <div class="homepage-hero-ctas">
               <a href="/stores" class="btn btn-primary">
                 Browse Stores
