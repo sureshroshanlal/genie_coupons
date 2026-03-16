@@ -208,6 +208,8 @@ export async function getBySlug(slug) {
     coupon_h3_blocks,
     active_coupons_count,
     verifier_id,
+    web_url,
+    aff_url,
     authors:verifier_id (
       id,
       name,
@@ -271,6 +273,8 @@ export async function getBySlug(slug) {
         : [],
       active_coupons: activeCoupons,
       verifier_id: data.verifier_id,
+      web_url: data.web_url || null,
+      aff_url: data.aff_url || null,
       verifier: data.authors
         ? {
             id: data.authors.id,
