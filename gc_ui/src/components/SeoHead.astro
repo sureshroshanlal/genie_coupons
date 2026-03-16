@@ -22,10 +22,10 @@ const suffix = getCurrentMonthYear();
 
 // base values (before suffix)
 const rawTitle =
-  meta.title || "Genie Coupon Deals | Verified Coupons & Discounts";
+  meta.title || "Genie Coupon | Verified and Working Deals, Coupons & Discounts ";
 const rawDesc =
   meta.description ||
-  "Verified coupons, real savings, no expired junk — handpicked by real humans.";
+  "Real savings on Every Purchase, no expired junk — only Verified Coupons and Deals.";
 
 // append suffix if not already present
 const defaultTitle = hasMonthYearSuffix(rawTitle)
@@ -37,7 +37,7 @@ const defaultDesc = hasMonthYearSuffix(rawDesc)
   : `${rawDesc} ${suffix}`;
 
 const canonical = `https://geniecoupon.com${Astro.url.pathname}`;
-const ogImage = meta.og_image || "/og-default.png";
+const ogImage = meta.og_image || "/og-default.webp";
 const jsonld = meta.jsonld;
 ---
 
