@@ -472,6 +472,8 @@ export async function detail(req, res) {
             },
             verifier: store.verifier || null,
             verifier_id: store.verifier_id || null,
+            aff_url: store.aff_url || null,
+            web_url: store.web_url || null,
           },
           meta: {
             generated_at: new Date().toISOString(),

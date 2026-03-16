@@ -46,6 +46,8 @@ type StoreDetail = {
   slug: string;
   name: string;
   verifier_id?: number | string | null;
+  aff_url?: string | null;
+  web_url?: string | null;
   logo_url?: string | null;
   category_names?: string[];
   side_description_html?: string | null;
@@ -140,7 +142,6 @@ if (isStoreSubdomain && storeSlug) {
     const refType = Astro.url.searchParams.get("ref");
     const parentSlug = Astro.url.searchParams.get("parent");
     const subSlug = Astro.url.searchParams.get("sub");
-
     if (refType === "category" && parentSlug && subSlug) {
       try {
         const res = await fetch(
@@ -178,6 +179,8 @@ if (isStoreSubdomain && storeSlug) {
     return Astro.redirect("/404");
   }
 }
+
+const visitUrl = (store as any)?.aff_url || (store as any)?.web_url || null;
 
 // ── Sanitize HTML ──
 const _ALLOWED_TAGS = [
@@ -291,20 +294,54 @@ try {
             <div class="store-hero-left">
               <div class="store-hero-inner">
                 <div class="store-hero-logo">
-                  {store.logo_url ? (
-                    <img
-                      src={store.logo_url}
-                      alt={`${store.name} logo`}
-                      width="80"
-                      height="80"
-                      class="object-contain max-h-full max-w-full"
-                      loading="eager"
-                      decoding="async"
-                    />
+                  {visitUrl ? (
+                    <a
+                      href={visitUrl}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      class="store-hero-logo"
+                      aria-label={`Visit ${store.name}`}
+                    >
+                      {store.logo_url ? (
+                        <img
+                          src={store.logo_url}
+                          alt={`${store.name} logo`}
+                          width="80"
+                          height="80"
+                          class="object-contain max-h-full max-w-full"
+                          loading="eager"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span
+                          class="text-sm font-semibold"
+                          style="color:#707068;"
+                        >
+                          {store.name.charAt(0)}
+                        </span>
+                      )}
+                    </a>
                   ) : (
-                    <span class="text-sm font-semibold" style="color:#707068;">
-                      {store.name.charAt(0)}
-                    </span>
+                    <div class="store-hero-logo">
+                      {store.logo_url ? (
+                        <img
+                          src={store.logo_url}
+                          alt={`${store.name} logo`}
+                          width="80"
+                          height="80"
+                          class="object-contain max-h-full max-w-full"
+                          loading="eager"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span
+                          class="text-sm font-semibold"
+                          style="color:#707068;"
+                        >
+                          {store.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div class="store-hero-meta">
@@ -330,6 +367,7 @@ try {
                       </svg>
                       {totalCoupons} {totalCoupons === 1 ? "Offer" : "Offers"}
                     </span>
+                    0
                     <span class="pill pill-gray">
                       <svg
                         class="w-3 h-3 mr-1"
@@ -353,6 +391,30 @@ try {
                           {store.category_names[0]}
                         </span>
                       )}
+                    {visitUrl && (
+                      <a
+                        href={visitUrl}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        class="store-hero-visit-btn"
+                      >
+                        <svg
+                          class="w-3 h-3"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2.5"
+                          aria-hidden="true"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
+                        </svg>
+                        Visit Store
+                      </a>
+                    )}
                     <a href="#about-section" class="store-hero-about-link">
                       About {store.name} ↓
                     </a>
