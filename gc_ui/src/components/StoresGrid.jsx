@@ -1,7 +1,7 @@
-// src/components/StoresGrid.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
 
 const ALPHABET = [
+  "All",
   "0-9",
   "A",
   "B",
@@ -33,17 +33,68 @@ const ALPHABET = [
 const INITIAL_LOAD = 100;
 const LOAD_MORE = 50;
 
+// ── Store Card ────────────────────────────────────────────────────────────────
+function StoreCard({ store }) {
+  const offers = store.stats?.active_coupons ?? null;
+  const initial = store.name?.charAt(0).toUpperCase() ?? "?";
+
+  return (
+    <a
+      href={`https://${store.slug}.geniecoupon.com`}
+      className="store-grid-card"
+    >
+      {/* Offer badge */}
+      {offers !== null && offers > 0 && (
+        <span className="store-grid-card__badge">
+          {offers} {offers === 1 ? "offer" : "offers"}
+        </span>
+      )}
+
+      {/* Logo */}
+      <div className="store-grid-card__logo">
+        {store.logo_url ? (
+          <img
+            src={store.logo_url}
+            alt={store.name}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <span className="store-grid-card__initial">{initial}</span>
+        )}
+      </div>
+
+      {/* Name */}
+      <p className="store-grid-card__name">{store.name}</p>
+
+      {/* CTA line */}
+      <span className="store-grid-card__cta">View deals →</span>
+    </a>
+  );
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div
+      className="store-grid-card store-grid-card--skeleton"
+      aria-hidden="true"
+    />
+  );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function StoresGrid({ apiUrl, categorySlug }) {
   const [stores, setStores] = useState([]);
-  const [selectedLetter, setSelectedLetter] = useState("0-9");
+  const [selectedLetter, setSelectedLetter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [cursor, setCursor] = useState(null);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState(null);
-  const observerRef = useRef(null);
   const loadMoreRef = useRef(null);
+  const observerRef = useRef(null);
 
   const fetchStores = async (letter, currentCursor = null, append = false) => {
     try {
@@ -53,14 +104,12 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
       let url = `${apiUrl}/stores?limit=${limit}&letter=${encodeURIComponent(letter)}`;
       if (categorySlug) url += `&category=${encodeURIComponent(categorySlug)}`;
       if (currentCursor) url += `&cursor=${encodeURIComponent(currentCursor)}`;
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`API returned ${response.status}`);
-      const data = await response.json();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`API returned ${res.status}`);
+      const data = await res.json();
       if (!data || !Array.isArray(data.data))
         throw new Error("Invalid API response");
-      append
-        ? setStores((prev) => [...prev, ...data.data])
-        : setStores(data.data);
+      append ? setStores((p) => [...p, ...data.data]) : setStores(data.data);
       setTotal(data.meta?.total || 0);
       setHasMore(!!data.meta?.nextCursor);
       setCursor(data.meta?.nextCursor || null);
@@ -101,39 +150,21 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
   }, [hasMore, loadingMore, loadMore]);
 
   useEffect(() => {
-    fetchStores("0-9", null, false);
+    fetchStores("All", null, false);
   }, []);
 
   return (
-    <div className="min-h-screen">
-      {/* Alphabet filter — sticky */}
-      <div
-        className="sticky top-14 z-10 py-3 mb-6"
-        style={{
-          background: "var(--bg-default)",
-          borderBottom: "1px solid var(--border-default)",
-        }}
-      >
-        <div className="flex flex-wrap gap-1.5 justify-center">
+    <div className="stores-grid-root">
+      {/* ── Alphabet bar ── */}
+      <div className="stores-alpha-bar">
+        <div className="stores-alpha-inner">
           {ALPHABET.map((letter) => (
             <button
               key={letter}
               onClick={() => handleLetterChange(letter)}
               disabled={loading && selectedLetter !== letter}
-              className="px-3 py-1 rounded-full text-xs font-semibold transition-all"
-              style={
-                selectedLetter === letter
-                  ? {
-                      background: "#89E900",
-                      color: "#181818",
-                      border: "1px solid #89E900",
-                    }
-                  : {
-                      background: "var(--bg-subtle)",
-                      color: "var(--text-secondary)",
-                      border: "1px solid var(--border-default)",
-                    }
-              }
+              className="stores-alpha-btn"
+              data-active={selectedLetter === letter ? "true" : "false"}
             >
               {letter}
             </button>
@@ -141,33 +172,41 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
         </div>
       </div>
 
-      {/* Count */}
-      <div className="mb-4 text-xs" style={{ color: "var(--text-muted)" }}>
+      {/* ── Meta line ── */}
+      <div className="stores-meta-line">
         {loading ? (
-          "Loading stores…"
+          <span>Loading stores…</span>
         ) : error ? (
           <span style={{ color: "#f87171" }}>Error: {error}</span>
         ) : (
-          `Showing ${stores.length} of ${total} stores starting with "${selectedLetter}"`
+          <>
+            <span style={{ color: "var(--brand-primary)", fontWeight: 700 }}>
+              {stores.length}
+            </span>
+            <span> of </span>
+            <span style={{ color: "var(--text-secondary)" }}>
+              {total} stores
+            </span>
+            {selectedLetter !== "All" && (
+              <span style={{ color: "var(--text-muted)" }}>
+                {" "}
+                · "{selectedLetter}"
+              </span>
+            )}
+          </>
         )}
       </div>
 
-      {/* Grid */}
+      {/* ── Grid ── */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-lg h-36"
-              style={{ background: "var(--bg-subtle)" }}
-            />
+        <div className="stores-grid">
+          {Array.from({ length: 24 }).map((_, i) => (
+            <SkeletonCard key={i} />
           ))}
         </div>
       ) : error ? (
-        <div className="text-center py-12">
-          <p className="mb-4" style={{ color: "#f87171" }}>
-            Failed to load stores
-          </p>
+        <div className="stores-error">
+          <p>Failed to load stores</p>
           <button
             onClick={() => fetchStores(selectedLetter, null, false)}
             className="btn btn-primary"
@@ -177,100 +216,30 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
         </div>
       ) : stores.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
+          <div className="stores-grid">
             {stores.map((store) => (
-              <a
-                key={store.id}
-                href={`https://${store.slug}.geniecoupon.com`}
-                className="group block rounded-lg p-3 transition-all"
-                style={{
-                  background: "var(--bg-surface)",
-                  border: "1px solid var(--border-default)",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(137,233,0,0.4)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 16px rgba(137,233,0,0.08)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border-default)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div
-                  className="aspect-square mb-2 flex items-center justify-center rounded-lg overflow-hidden"
-                  style={{ background: "var(--bg-elevated)" }}
-                >
-                  {store.logo_url ? (
-                    <img
-                      src={store.logo_url}
-                      alt={store.name}
-                      className="max-w-full max-h-full object-contain p-1"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div
-                      className="text-2xl font-bold"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {store.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <h3
-                  className="text-xs font-semibold text-center mb-1 line-clamp-2 transition-colors"
-                  style={{ color: "var(--text-primary)" }}
-                >
-                  {store.name}
-                </h3>
-                {store.stats?.active_coupons !== undefined && (
-                  <p
-                    className="text-[10px] text-center"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {store.stats.active_coupons}{" "}
-                    {store.stats.active_coupons === 1 ? "offer" : "offers"}
-                  </p>
-                )}
-              </a>
+              <StoreCard key={store.id} store={store} />
             ))}
           </div>
 
-          {hasMore && (
-            <div ref={loadMoreRef} className="mt-8 flex justify-center py-8">
-              {loadingMore && (
-                <div
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  <div
-                    className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
-                    style={{
-                      borderColor: "#89E900",
-                      borderTopColor: "transparent",
-                    }}
-                  />
-                  Loading more stores…
-                </div>
-              )}
-            </div>
-          )}
+          {/* Infinite scroll trigger */}
+          <div ref={loadMoreRef} className="stores-load-more">
+            {loadingMore && (
+              <div className="stores-spinner">
+                <div className="stores-spinner__ring" />
+                <span>Loading more…</span>
+              </div>
+            )}
+          </div>
 
           {!hasMore && stores.length > 0 && (
-            <div
-              className="mt-8 text-center py-4 text-xs"
-              style={{ color: "var(--text-muted)" }}
-            >
-              You've seen all {total} stores
-            </div>
+            <div className="stores-end-label">All {total} stores loaded</div>
           )}
         </>
       ) : (
-        <div
-          className="text-center py-12 text-sm"
-          style={{ color: "var(--text-muted)" }}
-        >
-          No stores found starting with "{selectedLetter}"
+        <div className="stores-empty">
+          No stores found
+          {selectedLetter !== "All" ? ` starting with "${selectedLetter}"` : ""}
         </div>
       )}
     </div>
