@@ -200,14 +200,13 @@ export async function detail(req, res) {
         //   return { items: [], total: 0 };
         // });
 
-        const [couponsResult, relatedResult, totalClicks,] =
-          await Promise.all([
-            couponsPromise,
-            relatedPromise,
-            // trendingPromise,
-            // recentActivityPromise,
-            clickCountPromise,
-          ]);
+        const [couponsResult, relatedResult, totalClicks] = await Promise.all([
+          couponsPromise,
+          relatedPromise,
+          // trendingPromise,
+          // recentActivityPromise,
+          clickCountPromise,
+        ]);
 
         const extractDiscountScore = (title = "") => {
           const percentMatch = title.match(/(\d+)\s*%/);
@@ -390,34 +389,6 @@ export async function detail(req, res) {
           generatedAt: new Date().toISOString(),
         });
 
-        // // Coupons prev/next navigation helper – rewrite to backend base if configured
-        // const couponsNav = buildPrevNext({
-        //   origin: params.origin,
-        //   path: params.path,
-        //   page,
-        //   limit,
-        //   total,
-        //   extraParams: { type, sort, locale: params.locale || undefined },
-        // });
-
-        // const backendBase = (process.env.PUBLIC_API_BASE_URL || "")
-        //   .toString()
-        //   .trim()
-        //   .replace(/\/+$/, "");
-        // if (backendBase) {
-        //   const rewrite = (raw) => {
-        //     if (!raw) return null;
-        //     try {
-        //       const u = new URL(raw, "http://example.invalid");
-        //       return `${backendBase}${u.pathname}${u.search}`;
-        //     } catch (err) {
-        //       return raw;
-        //     }
-        //   };
-        //   couponsNav.prev = couponsNav.prev ? rewrite(couponsNav.prev) : null;
-        //   couponsNav.next = couponsNav.next ? rewrite(couponsNav.next) : null;
-        // }
-
         const side_description_html =
           store.side_description_html || store.summary_html || null;
         const description_html =
@@ -441,9 +412,6 @@ export async function detail(req, res) {
               page,
               limit,
               total,
-              prev: couponsNav.prev,
-              next: couponsNav.next,
-              total_pages: couponsNav.totalPages,
             },
             related_stores: related,
             faqs,
