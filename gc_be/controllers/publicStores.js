@@ -3,7 +3,6 @@ import * as StoresRepo from "../dbhelper/StoresRepoPublic.js";
 import * as CouponsRepo from "../dbhelper/CouponsRepoPublic.js";
 import { ok, fail, notFound } from "../utils/http.js";
 import { withCache } from "../utils/cache.js";
-import { buildStoreJsonLd } from "../utils/jsonld.js";
 import {
   valPage,
   valLimit,
@@ -13,12 +12,11 @@ import {
 } from "../utils/validation.js";
 import { badRequest } from "../utils/errors.js";
 import { STORE_SORTS, STORE_COUPON_TYPES } from "../constants/publicEnums.js";
-import * as TestimonialsRepo from "../dbhelper/TestimonialsRepo.js";
-import * as ActivityRepo from "../dbhelper/ActivityRepo.js";
 import DOMPurify from "isomorphic-dompurify";
 import { getOrigin, getPath } from "../utils/request-helper.js";
 import { buildPrevNext } from "../utils/pagination.js";
 import { makeListCacheKey } from "../utils/cacheKey.js";
+import { buildStoreSchema } from "../utils/buildStoreSchema.js";
 
 /**
  * GET /public/v1/stores
@@ -171,36 +169,44 @@ export async function detail(req, res) {
           return [];
         });
 
-        const trendingPromise = CouponsRepo.listForStore({
-          merchantId: store.id,
-          type: "all",
-          page: 1,
-          limit: 50,
-          sort: "trending",
-          skipCount: true,
-        }).catch((e) => {
-          console.warn("trending listForStore failed:", e);
-          return null;
-        });
+        const clickCountPromise = StoresRepo.sumClickCount(store.id).catch(
+          (e) => {
+            console.warn("sumClickCount failed:", e);
+            return 0;
+          },
+        );
 
-        const recentActivityPromise = CouponsRepo.listForStore({
-          merchantId: store.id,
-          type: "all",
-          page: 1,
-          limit: 5,
-          sort: "latest",
-          skipCount: true,
-        }).catch((e) => {
-          console.warn("recent listForStore failed:", e);
-          return { items: [], total: 0 };
-        });
+        // const trendingPromise = CouponsRepo.listForStore({
+        //   merchantId: store.id,
+        //   type: "all",
+        //   page: 1,
+        //   limit: 50,
+        //   sort: "trending",
+        //   skipCount: true,
+        // }).catch((e) => {
+        //   console.warn("trending listForStore failed:", e);
+        //   return null;
+        // });
 
-        const [couponsResult, relatedResult, trendingResult, recentResult] =
+        // const recentActivityPromise = CouponsRepo.listForStore({
+        //   merchantId: store.id,
+        //   type: "all",
+        //   page: 1,
+        //   limit: 5,
+        //   sort: "latest",
+        //   skipCount: true,
+        // }).catch((e) => {
+        //   console.warn("recent listForStore failed:", e);
+        //   return { items: [], total: 0 };
+        // });
+
+        const [couponsResult, relatedResult, totalClicks,] =
           await Promise.all([
             couponsPromise,
             relatedPromise,
-            trendingPromise,
-            recentActivityPromise,
+            // trendingPromise,
+            // recentActivityPromise,
+            clickCountPromise,
           ]);
 
         const extractDiscountScore = (title = "") => {
@@ -213,25 +219,25 @@ export async function detail(req, res) {
           return 0;
         };
 
-        const trendingOffers = (trendingResult?.items || [])
-          .map((c) => ({
-            ...c,
-            _score: extractDiscountScore(c.title),
-          }))
-          .filter((c) => c._score > 0)
-          .sort((a, b) => b._score - a._score)
-          .slice(0, 5)
-          .map((c) => ({
-            id: c.id,
-            title: c.title,
-            coupon_type: c.coupon_type,
-            short_desc: c.description,
-            banner_image: null,
-            expires_at: c.ends_at,
-            is_active: true,
-            click_count: c.click_count || 0,
-            code: null,
-          }));
+        // const trendingOffers = (trendingResult?.items || [])
+        //   .map((c) => ({
+        //     ...c,
+        //     _score: extractDiscountScore(c.title),
+        //   }))
+        //   .filter((c) => c._score > 0)
+        //   .sort((a, b) => b._score - a._score)
+        //   .slice(0, 5)
+        //   .map((c) => ({
+        //     id: c.id,
+        //     title: c.title,
+        //     coupon_type: c.coupon_type,
+        //     short_desc: c.description,
+        //     banner_image: null,
+        //     expires_at: c.ends_at,
+        //     is_active: true,
+        //     click_count: c.click_count || 0,
+        //     code: null,
+        //   }));
 
         const rawItems =
           couponsResult && couponsResult.items ? couponsResult.items : [];
@@ -334,30 +340,30 @@ export async function detail(req, res) {
           answer: DOMPurify.sanitize(f.answer),
         }));
 
-        const faqJsonLd = faqs.length
-          ? {
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: faqs.map((f) => ({
-                "@type": "Question",
-                name: f.question,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: f.answer,
-                },
-              })),
-            }
-          : null;
+        // const faqJsonLd = faqs.length
+        //   ? {
+        //       "@context": "https://schema.org",
+        //       "@type": "FAQPage",
+        //       mainEntity: faqs.map((f) => ({
+        //         "@type": "Question",
+        //         name: f.question,
+        //         acceptedAnswer: {
+        //           "@type": "Answer",
+        //           text: f.answer,
+        //         },
+        //       })),
+        //     }
+        //   : null;
 
         // Testimonials / ratings fallback (kept as before)
         let testimonials = [];
         let avgRating = null;
         let reviewsCount = 0;
 
-        const recentActivity = {
-          total_offers: recentResult?.total || 0,
-          recent: recentResult?.items || [],
-        };
+        // const recentActivity = {
+        //   total_offers: recentResult?.total || 0,
+        //   recent: recentResult?.items || [],
+        // };
 
         // canonical + seo
         const canonical = `${origin}/stores/${slug}`;
@@ -367,67 +373,50 @@ export async function detail(req, res) {
           locale: params.locale,
         });
         const breadcrumbs = StoresRepo.buildBreadcrumbs(store, params);
-        const jsonld = {
-          organization: buildStoreJsonLd(store, params.origin),
-          breadcrumb: {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: breadcrumbs.map((b, i) => ({
-              "@type": "ListItem",
-              position: i + 1,
-              name: b.name,
-              item: b.url,
-            })),
-          },
-          faq: faqJsonLd,
-          person: store.verifier
-            ? {
-                "@context": "https://schema.org",
-                "@type": "Person",
-                "@id": `${SITE_URL}/author/${store.verifier.slug}`,
-                name: store.verifier.name,
-                jobTitle: store.verifier.designation,
-                ...(store.verifier.avatar_url
-                  ? {
-                      image: {
-                        "@type": "ImageObject",
-                        url: store.verifier.avatar_url,
-                      },
-                    }
-                  : {}),
-                worksFor: { "@id": `${SITE_URL}/#organization` },
-                sameAs: (store.verifier.same_as || []).map((s) => s.url),
-              }
-            : null,
-        };
 
-        // Coupons prev/next navigation helper – rewrite to backend base if configured
-        const couponsNav = buildPrevNext({
-          origin: params.origin,
-          path: params.path,
-          page,
-          limit,
-          total,
-          extraParams: { type, sort, locale: params.locale || undefined },
+        //Build Store Schema with all available data (for frontend and SEO use)
+        const jsonld = buildStoreSchema({
+          store, // has web_url now
+          seo,
+          coupons: couponsItems,
+          // trendingOffers,
+          relatedStores: related,
+          // recentActivity,
+          faqs, // all FAQs, no limit
+          proofs: [], // proofs fetched client-side in astro; pass [] here
+          // OR pass proofs if you move that fetch to backend
+          totalSavings: 0, // computed in [slug].astro — pass 0 here, astro will override
+          totalClicks,
+          generatedAt: new Date().toISOString(),
         });
 
-        const backendBase = (process.env.PUBLIC_API_BASE_URL || "")
-          .toString()
-          .trim()
-          .replace(/\/+$/, "");
-        if (backendBase) {
-          const rewrite = (raw) => {
-            if (!raw) return null;
-            try {
-              const u = new URL(raw, "http://example.invalid");
-              return `${backendBase}${u.pathname}${u.search}`;
-            } catch (err) {
-              return raw;
-            }
-          };
-          couponsNav.prev = couponsNav.prev ? rewrite(couponsNav.prev) : null;
-          couponsNav.next = couponsNav.next ? rewrite(couponsNav.next) : null;
-        }
+        // // Coupons prev/next navigation helper – rewrite to backend base if configured
+        // const couponsNav = buildPrevNext({
+        //   origin: params.origin,
+        //   path: params.path,
+        //   page,
+        //   limit,
+        //   total,
+        //   extraParams: { type, sort, locale: params.locale || undefined },
+        // });
+
+        // const backendBase = (process.env.PUBLIC_API_BASE_URL || "")
+        //   .toString()
+        //   .trim()
+        //   .replace(/\/+$/, "");
+        // if (backendBase) {
+        //   const rewrite = (raw) => {
+        //     if (!raw) return null;
+        //     try {
+        //       const u = new URL(raw, "http://example.invalid");
+        //       return `${backendBase}${u.pathname}${u.search}`;
+        //     } catch (err) {
+        //       return raw;
+        //     }
+        //   };
+        //   couponsNav.prev = couponsNav.prev ? rewrite(couponsNav.prev) : null;
+        //   couponsNav.next = couponsNav.next ? rewrite(couponsNav.next) : null;
+        // }
 
         const side_description_html =
           store.side_description_html || store.summary_html || null;
@@ -461,8 +450,8 @@ export async function detail(req, res) {
             testimonials,
             reviews_count: reviewsCount,
             avg_rating: avgRating,
-            trending_offers: trendingOffers,
-            recent_activity: recentActivity,
+            // trending_offers: trendingOffers,
+            // recent_activity: recentActivity,
             trust_text: StoresRepo.getTrustText
               ? StoresRepo.getTrustText(store)
               : null,

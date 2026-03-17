@@ -427,3 +427,31 @@ export async function insertStoreFeedback({ storeId, name, email, message }) {
 
   return data;
 }
+
+/**
+ * Sum click_count across all published coupons for a merchant.
+ * Used for aggregateRating.reviewCount in JSON-LD schema.
+ *
+ * @param {number} merchantId
+ * @returns {Promise<number>}
+ */
+export async function sumClickCount(merchantId) {
+  if (!merchantId) return 0;
+  try {
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("click_count")
+      .eq("merchant_id", merchantId)
+      .eq("is_publish", true);
+
+    if (error) {
+      console.warn("sumClickCount error:", error);
+      return 0;
+    }
+
+    return (data || []).reduce((acc, row) => acc + (row.click_count || 0), 0);
+  } catch (e) {
+    console.warn("sumClickCount unexpected error:", e);
+    return 0;
+  }
+}
