@@ -194,6 +194,8 @@ export default function MerchantProofsIsland({
 }
 
 function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
+  const item = proofs[index];
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
@@ -206,47 +208,46 @@ function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
           e.stopPropagation();
           onPrev(e);
         }}
-        className="absolute left-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
-        aria-label="Previous image"
+        className="absolute left-4 text-white text-4xl"
       >
         ‹
       </button>
+
       <a
         href={visitUrl || "#"}
         target="_blank"
         rel="noopener noreferrer sponsored"
         onClick={(e) => e.stopPropagation()}
-        aria-label="Visit store"
       >
         <img
-          src={proofsArr[lightboxIndex].image_url}
-          alt={proofsArr[lightboxIndex].filename}
-          className="max-h-full max-w-full rounded shadow-lg animate-fadeIn cursor-pointer"
-          onClick={(e) => e.stopPropagation()}
+          src={item.image_url}
+          alt={item.filename}
+          className="max-h-full max-w-full rounded shadow-lg"
         />
       </a>
+
       <button
         onClick={(e) => {
           e.stopPropagation();
           onNext(e);
         }}
-        className="absolute right-4 text-white text-4xl font-semibold opacity-80 hover:opacity-100 transition-opacity"
-        aria-label="Next image"
+        className="absolute right-4 text-white text-4xl"
       >
         ›
       </button>
+
       <button
         onClick={(e) => {
           e.stopPropagation();
           onClose();
         }}
-        className="absolute top-4 right-4 text-white text-2xl font-bold opacity-80 hover:opacity-100 transition-opacity"
-        aria-label="Close"
+        className="absolute top-4 right-4 text-white text-2xl"
       >
         ×
       </button>
+
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/90 bg-black/40 px-3 py-1 rounded">
-        {proofs[index].filename} — {index + 1}/{proofs.length}
+        {item.filename} — {index + 1}/{proofs.length}
       </div>
     </div>
   );
