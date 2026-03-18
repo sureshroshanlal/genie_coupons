@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 
 /**
- * @param {{ proofs: any[], mode?: "strip" | "grid" }} props
+ * @param {{ proofs: any[], mode?: "strip" | "grid", visitUrl: string }} props
  * mode="strip" → compact horizontal scroll row (for hero section)
  * mode="grid"  → 2×4 grid with lightbox (original behaviour)
  */
@@ -80,6 +80,7 @@ export default function MerchantProofsIsland({
             onClose={closeLightbox}
             onPrev={lbPrev}
             onNext={lbNext}
+            visitUrl={visitUrl}
           />
         )}
       </>
@@ -184,13 +185,14 @@ export default function MerchantProofsIsland({
           onClose={closeLightbox}
           onPrev={lbPrev}
           onNext={lbNext}
+          visitUrl={visitUrl}
         />
       )}
     </section>
   );
 }
 
-function Lightbox({ proofs, index, onClose, onPrev, onNext }) {
+function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
@@ -208,12 +210,20 @@ function Lightbox({ proofs, index, onClose, onPrev, onNext }) {
       >
         ‹
       </button>
-      <img
-        src={proofs[index].image_url}
-        alt={proofs[index].filename}
-        className="max-h-full max-w-full rounded shadow-lg animate-fadeIn"
+      <a
+        href={visitUrl || "#"}
+        target="_blank"
+        rel="noopener noreferrer sponsored"
         onClick={(e) => e.stopPropagation()}
-      />
+        aria-label="Visit store"
+      >
+        <img
+          src={proofsArr[lightboxIndex].image_url}
+          alt={proofsArr[lightboxIndex].filename}
+          className="max-h-full max-w-full rounded shadow-lg animate-fadeIn cursor-pointer"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </a>
       <button
         onClick={(e) => {
           e.stopPropagation();
