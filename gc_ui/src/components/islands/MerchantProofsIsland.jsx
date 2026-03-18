@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 export default function MerchantProofsIsland({
   proofs: initialProofs = [],
   mode = "grid",
+  visitUrl = "#",
 }) {
   const proofsArr = Array.isArray(initialProofs) ? initialProofs : [];
   const [startIndex, setStartIndex] = useState(0);
