@@ -1,5 +1,6 @@
 ---
 import HeaderSearchIsland from "../components/islands/HeaderSearchIsland.jsx";
+import HeaderAuthIsland from "../components/auth/HeaderAuthIsland.jsx";
 
 const MAIN = "https://geniecoupon.com";
 const isSubdomain = Astro.locals?.isSubdomain === true;
@@ -44,15 +45,6 @@ const nav = [
           loading="eager"
           aria-hidden="true"
         />
-        <!-- <img
-          src="/GC_logo_Text.webp"
-          alt=""
-          width="72"
-          height="42"
-          class="rounded-sm"
-          loading="eager"
-          aria-hidden="true"
-        /> -->
       </a>
 
       <!-- Search — centered, max width -->
@@ -102,6 +94,9 @@ const nav = [
           }
         </ul>
       </nav>
+      <div class="shrink-0">
+        <HeaderAuthIsland client:load />
+      </div>
     </div>
   </div>
 </header>

@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.js";
 
 // import { etagMiddleware } from "./middleware/etagMiddleware.js";
 // import { publicRateLimiter } from "./middleware/rateLimit.js";
@@ -17,6 +19,7 @@ const app = express();
 // Basic parsers
 app.use(express.json({ limit: process.env.JSON_LIMIT || "1mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const allowedOrigins = [
   "https://geniecoupon.com",
@@ -50,6 +53,8 @@ app.use(
 // app.use(etagMiddleware);
 // app.use("/public/v1", publicRateLimiter, publicRouter);
 app.use("/public/v1", publicRouter);
+//Auth routes
+app.use("/auth", authRouter);
 // Static uploads
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 

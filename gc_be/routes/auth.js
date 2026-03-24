@@ -1,0 +1,182 @@
+import express from "express";
+import { createClient } from "@supabase/supabase-js";
+import { requireAuth } from "../middleware/auth.js";
+import { supabase } from "../dbhelper/dbclient.js";
+
+const router = express.Router();
+
+const COOKIE_NAME = "gc_token";
+const IS_PROD = process.env.NODE_ENV === "production";
+
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: IS_PROD,
+  sameSite: IS_PROD ? "strict" : "lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: "/",
+};
+
+/**
+ * POST /auth/login
+ * Email + password login
+ * Body: { email, password }
+ */
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    res.cookie(COOKIE_NAME, data.session.access_token, COOKIE_OPTIONS);
+
+    return res.status(200).json({
+      user: {
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata?.full_name || null,
+        avatar_url: data.user.user_metadata?.avatar_url || null,
+      },
+    });
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * POST /auth/signup
+ * Email + password signup
+ * Body: { email, password, full_name }
+ */
+router.post("/signup", async (req, res) => {
+  try {
+    const { email, password, full_name } = req.body;
+
+    if (!email || !password || !full_name) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters" });
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim().toLowerCase(),
+      password,
+      options: {
+        data: { full_name: full_name.trim() },
+      },
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    // Email confirmation required — no session yet
+    return res.status(200).json({
+      message: "Verification email sent. Please check your inbox.",
+    });
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * GET /auth/google
+ * Initiates Google OAuth flow
+ * Redirects to Google consent screen
+ */
+router.get("/google", async (req, res) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${process.env.SITE_URL}/auth/callback`,
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
+
+    if (error || !data?.url) {
+      return res.status(500).json({ error: "Failed to initiate Google login" });
+    }
+
+    return res.redirect(data.url);
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+/**
+ * GET /auth/callback
+ * Handles OAuth callback — exchanges code for session
+ * Query: { code }
+ */
+router.get("/callback", async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.redirect(`${process.env.SITE_URL}/login?error=missing_code`);
+    }
+
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error || !data?.session) {
+      return res.redirect(`${process.env.SITE_URL}/login?error=auth_failed`);
+    }
+
+    res.cookie(COOKIE_NAME, data.session.access_token, COOKIE_OPTIONS);
+
+    return res.redirect(`${process.env.SITE_URL}/`);
+  } catch {
+    return res.redirect(`${process.env.SITE_URL}/login?error=server_error`);
+  }
+});
+
+/**
+ * POST /auth/logout
+ * Clears the auth cookie and invalidates session
+ */
+router.post("/logout", requireAuth, async (req, res) => {
+  const token = req.cookies?.[COOKIE_NAME];
+  await supabase.auth.admin.signOut(token);
+
+  res.clearCookie(COOKIE_NAME, { path: "/" });
+  return res.status(200).json({ message: "Logged out successfully" });
+});
+
+/**
+ * GET /auth/me
+ * Returns the currently authenticated user
+ */
+router.get("/me", requireAuth, async (req, res) => {
+  try {
+    return res.status(200).json({
+      user: {
+        id: req.user.id,
+        email: req.user.email,
+        full_name: req.user.user_metadata?.full_name || null,
+        avatar_url: req.user.user_metadata?.avatar_url || null,
+      },
+    });
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+export default router;
