@@ -99,6 +99,8 @@ export async function googleLogin(req, res) {
           access_type: "offline",
           prompt: "consent",
         },
+        skipBrowserRedirect: false,
+        flowType: "pkce",
       },
     });
 
