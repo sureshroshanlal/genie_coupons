@@ -8,7 +8,7 @@ import LoginModal from "../auth/LoginModal";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
-function CouponReviewsInner({ couponId }) {
+function CouponReviews({ couponId }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
@@ -147,10 +147,4 @@ function CouponReviewsInner({ couponId }) {
   return createPortal(panel, panelEl);
 }
 
-export default function CouponReviews({ couponId }) {
-  return (
-    <AuthProvider>
-      <CouponReviewsInner couponId={couponId} />
-    </AuthProvider>
-  );
-}
+export default CouponReviews;
