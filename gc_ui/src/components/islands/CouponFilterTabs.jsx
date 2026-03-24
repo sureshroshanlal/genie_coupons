@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { renderCouponCardHtml } from "../../lib/renderers/couponCardHtml.js";
 import CouponReviews from "../reviews/CouponReviews";
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider } from "../../context/AuthContext";
 
 const TABS = [
   { key: "all", label: "All" },

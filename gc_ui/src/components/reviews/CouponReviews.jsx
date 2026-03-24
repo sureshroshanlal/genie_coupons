@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { AuthProvider, useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
