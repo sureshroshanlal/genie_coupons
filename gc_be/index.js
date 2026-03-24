@@ -54,7 +54,7 @@ app.use(
 // app.use("/public/v1", publicRateLimiter, publicRouter);
 app.use("/public/v1", publicRouter);
 //Auth routes
-app.use("/auth", authRouter);
+app.use("/public/v1/auth", authRouter);
 // Static uploads
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
