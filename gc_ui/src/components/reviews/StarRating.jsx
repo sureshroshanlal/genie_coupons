@@ -6,21 +6,20 @@ import { useState } from "react";
  *   value (number) — current rating 0-5
  *   onChange (fn) — called with new rating, only if interactive
  *   interactive (bool) — default false (display only)
- *   size (number) — px size of each star, default 16
+ *   size (number) — px size of each star, default 14
  */
 export default function StarRating({
   value = 0,
   onChange,
   interactive = false,
-  size = 16,
+  size = 14,
 }) {
   const [hovered, setHovered] = useState(0);
-
   const display = interactive ? hovered || value : value;
 
   return (
     <div
-      style={{ display: "flex", gap: "2px", alignItems: "center" }}
+      style={{ display: "inline-flex", gap: "1px", alignItems: "center" }}
       role={interactive ? "radiogroup" : "img"}
       aria-label={`${value} out of 5 stars`}
     >
@@ -33,7 +32,7 @@ export default function StarRating({
           style={{
             cursor: interactive ? "pointer" : "default",
             fontSize: `${size}px`,
-            color: star <= display ? "#89E900" : "#333",
+            color: star <= display ? "#89E900" : "#2a2a2a",
             transition: "color 0.1s",
             lineHeight: 1,
             userSelect: "none",

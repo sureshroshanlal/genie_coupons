@@ -240,7 +240,19 @@ export function renderCouponCardHtml(item = {}) {
           </button>
         </div>
       </div>
-
+      <!-- Reviews toggle bar + portal target -->
+      <div class="gc-reviews-root" data-coupon-id="${id}">
+        <div id="gc-reviews-toggle-${id}"
+          style="border-top:1px solid #2a2a2a; margin-top:8px; padding-top:8px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;"
+        >
+          <span id="gc-reviews-summary-${id}" style="font-size:12px; color:#555;">
+            Loading reviews...
+          </span>
+          <span id="gc-reviews-chevron-${id}" style="font-size:11px; color:#555;">▼</span>
+        </div>
+        <div id="gc-reviews-panel-${id}" style="display:none;"></div>
+      </div>
+ 
     </div>
   `;
 }

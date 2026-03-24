@@ -1,6 +1,7 @@
 // src/components/islands/CouponFilterTabs.jsx
 import { useState, useEffect, useRef } from "react";
 import { renderCouponCardHtml } from "../../lib/renderers/couponCardHtml.js";
+import CouponReviews from "../reviews/CouponReviews";
 
 const TABS = [
   { key: "all", label: "All" },
@@ -156,7 +157,12 @@ function CouponCard({ coupon, storeSlug }) {
     });
   }, [coupon, disabledIds]);
 
-  return <div ref={containerRef} />;
+  return (
+    <>
+      <div ref={containerRef} />
+      <CouponReviews couponId={coupon.id} />
+    </>
+  );
 }
 
 // ── Main Filter Tabs component ─────────────────────────────────────────────

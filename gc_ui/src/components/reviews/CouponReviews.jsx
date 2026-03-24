@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
@@ -12,7 +13,21 @@ function CouponReviewsInner({ couponId }) {
   const [reviews, setReviews] = useState([]);
   const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // DOM targets injected by renderCouponCardHtml
+  const [summaryEl, setSummaryEl] = useState(null);
+  const [chevronEl, setChevronEl] = useState(null);
+  const [panelEl, setPanelEl] = useState(null);
+  const [toggleEl, setToggleEl] = useState(null);
+
+  useEffect(() => {
+    setSummaryEl(document.getElementById(`gc-reviews-summary-${couponId}`));
+    setChevronEl(document.getElementById(`gc-reviews-chevron-${couponId}`));
+    setPanelEl(document.getElementById(`gc-reviews-panel-${couponId}`));
+    setToggleEl(document.getElementById(`gc-reviews-toggle-${couponId}`));
+  }, [couponId]);
 
   async function fetchReviews() {
     try {
@@ -32,79 +47,69 @@ function CouponReviewsInner({ couponId }) {
     if (couponId) fetchReviews();
   }, [couponId]);
 
+  // Update summary text in the toggle bar
+  useEffect(() => {
+    if (!summaryEl) return;
+    if (loading) {
+      summaryEl.textContent = "Loading reviews...";
+      return;
+    }
+    if (aggregate.total > 0) {
+      summaryEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;">
+        <span style="color:#89E900;font-size:11px;">★</span>
+        <span style="color:#888;font-size:12px;">${aggregate.avg_rating} · ${aggregate.total} ${aggregate.total === 1 ? "review" : "reviews"}</span>
+      </span>`;
+    } else {
+      summaryEl.innerHTML = `<span style="color:#555;font-size:12px;">✦ Be the first to review</span>`;
+    }
+  }, [loading, aggregate, summaryEl]);
+
+  // Toggle open/close
+  useEffect(() => {
+    if (!toggleEl || !panelEl || !chevronEl) return;
+    const handler = () => setOpen((o) => !o);
+    toggleEl.addEventListener("click", handler);
+    return () => toggleEl.removeEventListener("click", handler);
+  }, [toggleEl, panelEl, chevronEl]);
+
+  // Show/hide panel + rotate chevron
+  useEffect(() => {
+    if (!panelEl || !chevronEl) return;
+    panelEl.style.display = open ? "block" : "none";
+    chevronEl.style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
+    chevronEl.style.transition = "transform 0.2s";
+  }, [open, panelEl, chevronEl]);
+
   const userHasReviewed = user
     ? reviews.some((r) => r.user_id === user.id)
     : false;
 
-  if (loading) {
-    return (
-      <div style={{ padding: "12px 0" }}>
-        <div
-          style={{
-            height: 12,
-            background: "#2a2a2a",
-            borderRadius: 4,
-            width: "40%",
-            marginBottom: 8,
-          }}
-        />
-        <div
-          style={{
-            height: 10,
-            background: "#2a2a2a",
-            borderRadius: 4,
-            width: "60%",
-          }}
-        />
-      </div>
-    );
-  }
+  if (!panelEl) return null;
 
-  return (
+  const panel = (
     <div
       style={{
-        borderTop: "1px solid #2a2a2a",
-        marginTop: 12,
-        paddingTop: 12,
+        paddingTop: 10,
         display: "flex",
         flexDirection: "column",
-        gap: 14,
+        gap: 4,
       }}
     >
-      {/* Aggregate */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <StarRating value={Math.round(aggregate.avg_rating)} size={15} />
-        <span style={{ fontSize: 13, color: "#888" }}>
-          {aggregate.avg_rating > 0
-            ? `${aggregate.avg_rating} / 5 (${aggregate.total} ${aggregate.total === 1 ? "review" : "reviews"})`
-            : "No reviews yet"}
-        </span>
-      </div>
-
-      {/* Review list */}
       <ReviewList reviews={reviews} />
 
-      {/* Submit form or login prompt */}
-      <div style={{ borderTop: "1px solid #2a2a2a", paddingTop: 12 }}>
+      <div
+        style={{
+          borderTop: reviews.length ? "1px solid #1e1e1e" : "none",
+          paddingTop: reviews.length ? 8 : 0,
+        }}
+      >
         {user ? (
           userHasReviewed ? (
-            <p style={{ fontSize: 13, color: "#555", margin: 0 }}>
-              You have already reviewed this coupon.
+            <p style={{ fontSize: 12, color: "#555", margin: 0 }}>
+              You've already reviewed this coupon.
             </p>
           ) : (
-            <>
-              <p
-                style={{
-                  fontSize: 13,
-                  color: "#888",
-                  margin: "0 0 10px",
-                  fontWeight: 500,
-                }}
-              >
-                Write a Review
-              </p>
-              <ReviewForm couponId={couponId} onSubmitted={fetchReviews} />
-            </>
+            <ReviewForm couponId={couponId} onSubmitted={fetchReviews} />
           )
         ) : (
           <button
@@ -112,20 +117,19 @@ function CouponReviewsInner({ couponId }) {
             style={{
               background: "transparent",
               border: "1px solid #2a2a2a",
-              borderRadius: 8,
-              padding: "8px 14px",
-              fontSize: 13,
-              color: "#888",
+              borderRadius: 6,
+              padding: "6px 12px",
+              fontSize: 12,
+              color: "#666",
               cursor: "pointer",
-              transition: "all 0.15s",
             }}
             onMouseOver={(e) => {
-              e.target.style.borderColor = "#89E900";
-              e.target.style.color = "#89E900";
+              e.currentTarget.style.borderColor = "#89E900";
+              e.currentTarget.style.color = "#89E900";
             }}
             onMouseOut={(e) => {
-              e.target.style.borderColor = "#2a2a2a";
-              e.target.style.color = "#888";
+              e.currentTarget.style.borderColor = "#2a2a2a";
+              e.currentTarget.style.color = "#666";
             }}
           >
             Login to write a review
@@ -139,6 +143,8 @@ function CouponReviewsInner({ couponId }) {
       />
     </div>
   );
+
+  return createPortal(panel, panelEl);
 }
 
 export default function CouponReviews({ couponId }) {
