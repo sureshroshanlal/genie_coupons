@@ -288,7 +288,10 @@ try {
           <!-- Main content -->
           <div class="lg:col-span-2 space-y-8">
             <!-- Merchant proofs -->
-            <MerchantProofsIsland client:visible proofs={proofs} />
+            <MerchantProofsIsland client:visible
+                  proofs={proofs}
+                  mode="strip"
+                  visitUrl={"#"} />
             <!-- Coupons -->
             <section id="coupons">
               <h2 class="section-heading">Coupons & Deals</h2>

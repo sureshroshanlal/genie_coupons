@@ -1,6 +1,7 @@
 // src/components/couponReveal.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { renderCouponCardHtml } from "../lib/renderers/couponCardHtml.js";
+import CouponReviews from "./reviews/CouponReviews";
 
 async function fetchWithRetry(url, options, retries = 2) {
   for (let i = 0; i <= retries; i++) {
@@ -253,6 +254,7 @@ export default function CouponReveal({ coupon, storeSlug }) {
   return (
     <>
       <div ref={containerRef} />
+      <CouponReviews couponId={c.id} />
       {toasts.map((t) => (
         <Toast
           key={t.id}

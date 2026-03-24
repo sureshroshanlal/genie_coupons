@@ -13,6 +13,8 @@ import {
 } from "../controllers/publicSitemaps.js";
 import { click } from "../controllers/offers.js";
 import { subscribe } from "../controllers/subscribe.js";
+import * as reviews from "../controllers/reviewsController.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const publicRouter = Router();
 
@@ -60,5 +62,9 @@ publicRouter.post("/offers/:offerId/click", click);
 
 // Subscribe
 publicRouter.post("/subscribe", subscribe);
+
+// Reviews
+publicRouter.get("/reviews/:couponId", reviews.getReviews);
+publicRouter.post("/reviews/:couponId", requireAuth, reviews.submitReview);
 
 export default publicRouter;
