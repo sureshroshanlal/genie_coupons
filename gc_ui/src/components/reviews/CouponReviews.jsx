@@ -78,26 +78,11 @@ export default function CouponReviews({ couponId }) {
 
   // Attach toggle click handler
   useEffect(() => {
-    if (!toggleEl || !chevronEl) return;
-    const handler = () => {
-      if (!domReady) {
-        const summary = document.getElementById(`gc-reviews-summary-${id}`);
-        const chevron = document.getElementById(`gc-reviews-chevron-${id}`);
-        const panel = document.getElementById(`gc-reviews-panel-${id}`);
-        const toggle = document.getElementById(`gc-reviews-toggle-${id}`);
-        if (summary && chevron && panel && toggle) {
-          setSummaryEl(summary);
-          setChevronEl(chevron);
-          setPanelEl(panel);
-          setToggleEl(toggle);
-          setDomReady(true);
-        }
-      }
-      setOpen((o) => !o);
-    };
+    if (!toggleEl || !panelEl || !chevronEl) return;
+    const handler = () => setOpen((o) => !o);
     toggleEl.addEventListener("click", handler);
     return () => toggleEl.removeEventListener("click", handler);
-  }, [toggleEl, chevronEl, domReady, id]);
+  }, [toggleEl, panelEl, chevronEl]);
 
   useEffect(() => {
     if (!panelEl) return;
