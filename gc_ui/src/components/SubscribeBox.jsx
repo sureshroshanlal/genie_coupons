@@ -107,13 +107,13 @@ export default function SubscribeBox({ source }) {
   return (
     <>
       <form className="w-full" onSubmit={handleSubmit} noValidate>
-        <label
+        {/* <label
           htmlFor="subscribe-email"
           className="block text-xs font-semibold uppercase tracking-widest mb-2"
           style={{ color: "#89E900" }}
         >
           Get Updates
-        </label>
+        </label> */}
         <div className="flex gap-1.5">
           <input
             id="subscribe-email"
