@@ -6,10 +6,8 @@ import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
-const PANEL_ATTACHED_FLAG = "__gcReviewsAttached";
 
 export default function CouponReviews({ couponId }) {
-  const id = String(couponId); // ensure it's a string for consistent DOM lookups
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
@@ -28,10 +26,10 @@ export default function CouponReviews({ couponId }) {
     let attempts = 0;
     const MAX = 20;
     const interval = setInterval(() => {
-      const summary = document.getElementById(`gc-reviews-summary-${id}`);
-      const chevron = document.getElementById(`gc-reviews-chevron-${id}`);
-      const panel = document.getElementById(`gc-reviews-panel-${id}`);
-      const toggle = document.getElementById(`gc-reviews-toggle-${id}`);
+      const summary = document.getElementById(`gc-reviews-summary-${couponId}`);
+      const chevron = document.getElementById(`gc-reviews-chevron-${couponId}`);
+      const panel = document.getElementById(`gc-reviews-panel-${couponId}`);
+      const toggle = document.getElementById(`gc-reviews-toggle-${couponId}`);
       if (summary && chevron && panel && toggle) {
         setSummaryEl(summary);
         setChevronEl(chevron);
@@ -43,11 +41,11 @@ export default function CouponReviews({ couponId }) {
       if (++attempts >= MAX) clearInterval(interval);
     }, 50);
     return () => clearInterval(interval);
-  }, [id]);
+  }, [couponId]);
 
   async function fetchReviews() {
     try {
-      const res = await fetch(`${API}/reviews/${id}`);
+      const res = await fetch(`${API}/reviews/${couponId}`);
       if (!res.ok) return;
       const data = await res.json();
       setReviews(data.reviews || []);
@@ -60,8 +58,8 @@ export default function CouponReviews({ couponId }) {
   }
 
   useEffect(() => {
-    if (id) fetchReviews();
-  }, [id]);
+    if (couponId) fetchReviews();
+  }, [couponId]);
 
   // Update summary text once DOM + data are both ready
   useEffect(() => {
@@ -84,14 +82,6 @@ export default function CouponReviews({ couponId }) {
     return () => toggleEl.removeEventListener("click", handler);
   }, [toggleEl, panelEl, chevronEl]);
 
-  useEffect(() => {
-    if (!panelEl) return;
-    if (panelEl[PANEL_ATTACHED_FLAG]) {
-      return;
-    }
-    toggleEl[PANEL_ATTACHED_FLAG] = true;
-  }, [panelEl]);
-
   // Show/hide panel + rotate chevron
   useEffect(() => {
     if (!panelEl || !chevronEl) return;
@@ -104,9 +94,8 @@ export default function CouponReviews({ couponId }) {
     ? reviews.some((r) => r.user_id === user.id)
     : false;
 
-  if (!domReady || !panelEl || panelEl[PANEL_ATTACHED_FLAG] !== true) {
-    return null;
-  }
+  if (!domReady || !panelEl) return null;
+
   return createPortal(
     <div
       style={{
