@@ -1,32 +1,46 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
-import StarRating from "./StarRating";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
-function CouponReviews({ couponId }) {
+export default function CouponReviews({ couponId }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [domReady, setDomReady] = useState(false);
 
-  // DOM targets injected by renderCouponCardHtml
   const [summaryEl, setSummaryEl] = useState(null);
   const [chevronEl, setChevronEl] = useState(null);
   const [panelEl, setPanelEl] = useState(null);
   const [toggleEl, setToggleEl] = useState(null);
 
+  // Wait for card HTML to be injected before looking up DOM elements
   useEffect(() => {
-    setSummaryEl(document.getElementById(`gc-reviews-summary-${couponId}`));
-    setChevronEl(document.getElementById(`gc-reviews-chevron-${couponId}`));
-    setPanelEl(document.getElementById(`gc-reviews-panel-${couponId}`));
-    setToggleEl(document.getElementById(`gc-reviews-toggle-${couponId}`));
+    let attempts = 0;
+    const MAX = 20;
+    const interval = setInterval(() => {
+      const summary = document.getElementById(`gc-reviews-summary-${couponId}`);
+      const chevron = document.getElementById(`gc-reviews-chevron-${couponId}`);
+      const panel = document.getElementById(`gc-reviews-panel-${couponId}`);
+      const toggle = document.getElementById(`gc-reviews-toggle-${couponId}`);
+      if (summary && chevron && panel && toggle) {
+        setSummaryEl(summary);
+        setChevronEl(chevron);
+        setPanelEl(panel);
+        setToggleEl(toggle);
+        setDomReady(true);
+        clearInterval(interval);
+      }
+      if (++attempts >= MAX) clearInterval(interval);
+    }, 50);
+    return () => clearInterval(interval);
   }, [couponId]);
 
   async function fetchReviews() {
@@ -47,13 +61,9 @@ function CouponReviews({ couponId }) {
     if (couponId) fetchReviews();
   }, [couponId]);
 
-  // Update summary text in the toggle bar
+  // Update summary text once DOM + data are both ready
   useEffect(() => {
-    if (!summaryEl) return;
-    if (loading) {
-      summaryEl.textContent = "Loading reviews...";
-      return;
-    }
+    if (!summaryEl || loading) return;
     if (aggregate.total > 0) {
       summaryEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;">
         <span style="color:#89E900;font-size:11px;">★</span>
@@ -64,7 +74,7 @@ function CouponReviews({ couponId }) {
     }
   }, [loading, aggregate, summaryEl]);
 
-  // Toggle open/close
+  // Attach toggle click handler
   useEffect(() => {
     if (!toggleEl || !panelEl || !chevronEl) return;
     const handler = () => setOpen((o) => !o);
@@ -84,9 +94,9 @@ function CouponReviews({ couponId }) {
     ? reviews.some((r) => r.user_id === user.id)
     : false;
 
-  if (!panelEl) return null;
+  if (!domReady || !panelEl) return null;
 
-  const panel = (
+  return createPortal(
     <div
       style={{
         paddingTop: 10,
@@ -96,7 +106,6 @@ function CouponReviews({ couponId }) {
       }}
     >
       <ReviewList reviews={reviews} />
-
       <div
         style={{
           borderTop: reviews.length ? "1px solid #1e1e1e" : "none",
@@ -136,15 +145,11 @@ function CouponReviews({ couponId }) {
           </button>
         )}
       </div>
-
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
       />
-    </div>
+    </div>,
+    panelEl,
   );
-
-  return createPortal(panel, panelEl);
 }
-
-export default CouponReviews;

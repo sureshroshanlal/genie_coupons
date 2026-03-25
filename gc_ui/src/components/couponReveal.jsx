@@ -253,7 +253,6 @@ export default function CouponReveal({ coupon, storeSlug }) {
   }, [c, sSlug, disabledOfferIds]);
 
   return (
-    <>
     <AuthProvider>
       <div ref={containerRef} />
       <CouponReviews couponId={c.id} />
@@ -265,6 +264,5 @@ export default function CouponReveal({ coupon, storeSlug }) {
         />
       ))}
     </AuthProvider>
-    </>
   );
 }
