@@ -1,6 +1,10 @@
 // src/components/FAQAccordion.jsx
 import React, { useState, useRef, useEffect } from "react";
-import DOMPurify from "dompurify";
+import createDOMPurify from "isomorphic-dompurify";
+
+const DOMPurify = createDOMPurify(
+  typeof window !== "undefined" ? window : undefined
+);
 
 export default function FaqAccordion({
   faqs,

@@ -14,7 +14,6 @@ import { badRequest } from "../utils/errors.js";
 import { STORE_SORTS, STORE_COUPON_TYPES } from "../constants/publicEnums.js";
 import DOMPurify from "isomorphic-dompurify";
 import { getOrigin, getPath } from "../utils/request-helper.js";
-import { buildPrevNext } from "../utils/pagination.js";
 import { makeListCacheKey } from "../utils/cacheKey.js";
 import { buildStoreSchema } from "../utils/buildStoreSchema.js";
 

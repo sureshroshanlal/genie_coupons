@@ -23,7 +23,7 @@ const icons: Record<string, string> = {
 };
 ---
 
-<div class="card-base p-4">
+<div class="vb-card">
   <!-- Top accent bar -->
   <div class="vb-accent-bar" />
 
@@ -96,6 +96,11 @@ const icons: Record<string, string> = {
     padding: 0;
   }
 
+  .vb-card:hover {
+    border-color: var(--card-hover-border);
+    box-shadow: var(--card-hover-shadow);
+    @apply -translate-y-0.5;
+  }
   /* Top lime accent line */
   .vb-accent-bar {
     height: 3px;
