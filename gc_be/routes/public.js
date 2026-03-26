@@ -73,13 +73,13 @@ publicRouter.post("/offers/:offerId/click", click);
 publicRouter.post("/subscribe", subscribe);
 
 // Reviews
-publicRouter.get("/reviews/:couponId", reviews.getReviews);
-publicRouter.post("/reviews/:couponId", requireAuth, reviews.submitReview);
 publicRouter.post(
-  "/upload-screenshot",
+  "/reviews/upload-screenshot",
   requireAuth,
   upload.single("screenshot"),
   reviews.uploadScreenshot,
 );
+publicRouter.get("/reviews/:couponId", reviews.getReviews);
+publicRouter.post("/reviews/:couponId", requireAuth, reviews.submitReview);
 
 export default publicRouter;
