@@ -1,10 +1,5 @@
 // src/components/FAQAccordion.jsx
 import React, { useState, useRef, useEffect } from "react";
-import createDOMPurify from "isomorphic-dompurify";
-
-const DOMPurify = createDOMPurify(
-  typeof window !== "undefined" ? window : undefined
-);
 
 export default function FaqAccordion({
   faqs,
@@ -134,7 +129,6 @@ export default function FaqAccordion({
               ? String(f.answer ?? f.a ?? f.ans).trim()
               : "";
           const containsHtml = /<\/?[a-z][\s\S]*>/i.test(answerRaw);
-          const safeHtml = containsHtml ? DOMPurify.sanitize(answerRaw) : null;
 
           return (
             <div
@@ -211,7 +205,7 @@ export default function FaqAccordion({
                       <div
                         className="prose prose-sm max-w-none"
                         style={{ color: "var(--text-secondary)" }}
-                        dangerouslySetInnerHTML={{ __html: safeHtml }}
+                        dangerouslySetInnerHTML={{ __html: answerRaw }}
                       />
                     ) : (
                       <p
