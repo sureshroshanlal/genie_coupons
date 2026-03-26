@@ -216,6 +216,7 @@ const canonical = "https://geniecoupon.com/todays-deals";
               client:load
               coupons={latestCoupons}
               storeSlug=""
+              sectionId="latest"
             />
           </section>
         )
@@ -255,6 +256,7 @@ const canonical = "https://geniecoupon.com/todays-deals";
               client:load
               coupons={editorCoupons}
               storeSlug=""
+              sectionId="editor"
             />
           </section>
         )
@@ -294,6 +296,7 @@ const canonical = "https://geniecoupon.com/todays-deals";
               client:load
               coupons={couponsCoupons}
               storeSlug=""
+              sectionId="coupons"
             />
           </section>
         )
@@ -329,7 +332,12 @@ const canonical = "https://geniecoupon.com/todays-deals";
               </a>
             </div>
             {/* @ts-ignore */}
-            <CouponFilterTabs client:load coupons={dealsCoupons} storeSlug="" />
+            <CouponFilterTabs
+              client:load
+              coupons={dealsCoupons}
+              storeSlug=""
+              sectionId="deals"
+            />
           </section>
         )
       }

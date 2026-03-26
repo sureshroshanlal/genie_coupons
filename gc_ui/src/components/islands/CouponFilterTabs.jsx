@@ -12,7 +12,7 @@ const TABS = [
 ];
 
 // ── Inline CouponCard (mirrors CouponReveal logic without the full island overhead) ──
-function CouponCard({ coupon, storeSlug }) {
+function CouponCard({ coupon, storeSlug, sectionId }) {
   const containerRef = useRef(null);
   const revealedRef = useRef(new Map());
   const [disabledIds, setDisabledIds] = useState(new Set());
@@ -120,7 +120,7 @@ function CouponCard({ coupon, storeSlug }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    el.innerHTML = renderCouponCardHtml(coupon);
+    el.innerHTML = renderCouponCardHtml(coupon, sectionId);
 
     // Restore revealed state
     if (disabledIds.has(String(coupon.id))) {
@@ -161,13 +161,13 @@ function CouponCard({ coupon, storeSlug }) {
   return (
     <>
       <div ref={containerRef} />
-      <CouponReviews couponId={coupon.id} />
+      <CouponReviews couponId={coupon.id} sectionId={sectionId} />
     </>
   );
 }
 
 // ── Main Filter Tabs component ─────────────────────────────────────────────
-export default function CouponFilterTabs({ coupons = [], storeSlug = "" }) {
+export default function CouponFilterTabs({ coupons = [], storeSlug = "", sectionId = "default" }) {
   const [active, setActive] = useState("all");
 
   const filtered = coupons.filter((c) => {
@@ -217,7 +217,7 @@ export default function CouponFilterTabs({ coupons = [], storeSlug = "" }) {
         <div className="flex flex-col gap-3" role="tabpanel">
           {filtered.map((c) => (
             <div key={c.id}>
-              <CouponCard coupon={c} storeSlug={storeSlug} />
+              <CouponCard coupon={c} storeSlug={storeSlug} sectionId={sectionId}/>
             </div>
           ))}
         </div>

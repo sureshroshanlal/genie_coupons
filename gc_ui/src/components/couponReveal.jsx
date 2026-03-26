@@ -192,7 +192,7 @@ export default function CouponReveal({ coupon, storeSlug }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    el.innerHTML = renderCouponCardHtml(c);
+    el.innerHTML = renderCouponCardHtml(c, "home");
 
     // ── Restore previously revealed state in this session ──
     if (disabledOfferIds.has(String(c.id))) {
@@ -255,7 +255,7 @@ export default function CouponReveal({ coupon, storeSlug }) {
   return (
     <AuthProvider>
       <div ref={containerRef} />
-      <CouponReviews couponId={c.id} />
+      <CouponReviews couponId={c.id} sectionId="home"/>
       {toasts.map((t) => (
         <Toast
           key={t.id}

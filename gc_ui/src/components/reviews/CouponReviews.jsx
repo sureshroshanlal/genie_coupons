@@ -7,7 +7,7 @@ import LoginModal from "../auth/LoginModal";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
-export default function CouponReviews({ couponId }) {
+export default function CouponReviews({ couponId, sectionId = "default" }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
@@ -26,10 +26,10 @@ export default function CouponReviews({ couponId }) {
     let attempts = 0;
     const MAX = 20;
     const interval = setInterval(() => {
-      const summary = document.getElementById(`gc-reviews-summary-${couponId}`);
-      const chevron = document.getElementById(`gc-reviews-chevron-${couponId}`);
-      const panel = document.getElementById(`gc-reviews-panel-${couponId}`);
-      const toggle = document.getElementById(`gc-reviews-toggle-${couponId}`);
+      const summary = document.getElementById(`gc-reviews-summary-${couponId}-${sectionId}`);
+      const chevron = document.getElementById(`gc-reviews-chevron-${couponId}-${sectionId}`);
+      const panel = document.getElementById(`gc-reviews-panel-${couponId}-${sectionId}`);
+      const toggle = document.getElementById(`gc-reviews-toggle-${couponId}-${sectionId}`);
       if (summary && chevron && panel && toggle) {
         if (panel.dataset.claimed === "true") {
           clearInterval(interval);

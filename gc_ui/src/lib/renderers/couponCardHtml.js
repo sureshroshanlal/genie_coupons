@@ -86,13 +86,14 @@ try {
 /**
  * renderCouponCardHtml(item)
  */
-export function renderCouponCardHtml(item = {}) {
+export function renderCouponCardHtml(item = {}, sectionId = "default") {
   const id = escapeHtml(item.id ?? "");
   const title = escapeHtml(item.title ?? "");
   const description = escapeHtml(item.description ?? "");
   const couponType = item.coupon_type || "";
   const discountType = item.discount_type || "none";
   const discountValue = item.discount_value ?? null;
+  const sid = escapeHtml(sectionId);
 
   const endsAt = item.ends_at
     ? escapeHtml(
@@ -242,15 +243,15 @@ export function renderCouponCardHtml(item = {}) {
       </div>
       <!-- Reviews toggle bar + portal target -->
       <div class="gc-reviews-root" data-coupon-id="${id}">
-        <div id="gc-reviews-toggle-${id}"
+        <div id="gc-reviews-toggle-${id}-${sid}"
           style="border-top:1px solid #2a2a2a; margin-top:8px; padding-top:8px; cursor:pointer; display:flex; align-items:center; justify-content:space-between;"
         >
-          <span id="gc-reviews-summary-${id}" style="font-size:12px; color:#555;">
+          <span id="gc-reviews-summary-${id}-${sid}" style="font-size:12px; color:#555;">
             Loading reviews...
           </span>
-          <span id="gc-reviews-chevron-${id}" style="font-size:11px; color:#555;">▼</span>
+          <span id="gc-reviews-chevron-${id}-${sid}" style="font-size:11px; color:#555;">▼</span>
         </div>
-        <div id="gc-reviews-panel-${id}" style="display:none;"></div>
+        <div id="gc-reviews-panel-${id}-${sid}" style="display:none;"></div>
       </div>
  
     </div>
