@@ -1,4 +1,5 @@
 import { Router } from "express";
+import multer from "multer";
 import * as publicCategories from "../controllers/publicCategories.js";
 import * as publicStores from "../controllers/publicStores.js";
 import * as publicCoupons from "../controllers/publicCoupons.js";
@@ -16,12 +17,20 @@ import { subscribe } from "../controllers/subscribe.js";
 import * as reviews from "../controllers/reviewsController.js";
 import { requireAuth } from "../middleware/auth.js";
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 },
+});
+
 const publicRouter = Router();
 
 // Categories
 publicRouter.get("/categories", publicCategories.list);
 publicRouter.get("/categories/:slug", publicCategories.detail);
-publicRouter.get("/categories/:parentSlug/:subSlug", publicCategories.subcategoryDetail);
+publicRouter.get(
+  "/categories/:parentSlug/:subSlug",
+  publicCategories.subcategoryDetail,
+);
 
 // Stores
 publicRouter.get("/stores", publicStores.list);
@@ -66,5 +75,11 @@ publicRouter.post("/subscribe", subscribe);
 // Reviews
 publicRouter.get("/reviews/:couponId", reviews.getReviews);
 publicRouter.post("/reviews/:couponId", requireAuth, reviews.submitReview);
+publicRouter.post(
+  "/upload-screenshot",
+  requireAuth,
+  upload.single("screenshot"),
+  reviews.uploadScreenshot,
+);
 
 export default publicRouter;

@@ -1,4 +1,58 @@
+import sharp from "sharp";
 import { supabase } from "../dbhelper/dbclient.js";
+import { uploadImageBuffer } from "../utils/uploadImage.js";
+
+const BUCKET = "review-images";
+const FOLDER = "user-reviews";
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+/**
+ * POST /public/v1/reviews/upload-screenshot
+ * Converts image to WebP and uploads to Supabase
+ * Requires auth
+ */
+export async function uploadScreenshot(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const { mimetype, size, buffer, originalname } = req.file;
+
+    if (!ALLOWED_TYPES.includes(mimetype)) {
+      return res
+        .status(400)
+        .json({ error: "Only JPEG, PNG, WebP, or GIF images are allowed" });
+    }
+
+    if (size > MAX_FILE_SIZE) {
+      return res.status(400).json({ error: "File size must be under 5MB" });
+    }
+
+    // Convert to WebP
+    const webpBuffer = await sharp(buffer)
+      .resize({ width: 1200, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer();
+
+    const filename = `${originalname.replace(/\.[^/.]+$/, "")}.webp`;
+
+    const { url, error } = await uploadImageBuffer(
+      BUCKET,
+      FOLDER,
+      webpBuffer,
+      filename,
+      "image/webp",
+    );
+
+    if (error) return res.status(500).json({ error: "Upload failed" });
+
+    return res.status(200).json({ url });
+  } catch {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
 
 /**
  * GET /public/v1/reviews/:couponId
