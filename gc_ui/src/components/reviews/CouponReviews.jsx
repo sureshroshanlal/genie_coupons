@@ -31,6 +31,11 @@ export default function CouponReviews({ couponId }) {
       const panel = document.getElementById(`gc-reviews-panel-${couponId}`);
       const toggle = document.getElementById(`gc-reviews-toggle-${couponId}`);
       if (summary && chevron && panel && toggle) {
+        if (panel.dataset.claimed === "true") {
+          clearInterval(interval);
+          return;
+        }
+        panel.dataset.claimed = "true";
         setSummaryEl(summary);
         setChevronEl(chevron);
         setPanelEl(panel);
