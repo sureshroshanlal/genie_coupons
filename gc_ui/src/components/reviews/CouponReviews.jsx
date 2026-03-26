@@ -7,6 +7,54 @@ import LoginModal from "../auth/LoginModal";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
+function buildSummaryHtml(aggregate, reviews) {
+  if (aggregate.total === 0) {
+    return `<span style="display:block;width:100%;text-align:center;color:#555;font-size:12px;">✍️ No reviews yet — yours could be the first!</span>`;
+  }
+
+  // Stacked avatars from first 3 reviews
+  const top3 = reviews.slice(0, 3);
+  const avatarSize = 20;
+  const overlap = 6;
+  const totalWidth = avatarSize + (top3.length - 1) * (avatarSize - overlap);
+
+  const avatarsHtml = `
+    <span style="position:relative;display:inline-block;width:${totalWidth}px;height:${avatarSize}px;flex-shrink:0;">
+      ${top3
+        .map((r, i) => {
+          const name = r.user?.full_name || "?";
+          const initials = name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+          const left = i * (avatarSize - overlap);
+          const base = `position:absolute;left:${left}px;top:0;width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;border:1.5px solid #181818;object-fit:cover;`;
+          return r.user?.avatar_url
+            ? `<img src="${r.user.avatar_url}" referrerpolicy="no-referrer" alt="${initials}" style="${base}" />`
+            : `<span style="${base}background:#2a2a2a;display:inline-flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#89E900;">${initials}</span>`;
+        })
+        .join("")}
+    </span>
+  `;
+
+  const label =
+    aggregate.total === 1
+      ? "coupon hunter reviewed this"
+      : "coupon hunters reviewed this";
+
+  return `
+    <span style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;">
+      ${avatarsHtml}
+      <span style="display:inline-flex;align-items:center;gap:4px;">
+        <span style="color:#89E900;font-size:11px;">⭐</span>
+        <span style="color:#888;font-size:12px;">${aggregate.avg_rating} stars · ${aggregate.total} ${label}</span>
+      </span>
+    </span>
+  `;
+}
+
 export default function CouponReviews({ couponId, sectionId = "default" }) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
@@ -21,15 +69,22 @@ export default function CouponReviews({ couponId, sectionId = "default" }) {
   const [panelEl, setPanelEl] = useState(null);
   const [toggleEl, setToggleEl] = useState(null);
 
-  // Wait for card HTML to be injected before looking up DOM elements
   useEffect(() => {
     let attempts = 0;
     const MAX = 20;
     const interval = setInterval(() => {
-      const summary = document.getElementById(`gc-reviews-summary-${couponId}-${sectionId}`);
-      const chevron = document.getElementById(`gc-reviews-chevron-${couponId}-${sectionId}`);
-      const panel = document.getElementById(`gc-reviews-panel-${couponId}-${sectionId}`);
-      const toggle = document.getElementById(`gc-reviews-toggle-${couponId}-${sectionId}`);
+      const summary = document.getElementById(
+        `gc-reviews-summary-${couponId}-${sectionId}`,
+      );
+      const chevron = document.getElementById(
+        `gc-reviews-chevron-${couponId}-${sectionId}`,
+      );
+      const panel = document.getElementById(
+        `gc-reviews-panel-${couponId}-${sectionId}`,
+      );
+      const toggle = document.getElementById(
+        `gc-reviews-toggle-${couponId}-${sectionId}`,
+      );
       if (summary && chevron && panel && toggle) {
         if (panel.dataset.claimed === "true") {
           clearInterval(interval);
@@ -66,20 +121,11 @@ export default function CouponReviews({ couponId, sectionId = "default" }) {
     if (couponId) fetchReviews();
   }, [couponId]);
 
-  // Update summary text once DOM + data are both ready
   useEffect(() => {
     if (!summaryEl || loading) return;
-    if (aggregate.total > 0) {
-      summaryEl.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px;">
-        <span style="color:#89E900;font-size:11px;">★</span>
-        <span style="color:#888;font-size:12px;">${aggregate.avg_rating} · ${aggregate.total} ${aggregate.total === 1 ? "review" : "reviews"}</span>
-      </span>`;
-    } else {
-      summaryEl.innerHTML = `<span style="color:#555;font-size:12px;">✦ Be the first to review</span>`;
-    }
-  }, [loading, aggregate, summaryEl]);
+    summaryEl.innerHTML = buildSummaryHtml(aggregate, reviews);
+  }, [loading, aggregate, reviews, summaryEl]);
 
-  // Attach toggle click handler
   useEffect(() => {
     if (!toggleEl || !panelEl || !chevronEl) return;
     const handler = () => setOpen((o) => !o);
@@ -87,7 +133,6 @@ export default function CouponReviews({ couponId, sectionId = "default" }) {
     return () => toggleEl.removeEventListener("click", handler);
   }, [toggleEl, panelEl, chevronEl]);
 
-  // Show/hide panel + rotate chevron
   useEffect(() => {
     if (!panelEl || !chevronEl) return;
     panelEl.style.display = open ? "block" : "none";
