@@ -7,7 +7,15 @@ import critters from "astro-critters";
 export default defineConfig({
   output: "server",
   adapter: vercel(),
-  integrations: [tailwind(), react(), critters()],
+  integrations: [
+    tailwind(),
+    react(),
+    critters({
+      preload: "swap",
+      pruneSource: true,
+      compress: true,
+    }),
+  ],
   redirects: {
     "/coupons": {
       status: 301,
