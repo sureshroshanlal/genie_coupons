@@ -4,31 +4,47 @@ const AuthContext = createContext(null);
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
+// shared promise (prevents duplicate /auth/me calls)
+let mePromise = null;
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // On mount — check if a session exists via /auth/me
   useEffect(() => {
-    fetchMe();
+    if (!mePromise) fetchMe();
   }, []);
 
   async function fetchMe() {
-    try {
-      const res = await fetch(`${API}/auth/me`, {
-        credentials: "include", // sends httpOnly cookie
-      });
-      if (res.ok) {
-        const { user } = await res.json();
-        setUser(user);
-      } else {
+    if (mePromise) return mePromise;
+
+    mePromise = (async () => {
+      try {
+        const res = await fetch(`${API}/auth/me`, {
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const { user } = await res.json();
+          setUser(user);
+          return user;
+        } else {
+          setUser(null);
+          return null;
+        }
+      } catch {
         setUser(null);
+        return null;
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
+    })();
+
+    return mePromise;
+  }
+
+  function resetAuthCache() {
+    mePromise = null;
   }
 
   async function loginWithEmail(email, password) {
@@ -43,6 +59,7 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error(data.error || "Login failed");
 
     setUser(data.user);
+    resetAuthCache();
     return data.user;
   }
 
@@ -61,7 +78,6 @@ export function AuthProvider({ children }) {
   }
 
   function loginWithGoogle() {
-    // Redirect to backend which initiates OAuth flow
     window.location.href = `${API}/auth/google`;
   }
 
@@ -73,6 +89,7 @@ export function AuthProvider({ children }) {
       });
     } finally {
       setUser(null);
+      resetAuthCache();
     }
   }
 

@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function LoginModal({ isOpen, onClose, defaultTab = "login" }) {
   const { loginWithEmail, signupWithEmail, loginWithGoogle } = useAuth();
 
-  const [tab, setTab] = useState(defaultTab);
+  const [tab, setTab] = useState(() => defaultTab);
   const [form, setForm] = useState({ email: "", password: "", full_name: "" });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
