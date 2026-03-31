@@ -117,11 +117,28 @@ export default function CoverflowCarousel({ banners = [] }) {
               aria-hidden={offset !== 0}
             >
               <div className="coverflow-card-inner">
-                <img
+                {/* <img
                   src={webpSrc}
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
                   decoding="async"
+                  draggable={false}
+                /> */}
+                <img
+                  src={`${webpSrc}?width=640&quality=70`}
+                  srcSet={`
+                          ${webpSrc}?width=320&quality=60 320w,
+                          ${webpSrc}?width=640&quality=70 640w,
+                          ${webpSrc}?width=1024&quality=75 1024w
+                        `}
+                  sizes="(max-width: 640px) 100vw, 516px"
+                  alt={b.alt || `Banner ${idx + 1}`}
+                  loading={offset === 0 ? "eager" : "lazy"}
+                  fetchPriority={offset === 0 ? "high" : "auto"}
+                  decoding="async"
+                  width="516"
+                  height="290"
+                  style={{ aspectRatio: "516 / 290" }}
                   draggable={false}
                 />
                 {/* Active card overlay with store info */}
