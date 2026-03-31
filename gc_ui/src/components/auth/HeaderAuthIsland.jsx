@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { AuthProvider, useAuth } from "../../context/AuthContext";
 import LoginModal from "./LoginModal";
 
 function AuthButton() {
@@ -69,7 +69,7 @@ function AuthButton() {
 
 export default function HeaderAuthIsland() {
   return (
-    <>
+    <AuthProvider>
       <AuthButton />
       <style>{`
         .gc-auth-skeleton {
@@ -128,6 +128,6 @@ export default function HeaderAuthIsland() {
           line-height: 1;
         }
       `}</style>
-    </>
+    </AuthProvider>
   );
 }
