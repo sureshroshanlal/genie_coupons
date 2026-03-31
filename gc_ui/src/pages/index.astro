@@ -485,7 +485,7 @@ if (jsonld?.["@graph"]) {
             {/* Coupon filter tabs + cards */}
             {/* @ts-ignore */}
             <CouponFilterTabs
-              client:load
+              client:visible
               coupons={couponItems}
               storeSlug={store.slug} sectionId="store"
             />
@@ -529,7 +529,7 @@ if (jsonld?.["@graph"]) {
             {/* FAQs */}
             {store.faqs && store.faqs.length > 0 && (
               <section id="faqs-section" class="card-base p-6">
-                <FaqAccordion client:load faqs={store.faqs} />
+                <FaqAccordion client:visible faqs={store.faqs} />
               </section>
             )}
 
@@ -574,7 +574,7 @@ if (jsonld?.["@graph"]) {
             </div>
 
             <div class="sidebar-box p-0 overflow-hidden">
-              <WhyTrustUs client:load />
+              <WhyTrustUs client:visible />
             </div>
 
             <div class="sidebar-box p-0 overflow-hidden">
@@ -585,12 +585,12 @@ if (jsonld?.["@graph"]) {
                 >
                   Subscribe and Stay Updated.
                 </h3>
-                <SubscribeBox client:load source={store.slug} />
+                <SubscribeBox client:visible source={store.slug} />
               </div>
             </div>
 
             <div class="sidebar-box p-0 overflow-hidden">
-              <FeedbackForm client:load storeSlug={store.slug} />
+              <FeedbackForm client:visible storeSlug={store.slug} />
             </div>
 
             {store.trust_text && (
@@ -698,7 +698,7 @@ if (jsonld?.["@graph"]) {
         </section>
 
         <HomeSections
-          client:load
+          client:visible
           apiUrl={apiUrl}
           testimonials={SAMPLE_TESTIMONIALS as any[]}
           avgRating={avg}

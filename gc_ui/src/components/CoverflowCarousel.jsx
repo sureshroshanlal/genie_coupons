@@ -125,11 +125,11 @@ export default function CoverflowCarousel({ banners = [] }) {
                   draggable={false}
                 /> */}
                 <img
-                  src={`${webpSrc}?width=640&quality=70`}
+                  src={`${webpSrc}?transform=resize&w=640&q=70`}
                   srcSet={`
-                          ${webpSrc}?width=320&quality=60 320w,
-                          ${webpSrc}?width=640&quality=70 640w,
-                          ${webpSrc}?width=1024&quality=75 1024w
+                          ${webpSrc}?transform=resize&w=320&q=60 320w,
+                          ${webpSrc}?transform=resize&w=640&q=70 640w,
+                          ${webpSrc}?transform=resize&w=1024&q=75 1024w
                         `}
                   sizes="(max-width: 640px) 100vw, 516px"
                   alt={b.alt || `Banner ${idx + 1}`}
