@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { renderCouponCardHtml } from "../../lib/renderers/couponCardHtml.js";
 import CouponReviews from "../reviews/CouponReviews";
+import { AuthProvider } from "../../context/AuthContext";
 
 const TABS = [
   { key: "all", label: "All" },
@@ -183,7 +184,7 @@ export default function CouponFilterTabs({ coupons = [], storeSlug = "", section
   };
 
   return (
-  <>
+  <AuthProvider>
     <section id="coupons">
       {/* Filter tabs */}
       <div
@@ -226,6 +227,6 @@ export default function CouponFilterTabs({ coupons = [], storeSlug = "", section
         </p>
       )}
     </section>
-  </>
+  </AuthProvider>
   );
 }
