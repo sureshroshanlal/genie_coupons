@@ -255,7 +255,12 @@ export default function CouponReveal({ coupon, storeSlug }) {
   return (
     <AuthProvider>
       <div ref={containerRef} />
-      <CouponReviews couponId={c.id} sectionId="home"/>
+      <CouponReviews
+        couponId={c.id}
+        sectionId="home"
+        initialReviews={c.reviews || null}
+        initialAggregate={c.review_aggregate || null}
+      />
       {toasts.map((t) => (
         <Toast
           key={t.id}

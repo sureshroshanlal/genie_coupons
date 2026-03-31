@@ -33,6 +33,8 @@ type Coupon = {
   discount_type?: string | null;
   discount_value?: string | null;
   is_editor?: boolean | null;
+  reviews?: any[] | null;
+  review_aggregate?: { avg_rating: number; total: number } | null;
   merchant?: {
     slug?: string | null;
     logo_url?: string | null;

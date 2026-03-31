@@ -11,13 +11,10 @@ function buildSummaryHtml(aggregate, reviews) {
   if (aggregate.total === 0) {
     return `<span style="display:block;width:100%;text-align:center;color:#555;font-size:12px;">✍️ No reviews yet — yours could be the first!</span>`;
   }
-
-  // Stacked avatars from first 3 reviews
   const top3 = reviews.slice(0, 3);
   const avatarSize = 20;
   const overlap = 6;
   const totalWidth = avatarSize + (top3.length - 1) * (avatarSize - overlap);
-
   const avatarsHtml = `
     <span style="position:relative;display:inline-block;width:${totalWidth}px;height:${avatarSize}px;flex-shrink:0;">
       ${top3
@@ -38,12 +35,10 @@ function buildSummaryHtml(aggregate, reviews) {
         .join("")}
     </span>
   `;
-
   const label =
     aggregate.total === 1
       ? "coupon hunter reviewed this"
       : "coupon hunters reviewed this";
-
   return `
     <span style="display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;">
       ${avatarsHtml}
@@ -55,15 +50,21 @@ function buildSummaryHtml(aggregate, reviews) {
   `;
 }
 
-export default function CouponReviews({ couponId, sectionId = "default" }) {
+export default function CouponReviews({
+  couponId,
+  sectionId = "default",
+  initialReviews = null,
+  initialAggregate = null,
+}) {
   const { user } = useAuth();
-  const [reviews, setReviews] = useState([]);
-  const [aggregate, setAggregate] = useState({ avg_rating: 0, total: 0 });
-  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState(initialReviews || []);
+  const [aggregate, setAggregate] = useState(
+    initialAggregate || { avg_rating: 0, total: 0 },
+  );
+  const [loading, setLoading] = useState(initialReviews === null);
   const [open, setOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [domReady, setDomReady] = useState(false);
-
   const [summaryEl, setSummaryEl] = useState(null);
   const [chevronEl, setChevronEl] = useState(null);
   const [panelEl, setPanelEl] = useState(null);
@@ -101,7 +102,7 @@ export default function CouponReviews({ couponId, sectionId = "default" }) {
       if (++attempts >= MAX) clearInterval(interval);
     }, 50);
     return () => clearInterval(interval);
-  }, [couponId]);
+  }, [couponId, sectionId]);
 
   async function fetchReviews() {
     try {
@@ -111,13 +112,13 @@ export default function CouponReviews({ couponId, sectionId = "default" }) {
       setReviews(data.reviews || []);
       setAggregate(data.aggregate || { avg_rating: 0, total: 0 });
     } catch {
-      // fail silently
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
+    if (initialReviews !== null) return;
     if (couponId) fetchReviews();
   }, [couponId]);
 

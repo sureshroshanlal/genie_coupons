@@ -161,13 +161,22 @@ function CouponCard({ coupon, storeSlug, sectionId }) {
   return (
     <>
       <div ref={containerRef} />
-      <CouponReviews couponId={coupon.id} sectionId={sectionId} />
+      <CouponReviews
+        couponId={coupon.id}
+        sectionId={sectionId}
+        initialReviews={coupon.reviews || null}
+        initialAggregate={coupon.review_aggregate || null}
+      />
     </>
   );
 }
 
 // ── Main Filter Tabs component ─────────────────────────────────────────────
-export default function CouponFilterTabs({ coupons = [], storeSlug = "", sectionId = "default" }) {
+export default function CouponFilterTabs({
+  coupons = [],
+  storeSlug = "",
+  sectionId = "default",
+}) {
   const [active, setActive] = useState("all");
 
   const filtered = coupons.filter((c) => {
@@ -184,49 +193,53 @@ export default function CouponFilterTabs({ coupons = [], storeSlug = "", section
   };
 
   return (
-  <AuthProvider>
-    <section id="coupons">
-      {/* Filter tabs */}
-      <div
-        className="flex items-center gap-2 flex-wrap mb-4"
-        role="tablist"
-        aria-label="Filter coupons"
-      >
-        {TABS.map((tab) => {
-          const isActive = active === tab.key;
-          const count = counts[tab.key];
-          if (count === 0 && tab.key !== "all") return null;
-          return (
-            <button
-              key={tab.key}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActive(tab.key)}
-              className="filter-tab"
-              data-active={isActive ? "true" : "false"}
-            >
-              {tab.label}
-              {count > 0 && <span className="filter-tab-count">{count}</span>}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Coupon cards */}
-      {filtered.length > 0 ? (
-        <div className="flex flex-col gap-3" role="tabpanel">
-          {filtered.map((c) => (
-            <div key={c.id}>
-              <CouponCard coupon={c} storeSlug={storeSlug} sectionId={sectionId}/>
-            </div>
-          ))}
+    <AuthProvider>
+      <section id="coupons">
+        {/* Filter tabs */}
+        <div
+          className="flex items-center gap-2 flex-wrap mb-4"
+          role="tablist"
+          aria-label="Filter coupons"
+        >
+          {TABS.map((tab) => {
+            const isActive = active === tab.key;
+            const count = counts[tab.key];
+            if (count === 0 && tab.key !== "all") return null;
+            return (
+              <button
+                key={tab.key}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActive(tab.key)}
+                className="filter-tab"
+                data-active={isActive ? "true" : "false"}
+              >
+                {tab.label}
+                {count > 0 && <span className="filter-tab-count">{count}</span>}
+              </button>
+            );
+          })}
         </div>
-      ) : (
-        <p className="text-sm" style={{ color: "#707068" }}>
-          No {active === "all" ? "" : active} coupons available.
-        </p>
-      )}
-    </section>
-  </AuthProvider>
+
+        {/* Coupon cards */}
+        {filtered.length > 0 ? (
+          <div className="flex flex-col gap-3" role="tabpanel">
+            {filtered.map((c) => (
+              <div key={c.id}>
+                <CouponCard
+                  coupon={c}
+                  storeSlug={storeSlug}
+                  sectionId={sectionId}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm" style={{ color: "#707068" }}>
+            No {active === "all" ? "" : active} coupons available.
+          </p>
+        )}
+      </section>
+    </AuthProvider>
   );
 }
