@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import LoginModal from "./LoginModal";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 function AuthButton() {
   const { user, loading, logout } = useAuth();

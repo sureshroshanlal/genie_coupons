@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 const DEBOUNCE_MS = 250;
 const MAX_RESULTS = 6;

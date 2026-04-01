@@ -1,6 +1,6 @@
 import { useState } from "react";
 import StarRating from "./StarRating";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();

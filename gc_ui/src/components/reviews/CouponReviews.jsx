@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 

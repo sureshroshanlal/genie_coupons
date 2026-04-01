@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 /**
  * Props:

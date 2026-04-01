@@ -1,6 +1,6 @@
 // src/components/islands/MerchantProofsIsland.jsx
 import { useState, useEffect } from "react";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 /**
  * @param {{ proofs: any[], mode?: "strip" | "grid", visitUrl: string }} props
