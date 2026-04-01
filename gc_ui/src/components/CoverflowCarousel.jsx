@@ -1,5 +1,6 @@
 // src/components/CoverflowCarousel.jsx
 import { useState, useRef, useEffect, useCallback } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 const ROTATION = 40; // deg Y rotation for side cards
 const SCALE_SIDE = 0.78;
