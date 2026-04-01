@@ -1,5 +1,6 @@
 // src/components/CategoriesSection.jsx
 import { useState, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 function SkeletonCard() {
   return (
@@ -43,7 +44,7 @@ export default function CategoriesSection({ apiUrl }) {
                 <div className="category-card-home-icon">
                   {cat.thumb_url ? (
                     <img
-                      src={cat.thumb_url}
+                      src={cdnUrl(cat.thumb_url)}
                       alt={cat.name}
                       className="w-full h-full object-cover rounded-lg"
                       loading="lazy"

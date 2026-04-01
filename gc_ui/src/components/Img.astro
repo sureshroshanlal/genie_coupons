@@ -1,0 +1,8 @@
+---
+const SUPABASE_BASE = "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
+const { src, alt = "", class: cls, ...rest } = Astro.props;
+const resolvedSrc = typeof src === "string" && src.startsWith(SUPABASE_BASE)
+  ? src.replace(SUPABASE_BASE, "/cdn")
+  : src;
+---
+<img src={resolvedSrc} alt={alt} class={cls} {...rest} />

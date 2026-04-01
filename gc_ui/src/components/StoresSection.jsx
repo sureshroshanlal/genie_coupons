@@ -1,5 +1,6 @@
 // src/components/StoresSection.jsx
 import { useState, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 function SkeletonCard() {
   return (
@@ -43,7 +44,7 @@ export default function StoresSection({ apiUrl }) {
                 <div className="store-card-home-logo">
                   {store.logo_url ? (
                     <img
-                      src={store.logo_url}
+                      src={cdnUrl(store.logo_url)}
                       alt={store.name}
                       className="w-full h-full object-contain p-1"
                       loading="lazy"

@@ -18,6 +18,7 @@ import { api } from "../lib/api";
 import SavingsImpact from "../components/SavingsImpact.astro";
 import FeedbackForm from "../components/islands/FeedbackForm.jsx";
 import VerifiedBadge from "../components/VerifiedBadge.astro";
+import Img from '../components/Img.astro';
 
 // ── Subdomain detection ──
 const storeSlug = Astro.locals?.storeSlug ?? null;
@@ -342,7 +343,7 @@ const suffix = getCurrentMonthYear();
                       aria-label={`Visit ${store.name}`}
                     >
                       {store.logo_url ? (
-                        <img
+                        <Img
                           src={store.logo_url}
                           alt={`${store.name} logo`}
                           width="80"
@@ -363,7 +364,7 @@ const suffix = getCurrentMonthYear();
                   ) : (
                     <div class="store-hero-logo">
                       {store.logo_url ? (
-                        <img
+                        <Img
                           src={store.logo_url}
                           alt={`${store.name} logo`}
                           width="80"

@@ -1,5 +1,6 @@
 // src/components/islands/MerchantProofsIsland.jsx
 import { useState, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 /**
  * @param {{ proofs: any[], mode?: "strip" | "grid", visitUrl: string }} props
@@ -63,7 +64,7 @@ export default function MerchantProofsIsland({
               title={p.filename}
             >
               <img
-                src={p.image_url}
+                src={cdnUrl(p.image_url)}
                 alt={p.filename}
                 loading="lazy"
                 decoding="async"
@@ -116,7 +117,7 @@ export default function MerchantProofsIsland({
             >
               <div className="bg-white rounded-xl overflow-hidden m-[1px]">
                 <img
-                  src={p.image_url}
+                  src={cdnUrl(p.image_url)}
                   alt={p.filename}
                   loading="lazy"
                   decoding="async"
@@ -220,7 +221,7 @@ function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={item.image_url}
+          src={cdnUrl(item.image_url)}
           alt={item.filename}
           className="max-h-full max-w-full rounded shadow-lg"
         />

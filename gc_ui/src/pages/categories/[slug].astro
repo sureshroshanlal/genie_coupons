@@ -5,6 +5,7 @@ import Footer from "../../components/Footer.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import ParentCategorySubcategories from "../../components/ParentCategorySubcategories.jsx";
 import { api } from "../../lib/api";
+import Img from '../../components/Img.astro';
 
 interface Breadcrumb {
   name: string;
@@ -56,7 +57,7 @@ const canonical = category?.meta?.canonical;
                 <div class="store-hero-inner">
                   <div class="store-hero-logo">
                     {category.thumb_url ? (
-                      <img
+                      <Img
                         src={category.thumb_url}
                         alt={`${category.name} category`}
                         width="80"

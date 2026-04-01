@@ -1,5 +1,6 @@
 // src/components/BannerCarousel.jsx
 import React, { useEffect, useRef, useState } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 const WIDTHS = [320, 768, 1024, 1600];
 const SIZES = "(max-width:640px) 100vw, 1200px";
@@ -201,7 +202,7 @@ export default function BannerCarousel({ banners }) {
                     />
                   ) : null}
                   <img
-                    src={fallback}
+                    src={cdnUrl(fallback)}
                     alt={b.alt || ""}
                     width="1200"
                     height={Math.round((1200 * 5) / 16)}

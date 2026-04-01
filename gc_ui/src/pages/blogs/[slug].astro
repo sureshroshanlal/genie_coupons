@@ -5,6 +5,7 @@ import Footer from "../../components/Footer.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { api } from "../../lib/api";
 import DOMPurify from "isomorphic-dompurify";
+import Img from '../../components/Img.astro';
 
 type BlogDetail = {
   id: string | number;
@@ -169,7 +170,7 @@ if (safeBodyHtml) {
                 <div class="mt-4 flex items-center gap-3">
                   <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                     {post.author.avatar_url ? (
-                      <img src={post.author.avatar_url} alt={post.author.name || "Author"} class="w-full h-full object-cover" loading="lazy" />
+                      <Img src={post.author.avatar_url} alt={post.author.name || "Author"} class="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <div class="w-full h-full flex items-center justify-center text-xs text-gray-400">Author</div>
                     )}
@@ -184,7 +185,7 @@ if (safeBodyHtml) {
 
             {post.hero_image_url && (
               <figure class="mb-6">
-                <img src={post.hero_image_url} alt={post.title} class="w-full rounded-lg border border-gray-200 shadow-sm" loading="lazy" />
+                <Img src={post.hero_image_url} alt={post.title} class="w-full rounded-lg border border-gray-200 shadow-sm" loading="lazy" />
               </figure>
             )}
 
@@ -264,7 +265,7 @@ if (safeBodyHtml) {
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
                       {post.author.avatar_url ? (
-                        <img src={post.author.avatar_url} alt={post.author.name || "Author"} class="w-full h-full object-cover" loading="lazy" />
+                        <Img src={post.author.avatar_url} alt={post.author.name || "Author"} class="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <div class="w-full h-full flex items-center justify-center text-xs text-gray-400">A</div>
                       )}

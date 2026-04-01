@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { api } from "../../lib/api";
+import Img from '../../components/Img.astro';
 
 export async function getStaticPaths() {
   try {
@@ -137,7 +138,7 @@ const icons: Record<string, string> = {
       <div class="flex-shrink-0">
         {
           author.avatar_url ? (
-            <img
+            <Img
               src={author.avatar_url}
               alt={author.name}
               class="w-24 h-24 rounded-full object-cover"
@@ -262,7 +263,7 @@ const icons: Record<string, string> = {
                 class="card-base p-3 flex flex-col items-center gap-2 text-center hover:border-brand-primary transition"
               >
                 {store.logo_url ? (
-                  <img
+                  <Img
                     src={store.logo_url}
                     alt={store.name}
                     class="h-10 w-auto object-contain"

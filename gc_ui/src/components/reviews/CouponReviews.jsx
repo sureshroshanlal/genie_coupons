@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
@@ -29,7 +30,7 @@ function buildSummaryHtml(aggregate, reviews) {
           const left = i * (avatarSize - overlap);
           const base = `position:absolute;left:${left}px;top:0;width:${avatarSize}px;height:${avatarSize}px;border-radius:50%;border:1.5px solid #181818;object-fit:cover;`;
           return r.user?.avatar_url
-            ? `<img src="${r.user.avatar_url}" referrerpolicy="no-referrer" alt="${initials}" style="${base}" />`
+            ? `<img src="${cdnUrl(r.user.avatar_url)}" referrerpolicy="no-referrer" alt="${initials}" style="${base}" />`
             : `<span style="${base}background:#2a2a2a;display:inline-flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#89E900;">${initials}</span>`;
         })
         .join("")}

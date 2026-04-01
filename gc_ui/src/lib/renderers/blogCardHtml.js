@@ -1,6 +1,7 @@
 // src/lib/renderers/blogCardHtml.js
 
 import { escapeHtml } from "./couponCardHtml.js";
+import { cdnUrl } from '../../../utils/cdnUrl.js';
 
 /**
  * renderBlogCardHtml(post)
@@ -9,7 +10,7 @@ import { escapeHtml } from "./couponCardHtml.js";
 export function renderBlogCardHtml(post = {}) {
   const title = escapeHtml(post.title ?? post.headline ?? "");
   const slug = escapeHtml(post.slug ?? "");
-  const thumb = post.hero_image_url ? escapeHtml(post.hero_image_url) : "";
+  const thumb = post.hero_image_url ? cdnUrl(String(post.hero_image_url)) : "";
   const category = post.category ? escapeHtml(post.category) : "";
   const created = post.created_at
     ? escapeHtml(new Date(post.created_at).toLocaleDateString())

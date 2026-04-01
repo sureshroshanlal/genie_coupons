@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { api } from "../../lib/api";
+import Img from '../../components/Img.astro';
 
 type SameAs = {
   type: string;
@@ -83,7 +84,7 @@ const itemListSchema = {
             <!-- Avatar -->
             <div class="flex-shrink-0">
               {author.avatar_url ? (
-                <img
+                <Img
                   src={author.avatar_url}
                   alt={author.name}
                   class="w-14 h-14 rounded-full object-cover"

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 export default function CategoriesGrid({ apiUrl }) {
   const [categories, setCategories] = useState([]);
@@ -191,7 +192,7 @@ export default function CategoriesGrid({ apiUrl }) {
                   <div className="cats-subcard__icon">
                     {subcat.thumb_url ? (
                       <img
-                        src={subcat.thumb_url}
+                        src={cdnUrl(subcat.thumb_url)}
                         alt={subcat.name}
                         loading="lazy"
                         decoding="async"

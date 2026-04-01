@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 const DEBOUNCE_MS = 250;
 const MAX_RESULTS = 6;
@@ -236,7 +237,7 @@ export default function HeaderSearchIsland() {
                 <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center border rounded overflow-hidden bg-white">
                   {s.logo_url ? (
                     <img
-                      src={s.logo_url}
+                      src={cdnUrl(s.logo_url)}
                       alt={s.name}
                       className="object-contain w-full h-full"
                     />

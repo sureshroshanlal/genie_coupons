@@ -1,5 +1,6 @@
 import { useState } from "react";
 import StarRating from "./StarRating";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -23,7 +24,7 @@ function Avatar({ name, avatarUrl }) {
 
   return avatarUrl ? (
     <img
-      src={avatarUrl}
+      src={cdnUrl(avatarUrl)}
       alt={name}
       referrerPolicy="no-referrer"
       style={{
@@ -70,7 +71,7 @@ function Lightbox({ url, onClose }) {
       }}
     >
       <img
-        src={url}
+        src={cdnUrl(url)}
         alt="Proof screenshot"
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -177,7 +178,7 @@ export default function ReviewList({ reviews }) {
                   )}
                   {r.screenshot_url && (
                     <img
-                      src={r.screenshot_url}
+                      src={cdnUrl(r.screenshot_url)}
                       alt="Proof screenshot"
                       onClick={() => setLightbox(r.screenshot_url)}
                       style={{

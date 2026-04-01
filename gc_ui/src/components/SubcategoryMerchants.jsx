@@ -1,5 +1,6 @@
 // src/components/SubcategoryMerchants.jsx
 import { useState, useEffect, useRef, useCallback } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 export default function SubcategoryMerchants({
   apiUrl,
@@ -93,7 +94,7 @@ export default function SubcategoryMerchants({
             >
               {merchant.logo_url ? (
                 <img
-                  src={merchant.logo_url}
+                  src={cdnUrl(merchant.logo_url)}
                   alt={merchant.name}
                   className="w-full h-full object-contain p-2"
                   loading="lazy"

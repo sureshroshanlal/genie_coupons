@@ -1,4 +1,5 @@
 import React from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 /**
  * @typedef {Object} Testimonial
@@ -101,7 +102,7 @@ export default function TestimonialsList({
                 <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center flex-shrink-0">
                   {t.avatar_url ? (
                     <img
-                      src={t.avatar_url}
+                      src={cdnUrl(t.avatar_url)}
                       alt={
                         t.user_name
                           ? `${t.user_name}'s avatar`

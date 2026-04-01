@@ -4,6 +4,7 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import FAQAccordion from "../components/FAQAccordion.jsx";
+import Img from '../components/Img.astro';
 
 const pageMeta = {
   title:
@@ -154,7 +155,7 @@ const bfFaqs = [
   <main id="content" role="main" class="container mx-auto px-4 py-10 relative">
     <!-- Hero Section -->
     <header class="mb-12 relative flex flex-col md:flex-row items-center gap-6">
-      <img
+      <Img
         src="/assets/black-friday-hero-2.webp"
         alt="Black Friday deals"
         width="1600"
@@ -198,7 +199,7 @@ const bfFaqs = [
       <article
         class="bg-gray-900 rounded-lg p-4 shadow hover:shadow-lg transition"
       >
-        <img
+        <Img
           src="/assets/bf-electronics.webp"
           alt="Black Friday electronics deals"
           class="w-full h-36 object-cover rounded-md mb-3"
@@ -217,7 +218,7 @@ const bfFaqs = [
       <article
         class="bg-gray-900 rounded-lg p-4 shadow hover:shadow-lg transition"
       >
-        <img
+        <Img
           src="/assets/bf-home.webp"
           alt="Black Friday home and kitchen deals"
           class="w-full h-36 object-cover rounded-md mb-3"
@@ -232,7 +233,7 @@ const bfFaqs = [
       <article
         class="bg-gray-900 rounded-lg p-4 shadow hover:shadow-lg transition"
       >
-        <img
+        <Img
           src="/assets/bf-fashion.webp"
           alt="Black Friday fashion deals"
           class="w-full h-36 object-cover rounded-md mb-3"
@@ -247,7 +248,7 @@ const bfFaqs = [
       <article
         class="bg-gray-900 rounded-lg p-4 shadow hover:shadow-lg transition"
       >
-        <img
+        <Img
           src="/assets/bf-early-access.webp"
           alt="Black Friday early access deals"
           class="w-full h-36 object-cover rounded-md mb-3"

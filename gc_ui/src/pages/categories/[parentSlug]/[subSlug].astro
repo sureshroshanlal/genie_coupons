@@ -4,6 +4,7 @@ import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import SubcategoryMerchants from "../../../components/SubcategoryMerchants.jsx";
+import Img from '../../../components/Img.astro';
 
 const { parentSlug, subSlug } = Astro.params;
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
@@ -62,7 +63,7 @@ const canonical = `https://geniecoupon.com/categories/${parentSlug}/${subSlug}`;
             <div class="store-hero-logo">
               {
                 subcategoryData.subcategory.thumb_url ? (
-                  <img
+                  <Img
                     src={subcategoryData.subcategory.thumb_url}
                     alt={`${subcategoryData.subcategory.name} category`}
                     width="80"

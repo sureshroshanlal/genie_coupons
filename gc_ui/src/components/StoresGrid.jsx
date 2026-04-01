@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 const ALPHABET = [
   "All",
@@ -54,7 +55,7 @@ function StoreCard({ store }) {
       <div className="store-grid-card__logo">
         {store.logo_url ? (
           <img
-            src={store.logo_url}
+            src={cdnUrl(store.logo_url)}
             alt={store.name}
             loading="lazy"
             decoding="async"

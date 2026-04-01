@@ -1,5 +1,6 @@
 // src/components/ParentCategorySubcategories.jsx
 import { useState, useEffect } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
   const [subcategories, setSubcategories] = useState([]);
@@ -88,7 +89,7 @@ export default function ParentCategorySubcategories({ apiUrl, categorySlug }) {
           >
             {subcat.thumb_url ? (
               <img
-                src={subcat.thumb_url}
+                src={cdnUrl(subcat.thumb_url)}
                 alt={subcat.name}
                 className="w-full h-full object-contain"
                 loading="lazy"

@@ -1,6 +1,8 @@
 ---
 // src/components/VerifiedBadge.astro
 
+import Img from '../components/Img.astro';
+
 interface Props {
   name: string;
   designation: string;
@@ -43,7 +45,7 @@ const icons: Record<string, string> = {
   <div class="vb-identity">
     <div class="vb-avatar-wrap">
       {avatarUrl ? (
-        <img src={avatarUrl} alt={name} class="vb-avatar-img" loading="lazy" />
+        <Img src={avatarUrl} alt={name} class="vb-avatar-img" loading="lazy" />
       ) : (
         <div class="vb-avatar-fallback">{name.charAt(0)}</div>
       )}

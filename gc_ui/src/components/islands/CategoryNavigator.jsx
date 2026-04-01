@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 /**
  * Props:
@@ -29,7 +30,7 @@ export default function CategoryNavigator({ parents, childrenByParent }) {
             <div className="flex items-center gap-3">
               {parent.thumb_url && (
                 <img
-                  src={parent.thumb_url}
+                  src={cdnUrl(parent.thumb_url)}
                   alt={parent.name}
                   className="w-12 h-12 object-cover rounded"
                   loading="lazy"

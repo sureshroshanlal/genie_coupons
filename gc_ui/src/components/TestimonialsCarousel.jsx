@@ -1,5 +1,6 @@
 // src/components/TestimonialsCarousel.jsx
 import { useState, useEffect, useRef } from "react";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 function Stars({ rating }) {
   return (
@@ -25,7 +26,7 @@ function TestimonialCard({ t }) {
         <div className="testimonial-avatar">
           {t.avatar_url ? (
             <img
-              src={t.avatar_url}
+              src={cdnUrl(t.avatar_url)}
               alt={t.user_name || "Reviewer"}
               className="w-full h-full object-cover"
               loading="lazy"

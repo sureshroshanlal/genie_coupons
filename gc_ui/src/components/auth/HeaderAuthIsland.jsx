@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
 import LoginModal from "./LoginModal";
+import { cdnUrl } from '../utils/cdnUrl.js';
 
 function AuthButton() {
   const { user, loading, logout } = useAuth();
@@ -41,7 +42,7 @@ function AuthButton() {
       >
         {user.avatar_url ? (
           <img
-            src={user.avatar_url}
+            src={cdnUrl(user.avatar_url)}
             alt={user.full_name || user.email}
             className="gc-avatar-img"
             referrerPolicy="no-referrer"

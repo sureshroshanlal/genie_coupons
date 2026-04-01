@@ -23,6 +23,7 @@ import { api } from "../../lib/api";
 import SavingsImpact from "../../components/SavingsImpact.astro";
 import FeedbackForm from "../../components/islands/FeedbackForm.jsx";
 import VerifiedBadge from "../../components/VerifiedBadge.astro";
+import Img from '../../components/Img.astro';
 
 type Coupon = {
   id: string | number;
@@ -218,7 +219,7 @@ try {
                 <!-- logo -->
                 <div class="w-28 h-28 flex items-center justify-center border rounded-lg bg-white shadow-sm overflow-hidden flex-shrink-0">
                   {store.logo_url ? (
-                    <img
+                    <Img
                       src={store.logo_url}
                       alt={store.name}
                       width="112"
