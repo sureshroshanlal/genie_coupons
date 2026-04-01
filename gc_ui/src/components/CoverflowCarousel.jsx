@@ -1,6 +1,6 @@
 // src/components/CoverflowCarousel.jsx
 import { useState, useRef, useEffect, useCallback } from "react";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl, cdnSrcset } from "../utils/cdnUrl.js";
 
 const ROTATION = 40; // deg Y rotation for side cards
 const SCALE_SIDE = 0.78;
@@ -120,10 +120,17 @@ export default function CoverflowCarousel({ banners = [] }) {
               <div className="coverflow-card-inner">
                 <img
                   src={cdnUrl(webpSrc)}
+                  srcSet={cdnSrcset(webpSrc, [516, 800, 1200])}
+                  sizes="(max-width: 768px) 100vw, 516px"
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
-                  decoding="async"
+                  fetchpriority={
+                    offset === 0 && active === 0 ? "high" : undefined
+                  }
+                  decoding={offset === 0 ? "sync" : "async"}
                   draggable={false}
+                  width={516}
+                  height={290}
                 />
                 {/* Active card overlay with store info */}
                 {offset === 0 && (b.store_name || b.label) && (
