@@ -5,6 +5,22 @@ const COLS = `
   id, store_id, image_url, click_url, alt_text, label,
   display_order, merchants:store_id (id, name, slug)
 `;
+// Supabase storage URLs and transformation logic
+const SUPABASE_BASE =
+  "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
+const PROXY_TRANSFORM = "/cdn-transform";
+/**
+ *
+ * @param {*} imageUrl
+ * @param {*} width
+ * @param {*} quality
+ * @returns
+ */
+function transformUrl(imageUrl, width, quality = 75) {
+  if (!imageUrl?.startsWith(SUPABASE_BASE)) return imageUrl;
+  const path = imageUrl.replace(SUPABASE_BASE + "/", "");
+  return `${PROXY_TRANSFORM}/${path}?width=${width}&quality=${quality}`;
+}
 
 /**
  * List active banners ordered by display_order.
@@ -33,9 +49,12 @@ export async function listActive({ limit = 20 } = {}) {
     display_order: row.display_order,
     // Shape expected by CoverflowCarousel
     variants: {
-      webp: [row.image_url],
-      avif: [],
-      fallback: row.image_url,
+      webp: [
+        transformUrl(row.image_url, 516), // mobile display size
+        transformUrl(row.image_url, 800), // tablet
+        transformUrl(row.image_url, 1200), // desktop
+      ],
+      fallback: transformUrl(row.image_url, 516),
     },
     alt:
       row.alt_text ||

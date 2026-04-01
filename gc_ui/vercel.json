@@ -43,6 +43,15 @@
       ]
     },
     {
+      "source": "/cdn-transform/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/icons/(.*)",
       "headers": [
         {
@@ -60,6 +69,10 @@
     {
       "source": "/cdn/:path*",
       "destination": "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public/:path*"
+    },
+    {
+      "source": "/cdn-transform/:path*",
+      "destination": "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/render/image/public/:path*"
     }
   ],
   "redirects": [

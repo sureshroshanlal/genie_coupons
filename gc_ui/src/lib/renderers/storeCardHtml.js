@@ -1,6 +1,6 @@
 // src/lib/renderers/storeCardHtml.js
 import { escapeHtml } from "./couponCardHtml.js";
-import { cdnUrl } from '../../utils/cdnUrl.js';
+import { cdnUrl, cdnThumb } from '../../utils/cdnUrl.js';
 
 // load manifest once (server-safe OR browser-safe)
 let logoManifest = {};
@@ -96,7 +96,7 @@ try {
 export function renderStoreCardHtml(store = {}) {
   const slug = escapeHtml(store.slug ?? "");
   const name = escapeHtml(store.name ?? "");
-  const logoUrl = store.logo_url ? cdnUrl(String(store.logo_url)) : "";
+  const logoUrl = store.logo_url ? cdnThumb(String(store.logo_url), 96) : "";
 
   // try manifest lookup by id first
   const idKey = String(store.id);

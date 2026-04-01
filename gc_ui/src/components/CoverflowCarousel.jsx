@@ -1,6 +1,5 @@
 // src/components/CoverflowCarousel.jsx
 import { useState, useRef, useEffect, useCallback } from "react";
-import { cdnUrl, cdnSrcset } from "../utils/cdnUrl.js";
 
 const ROTATION = 40; // deg Y rotation for side cards
 const SCALE_SIDE = 0.78;
@@ -95,9 +94,9 @@ export default function CoverflowCarousel({ banners = [] }) {
       >
         {visible.map(({ idx, offset }) => {
           const b = banners[idx];
-          const fallback =
-            b.variants?.fallback || b.variants?.webp?.slice(-1)[0] || "";
-          const webpSrc = b.variants?.webp?.[1] || fallback;
+          const fallback = b.variants?.fallback || b.variants?.webp?.[0] || "";
+          const webpVariants = b.variants?.webp || [];
+          // const webpSrc = b.variants?.webp?.[1] || fallback;
           const clickUrl = b.click_url || null;
 
           const card = (
@@ -119,9 +118,11 @@ export default function CoverflowCarousel({ banners = [] }) {
             >
               <div className="coverflow-card-inner">
                 <img
-                  src={cdnUrl(webpSrc)}
-                  srcSet={cdnSrcset(webpSrc, [516, 800, 1200])}
-                  sizes="(max-width: 768px) 100vw, 516px"
+                  src={fallback}
+                  srcSet={webpVariants
+                    .map((url, i) => `${url} ${[516, 800, 1200][i]}w`)
+                    .join(", ")}
+                  sizes="(max-width: 640px) 516px, (max-width: 1024px) 800px, 1200px"
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
                   fetchpriority={
