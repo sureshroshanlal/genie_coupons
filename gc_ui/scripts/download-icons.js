@@ -4,7 +4,7 @@ import path from "path";
 import https from "https";
 
 const icons = [
-    "spiral-notepad.svg",
+    "spiral-notepad",
 //   "laptop",
 //   "floppy-disk",
 //   "shopping-bags",
