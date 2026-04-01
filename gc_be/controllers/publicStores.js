@@ -161,7 +161,8 @@ export async function detail(req, res) {
 
         const relatedPromise = StoresRepo.relatedByCategories({
           merchantId: store.id,
-          categoryNames: store.category_names || [],
+          categoryid : store.category_id || null,
+          subcategory_id: store.subcategory_id || null,
           limit: 8,
         }).catch((e) => {
           console.warn("relatedByCategories failed:", e);

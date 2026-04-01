@@ -15,10 +15,10 @@ export default function HomeSections({
 }) {
   return (
     <>
-      <StoresSection apiUrl={apiUrl} />
-      <DealsSection apiUrl={apiUrl} />
-      <PopularCategories apiUrl={apiUrl} />
-      <TestimonialsCarousel
+      <StoresSection client:visible apiUrl={apiUrl} />
+      <DealsSection client:visible apiUrl={apiUrl} />
+      <PopularCategories client:visible apiUrl={apiUrl} />
+      <TestimonialsCarousel client:visible
         items={testimonials}
         avgRating={avgRating}
         totalReviews={totalReviews}

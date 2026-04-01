@@ -338,14 +338,16 @@ export function buildBreadcrumbs(store, { origin } = {}) {
  */
 export async function relatedByCategories({
   merchantId,
-  categoryNames,
+  category_id,
+  subcategory_id,
   limit = 8,
 } = {}) {
   if (!categoryNames?.length) return [];
 
   try {
     const { data, error } = await supabase.rpc("merchants_by_category_any", {
-      cat_list: categoryNames,
+      cat_id: category_id,
+      subcat_id: subcategory_id,
       exclude_id: merchantId || null,
       limit_val: limit || 8,
     });
