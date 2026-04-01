@@ -343,7 +343,7 @@ export async function relatedByCategories({
   merchantId,
   category_id,
   subcategory_id,
-  limit = 8,
+  limit = 9,
 } = {}) {
   if (!category_id) return [];
 
@@ -352,7 +352,7 @@ export async function relatedByCategories({
       cat_id: category_id,
       subcat_id: subcategory_id,
       exclude_id: merchantId || null,
-      limit_val: limit || 8,
+      limit_val: limit || 9,
     });
 
     if (error) {

@@ -163,7 +163,7 @@ export async function detail(req, res) {
           merchantId: store.id,
           category_id : store.category_id || null,
           subcategory_id: store.subcategory_id || null,
-          limit: 8,
+          limit: 9,
         }).catch((e) => {
           console.warn("relatedByCategories failed:", e);
           return [];
