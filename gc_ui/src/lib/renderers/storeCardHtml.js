@@ -1,6 +1,6 @@
 // src/lib/renderers/storeCardHtml.js
 import { escapeHtml } from "./couponCardHtml.js";
-import { cdnUrl } from '../../../utils/cdnUrl.js';
+import { cdnUrl } from '../../utils/cdnUrl.js';
 
 // load manifest once (server-safe OR browser-safe)
 let logoManifest = {};
