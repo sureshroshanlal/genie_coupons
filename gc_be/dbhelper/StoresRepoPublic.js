@@ -342,7 +342,7 @@ export async function relatedByCategories({
   subcategory_id,
   limit = 8,
 } = {}) {
-  if (!categoryNames?.length) return [];
+  if (!category_id) return [];
 
   try {
     const { data, error } = await supabase.rpc("merchants_by_category_any", {
