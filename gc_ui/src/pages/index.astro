@@ -293,6 +293,16 @@ if (jsonld?.["@graph"]) {
     });
   });
 }
+
+// utility: returns "{Mon, YYYY}"
+function getCurrentMonthYear() {
+  const now = new Date();
+  const month = now.toLocaleString("en-US", { month: "long" }); // e.g. "Sep"
+  const year = now.getFullYear(); // e.g. 2025
+  return ` ${month}, ${year}`;
+}
+
+const suffix = getCurrentMonthYear();
 ---
 
 <Base
@@ -372,7 +382,7 @@ if (jsonld?.["@graph"]) {
                   )}
                 </div>
                 <div class="store-hero-meta">
-                  <h1 class="store-hero-name">{store.name}</h1>
+                  <h1 class="store-hero-name">{store.name} Verified Promo Codes & Coupons ${suffix}</h1>
                   {storeMeta.description && (
                     <p class="store-hero-desc">{storeMeta.description}</p>
                   )}
