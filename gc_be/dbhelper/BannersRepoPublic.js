@@ -8,7 +8,7 @@ const COLS = `
 // Supabase storage URLs and transformation logic
 const SUPABASE_BASE =
   "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
-const PROXY_TRANSFORM = "/cdn-transform";
+const PROXY_TRANSFORM = "https://www.geniecoupon.com/cdn-transform";
 /**
  *
  * @param {*} imageUrl

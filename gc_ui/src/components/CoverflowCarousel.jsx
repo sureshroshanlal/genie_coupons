@@ -122,7 +122,7 @@ export default function CoverflowCarousel({ banners = [] }) {
                   srcSet={webpVariants
                     .map((url, i) => `${url} ${[516, 800, 1200][i]}w`)
                     .join(", ")}
-                  sizes="(max-width: 480px) 516px, (max-width: 1024px) 800px, 1200px"
+                  sizes="(max-width: 768px) 516px, (max-width: 1200px) 800px, 1200px"
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
                   fetchpriority={
