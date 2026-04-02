@@ -1,5 +1,4 @@
 // src/components/DealsSection.jsx
-import { useState, useEffect } from "react";
 import CouponReveal from "./couponReveal.jsx";
 
 function SkeletonCard() {
@@ -11,19 +10,8 @@ function SkeletonCard() {
   );
 }
 
-/** @param {{ apiUrl: string }} props */
-export default function DealsSection({ apiUrl }) {
-  const [coupons, setCoupons] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`${apiUrl}/coupons?mode=homepage&limit=6&status=active`)
-      .then((r) => r.json())
-      .then((d) => setCoupons(d.data || []))
-      .catch(() => setCoupons([]))
-      .finally(() => setLoading(false));
-  }, []);
-
+/** @param {{ coupons: any[] }} props */
+export default function DealsSection({ coupons = [] }) {
   return (
     <section className="mt-10">
       <div className="flex items-center justify-between mb-5">
@@ -33,7 +21,7 @@ export default function DealsSection({ apiUrl }) {
         </a>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {loading ? (
+        {coupons.length === 0 ? (
           Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
         ) : coupons.length === 0 ? (
           <p className="col-span-2 text-sm" style={{ color: "#707068" }}>

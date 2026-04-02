@@ -3,7 +3,6 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import LandingSubscribeIsland from "../components/islands/LandingSubscribeIsland.jsx";
-import HomeSections from "../components/HomeSections.jsx";
 import { SAMPLE_TESTIMONIALS } from "../content/testimonials.sample";
 import CoverflowCarousel from "../components/CoverflowCarousel.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
@@ -18,7 +17,11 @@ import { api } from "../lib/api";
 import SavingsImpact from "../components/SavingsImpact.astro";
 import FeedbackForm from "../components/islands/FeedbackForm.jsx";
 import VerifiedBadge from "../components/VerifiedBadge.astro";
-import Img from '../components/Img.astro';
+import PopularCategories from "../components/CategoriesSection.jsx";
+import StoresSection from "../components/StoresSection.jsx";
+import DealsSection from "../components/DealsSection.jsx";
+import TestimonialsCarousel from "../components/TestimonialsCarousel.jsx";
+import Img from "../components/Img.astro";
 
 // ── Subdomain detection ──
 const storeSlug = Astro.locals?.storeSlug ?? null;
@@ -107,6 +110,24 @@ try {
   console.error("Failed to fetch banners:", e);
   banners = [];
 }
+
+let homeStores = [];
+let homeCoupons = [];
+let homeCategories = [];
+
+try {
+  const [storesRes, couponsRes, categoriesRes] = await Promise.all([
+    fetch(`${apiUrl}/stores?mode=homepage&limit=8`),
+    fetch(`${apiUrl}/coupons?mode=homepage&limit=6&status=active`),
+    fetch(`${apiUrl}/categories?show_home=true&limit=8`),
+  ]);
+  homeStores = (await storesRes.json())?.data || [];
+  homeCoupons = (await couponsRes.json())?.data || [];
+  homeCategories = (await categoriesRes.json())?.data || [];
+} catch (e) {
+  console.error("Failed to fetch home sections:", e);
+}
+
 const pageMeta = {
   title: "Genie Coupon | Verified Coupons & Discounts",
   description:
@@ -271,20 +292,20 @@ try {
 
 if (jsonld?.["@graph"]) {
   const storeUrl = `https://savingharbor.com/stores/${store?.slug}`;
- 
+
   // Patch #savings-impact value
-  const savingsNode = jsonld["@graph"].find(
-    (n: any) => n["@id"]?.endsWith("#savings-impact")
+  const savingsNode = jsonld["@graph"].find((n: any) =>
+    n["@id"]?.endsWith("#savings-impact"),
   );
   if (savingsNode) savingsNode.value = String(totalSavings);
- 
+
   // Remove any existing proof nodes built with empty/stale data on the backend
   jsonld["@graph"] = jsonld["@graph"].filter(
-    (n: any) => !n["@id"]?.includes("#verification-proof-")
+    (n: any) => !n["@id"]?.includes("#verification-proof-"),
   );
- 
+
   // Inject one node per proof (indexed)
-  (proofs || []).forEach((proof: { image_url: any; }, i: number) => {
+  (proofs || []).forEach((proof: { image_url: any }, i: number) => {
     if (!proof?.image_url) return;
     jsonld["@graph"].push({
       "@type": "ImageObject",
@@ -385,7 +406,9 @@ const suffix = getCurrentMonthYear();
                   )}
                 </div>
                 <div class="store-hero-meta">
-                  <h1 class="store-hero-name">{store.name} Verified Promo Codes & Coupons - {suffix}</h1>
+                  <h1 class="store-hero-name">
+                    {store.name} Verified Promo Codes & Coupons - {suffix}
+                  </h1>
                   {storeMeta.description && (
                     <p class="store-hero-desc">{storeMeta.description}</p>
                   )}
@@ -502,7 +525,8 @@ const suffix = getCurrentMonthYear();
             <CouponFilterTabs
               client:visible
               coupons={couponItems}
-              storeSlug={store.slug} sectionId="store"
+              storeSlug={store.slug}
+              sectionId="store"
             />
 
             {/* About this store */}
@@ -712,14 +736,15 @@ const suffix = getCurrentMonthYear();
           </div>
         </section>
 
-        <HomeSections
-          client:load
-          apiUrl={apiUrl}
-          testimonials={SAMPLE_TESTIMONIALS as any[]}
+        <StoresSection stores={homeStores} />
+        <DealsSection coupons={homeCoupons} />
+        <PopularCategories categories={homeCategories} />
+        <TestimonialsCarousel
+          client:visible
+          items={SAMPLE_TESTIMONIALS}
           avgRating={avg}
           totalReviews={SAMPLE_TESTIMONIALS.length}
         />
-
         {/* ── Subscribe CTA ── */}
         <section
           class="homepage-subscribe mt-12"

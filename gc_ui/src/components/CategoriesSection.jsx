@@ -1,6 +1,5 @@
 // src/components/CategoriesSection.jsx
-import { useState, useEffect } from "react";
-import { cdnUrl } from '../utils/cdnUrl.js';
+import { cdnUrl } from "../utils/cdnUrl.js";
 
 function SkeletonCard() {
   return (
@@ -11,19 +10,8 @@ function SkeletonCard() {
   );
 }
 
-/** @param {{ apiUrl: string }} props */
-export default function CategoriesSection({ apiUrl }) {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`${apiUrl}/categories?show_home=true&limit=8`)
-      .then((r) => r.json())
-      .then((d) => setCategories(d.data || []))
-      .catch(() => setCategories([]))
-      .finally(() => setLoading(false));
-  }, []);
-
+/** @param {{ categories: any[] }} props */
+export default function CategoriesSection({ categories = [] }) {
   return (
     <section className="mt-10">
       <div className="flex items-center justify-between mb-5">
@@ -33,7 +21,7 @@ export default function CategoriesSection({ apiUrl }) {
         </a>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {loading
+        {categories.length === 0
           ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           : categories.map((cat) => (
               <a

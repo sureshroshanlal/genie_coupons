@@ -1,6 +1,5 @@
 // src/components/StoresSection.jsx
-import { useState, useEffect } from "react";
-import { cdnUrl , cdnThumb} from '../utils/cdnUrl.js';
+import { cdnThumb } from "../utils/cdnUrl.js";
 
 function SkeletonCard() {
   return (
@@ -11,19 +10,8 @@ function SkeletonCard() {
   );
 }
 
-/** @param {{ apiUrl: string }} props */
-export default function StoresSection({ apiUrl }) {
-  const [stores, setStores] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`${apiUrl}/stores?mode=homepage&limit=8`)
-      .then((r) => r.json())
-      .then((d) => setStores(d.data || []))
-      .catch(() => setStores([]))
-      .finally(() => setLoading(false));
-  }, []);
-
+/** @param {{ stores: any[] }} props */
+export default function StoresSection({ stores = [] }) {
   return (
     <section className="mt-10">
       <div className="flex items-center justify-between mb-5">
@@ -33,7 +21,7 @@ export default function StoresSection({ apiUrl }) {
         </a>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 gap-3">
-        {loading
+        {stores.length === 0
           ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           : stores.map((store) => (
               <a
