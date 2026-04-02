@@ -9,11 +9,10 @@ const isSubdomain = Astro.locals?.isSubdomain === true;
 const storeSlug = Astro.locals?.storeSlug ?? null;
 
 const canonical = meta.canonical
-  ? meta.canonical  // use explicitly passed canonical if available
+  ? meta.canonical // use explicitly passed canonical if available
   : isSubdomain && storeSlug
     ? `https://${storeSlug}.geniecoupon.com`
     : `https://geniecoupon.com${Astro.url.pathname}`;
-
 
 // utility: returns "{Mon, YYYY}"
 function getCurrentMonthYear() {
@@ -26,8 +25,10 @@ function getCurrentMonthYear() {
 function hasMonthYearSuffix(text: string) {
   if (!text || typeof text !== "string") return false;
   // matches both old {Sep, 2025} and new [April 2026] patterns
-  return /\{\s*[A-Za-z]{3},\s*\d{4}\s*\}$/.test(text.trim()) ||
-         /\[[A-Za-z]+ \d{4}\]/.test(text);
+  return (
+    /\{\s*[A-Za-z]{3},\s*\d{4}\s*\}$/.test(text.trim()) ||
+    /\[[A-Za-z]+ \d{4}\]/.test(text)
+  );
 }
 
 const suffix = getCurrentMonthYear();
@@ -45,7 +46,7 @@ const defaultTitle = hasMonthYearSuffix(rawTitle)
   ? rawTitle
   : `${rawTitle} ${suffix}`;
 
-const defaultDesc = meta.description 
+const defaultDesc = meta.description
   ? meta.description
   : `${rawDesc} ${suffix}`;
 
@@ -87,29 +88,17 @@ const jsonld = meta.jsonld;
   <meta name="twitter:image" content={ogImage} />
   {
     meta.preloadHero && meta.heroSrc ? (
-      <>
-        <link
-          rel="preload"
-          as="image"
-          href={meta.heroSrc}
-          imagesrcset={meta.heroSrcSetAvif}
-          imagesizes="(max-width: 640px) 100vw, 1200px"
-          type="image/avif"
-          fetchpriority="high"
-        />
-        <link
-          rel="preload"
-          as="image"
-          href={meta.heroSrc.replace(".avif", ".webp")}
-          imagesrcset={meta.heroSrcSetWebp}
-          imagesizes="(max-width: 640px) 100vw, 1200px"
-          type="image/webp"
-          fetchpriority="high"
-        />
-      </>
+      <link
+        rel="preload"
+        as="image"
+        href={meta.heroSrc}
+        imagesrcset={meta.heroSrcSetWebp}
+        imagesizes="(max-width: 480px) 516px, (max-width: 1024px) 800px, 1200px"
+        fetchpriority="high"
+      />
     ) : null
   }
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="preload"

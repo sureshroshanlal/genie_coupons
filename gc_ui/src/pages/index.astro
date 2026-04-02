@@ -327,6 +327,11 @@ function getCurrentMonthYear() {
 }
 
 const suffix = getCurrentMonthYear();
+
+const lcpSrc = banners?.[0]?.variants?.fallback || null;
+const lcpSrcset = banners?.[0]?.variants?.webp
+  ?.map((url: string, i: number) => `${url} ${[516, 800, 1200][i]}w`)
+  .join(", ") || null;
 ---
 
 <Base
@@ -335,6 +340,9 @@ const suffix = getCurrentMonthYear();
     description: pageDesc,
     canonical,
     jsonld,
+    preloadHero: !isStoreSubdomain && !!lcpSrc,
+    heroSrc: lcpSrc,
+    heroSrcSetWebp: lcpSrcset,
   }}
 >
   <Header />
