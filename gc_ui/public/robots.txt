@@ -1,25 +1,21 @@
 # robots.txt for Genie Coupon
-# Last updated: 2025-09-17
+# Last updated: April 2026
 
 User-agent: *
-# Block internal and sensitive areas
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /api/
 Disallow: /private/
 Disallow: /tmp/
 Disallow: /scripts/
-Disallow: /user/profile/
+Disallow: /user/
 Disallow: /login/
 Disallow: /register/
-
-# Prevent indexing of only search/filter API calls
 Disallow: /public/v1/
 
-# Sitemap reference
 Sitemap: https://geniecoupon.com/sitemap-index.xml
 
-# AI crawlers - explicitly allowed
+# AI crawlers — explicitly allowed
 User-agent: GPTBot
 Allow: /
 

@@ -4,6 +4,17 @@ const meta = (props && props.meta) || {};
 
 const siteName = "Genie Coupon";
 
+// Fix 1: correct canonical for subdomains
+const isSubdomain = Astro.locals?.isSubdomain === true;
+const storeSlug = Astro.locals?.storeSlug ?? null;
+
+const canonical = meta.canonical
+  ? meta.canonical  // use explicitly passed canonical if available
+  : isSubdomain && storeSlug
+    ? `https://${storeSlug}.geniecoupon.com`
+    : `https://geniecoupon.com${Astro.url.pathname}`;
+
+
 // utility: returns "{Mon, YYYY}"
 function getCurrentMonthYear() {
   const now = new Date();
@@ -12,10 +23,11 @@ function getCurrentMonthYear() {
   return `( ${month}, ${year} ) | Verified`;
 }
 
-// detect existing suffix like "{Sep, 2025}" (basic but reliable)
 function hasMonthYearSuffix(text: string) {
   if (!text || typeof text !== "string") return false;
-  return /\{\s*[A-Za-z]{3},\s*\d{4}\s*\}$/.test(text.trim());
+  // matches both old {Sep, 2025} and new [April 2026] patterns
+  return /\{\s*[A-Za-z]{3},\s*\d{4}\s*\}$/.test(text.trim()) ||
+         /\[[A-Za-z]+ \d{4}\]/.test(text);
 }
 
 const suffix = getCurrentMonthYear();
@@ -33,11 +45,10 @@ const defaultTitle = hasMonthYearSuffix(rawTitle)
   ? rawTitle
   : `${rawTitle} ${suffix}`;
 
-const defaultDesc = hasMonthYearSuffix(rawDesc)
-  ? rawDesc
+const defaultDesc = meta.description 
+  ? meta.description
   : `${rawDesc} ${suffix}`;
 
-const canonical = `https://geniecoupon.com${Astro.url.pathname}`;
 const ogImage = meta.og_image || "/og-default.webp";
 const jsonld = meta.jsonld;
 ---

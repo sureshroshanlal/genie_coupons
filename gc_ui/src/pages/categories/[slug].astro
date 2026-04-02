@@ -126,7 +126,7 @@ const canonical = category?.meta?.canonical;
 
           <div class="mt-12">
             <ParentCategorySubcategories
-              client:load
+              client:visible
               apiUrl={import.meta.env.PUBLIC_API_BASE_URL}
               categorySlug={slug}
             />

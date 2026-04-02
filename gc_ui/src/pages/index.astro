@@ -732,7 +732,7 @@ const suffix = getCurrentMonthYear();
           {/* Right: portrait coverflow carousel */}
           <div class="homepage-hero-right">
             {/* @ts-ignore */}
-            <CoverflowCarousel client:visible banners={banners} />
+            <CoverflowCarousel client:load banners={banners} />
           </div>
         </section>
 

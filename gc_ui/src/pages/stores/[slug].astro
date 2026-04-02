@@ -264,7 +264,7 @@ try {
             <div class="min-w-0">
               {meta.description && (
                 <ExpandableText
-                  client:load
+                  client:visible
                   html={meta.description}
                   id="store-meta-desc"
                   initialLines={2}
@@ -274,7 +274,7 @@ try {
 
               {safeSideHtml && (
                 <ExpandableText
-                  client:load
+                  client:visible
                   html={safeSideHtml}
                   id="store-side-desc"
                   initialLines={2}
@@ -323,7 +323,7 @@ try {
             <!-- FAQs -->
             {store.faqs && store.faqs.length > 0 && (
               <section id="faqs-section" class="card-base p-6">
-                <FaqAccordion client:load faqs={store.faqs} />
+                <FaqAccordion client:visible faqs={store.faqs} />
               </section>
             )}
 
@@ -363,23 +363,23 @@ try {
               />
             </div>
             <div class="sidebar-box">
-              <WhyTrustUs client:load />
+              <WhyTrustUs client:visible />
             </div>
             <div class="sidebar-box">
-              <RecentActivity client:load data={store.recent_activity} />
+              <RecentActivity client:visible data={store.recent_activity} />
             </div>
             <div class="sidebar-box">
-              <TrendingOffersCompact client:load offers={store.trending_offers} storeSlug={store.slug} />
+              <TrendingOffersCompact client:visible offers={store.trending_offers} storeSlug={store.slug} />
             </div>
             {/* <div class="sidebar-box"> */}
             <div class="sidebar-box">
               <div class="card-base p-4">
                 <h3 class="text-lg font-semibold text-brand-secondary mb-3">Get updates</h3>
-                <SubscribeBox client:load source={store.slug} />
+                <SubscribeBox client:visible source={store.slug} />
               </div>
             </div>
             <div class="sidebar-box">
-              <FeedbackForm client:load storeSlug={store.slug} />
+              <FeedbackForm client:visible storeSlug={store.slug} />
             </div>
             
             {store.trust_text && (

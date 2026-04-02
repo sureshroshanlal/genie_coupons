@@ -7,6 +7,7 @@ import critters from "astro-critters";
 export default defineConfig({
   output: "server",
   adapter: vercel(),
+  trailingSlash: "never",
   integrations: [
     tailwind(),
     react(),

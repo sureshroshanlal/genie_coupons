@@ -85,6 +85,11 @@
       "source": "/blog/:slug",
       "destination": "/blogs/:slug",
       "permanent": true
+    },
+    {
+      "source": "/(.*)/",
+      "destination": "/$1",
+      "permanent": true
     }
   ],
   "crons": [
