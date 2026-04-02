@@ -737,7 +737,7 @@ const suffix = getCurrentMonthYear();
         </section>
 
         <StoresSection stores={homeStores} />
-        <DealsSection coupons={homeCoupons} />
+        <DealsSection client:visible coupons={homeCoupons} />
         <PopularCategories categories={homeCategories} />
         <TestimonialsCarousel
           client:visible
