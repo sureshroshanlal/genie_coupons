@@ -43,7 +43,7 @@ export default function CategoriesSection({ categories = [] }) {
                 </div>
                 <h3 className="category-card-home-name">{cat.name}</h3>
                 {cat.stats?.subcategories > 0 && (
-                  <p className="category-card-home-sub">
+                  <p className="category-card-home-name">
                     {cat.stats.subcategories} subcategories
                   </p>
                 )}

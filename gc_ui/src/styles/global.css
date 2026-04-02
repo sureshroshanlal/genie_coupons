@@ -1368,13 +1368,13 @@ button[aria-label^="Go to slide"]:focus-visible {
   transition: color 150ms ease;
 }
 
-.category-card-home:hover .category-card-home-name {
+.category-card-home:hover .category-card-home-name:hover {
   color: var(--brand-primary);
 }
 
 .category-card-home-sub {
   font-size: 0.7rem;
-  color: var(--text-muted);
+  color: var(--text-primary);
   margin: 0;
 }
 
