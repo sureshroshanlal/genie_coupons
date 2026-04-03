@@ -16,7 +16,7 @@ const PROXY_TRANSFORM = "https://www.geniecoupon.com/cdn-transform";
  * @param {*} quality
  * @returns
  */
-function transformUrl(imageUrl, width, quality = 75) {
+function transformUrl(imageUrl, width, quality = 60) {
   if (!imageUrl?.startsWith(SUPABASE_BASE)) return imageUrl;
   const path = imageUrl.replace(SUPABASE_BASE + "/", "");
   return `${PROXY_TRANSFORM}/${path}?width=${width}&quality=${quality}`;
