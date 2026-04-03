@@ -150,10 +150,10 @@ export function renderCouponCardHtml(item = {}, sectionId = "default") {
     <div class="w-full flex items-center justify-between">
       <div class="flex items-center gap-1.5">
         <img src="/images/verified-badge.webp" alt="Verified" class="h-4 w-4 object-contain" loading="lazy" decoding="async" />
-        <span class="text-xs text-emerald-700 font-medium">Verified</span>
+        <span class="text-xs text-brand-secondary font-medium">Verified</span>
       </div>
       <div class="flex items-center gap-1.5">
-        <span class="text-xs text-emerald-700 font-medium">Re-verified</span>
+        <span class="text-xs text-brand-secondary font-medium">Re-verified</span>
         <img src="/images/reverified-badge.webp" alt="Re-verified" class="h-4 w-4 object-contain" loading="lazy" decoding="async" />
       </div>
     </div>

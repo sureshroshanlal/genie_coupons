@@ -10,7 +10,7 @@ const API = import.meta.env.PUBLIC_API_BASE_URL;
 
 function buildSummaryHtml(aggregate, reviews) {
   if (aggregate.total === 0) {
-    return `<span style="display:block;width:100%;text-align:center;color:#555;font-size:12px;">✍️ No reviews yet — yours could be the first!</span>`;
+    return `<span style="display:block;width:100%;text-align:center;color:#f7f7e8;font-size:12px;">✍️ No reviews yet — yours could be the first!</span>`;
   }
   const top3 = reviews.slice(0, 3);
   const avatarSize = 20;
@@ -45,7 +45,7 @@ function buildSummaryHtml(aggregate, reviews) {
       ${avatarsHtml}
       <span style="display:inline-flex;align-items:center;gap:4px;">
         <span style="color:#89E900;font-size:11px;">⭐</span>
-        <span style="color:#888;font-size:12px;">${aggregate.avg_rating} stars · ${aggregate.total} ${label}</span>
+        <span style="color:#f7f7e8;font-size:12px;">${aggregate.avg_rating} stars · ${aggregate.total} ${label}</span>
       </span>
     </span>
   `;
