@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { AuthProvider, useAuth } from "../../context/AuthContext";
-import LoginModal from "./LoginModal";
-import { cdnUrl } from '../../utils/cdnUrl.js';
+import { cdnUrl } from "../../utils/cdnUrl.js";
+
+const LoginModal = lazy(() => import("./LoginModal"));
 
 function AuthButton() {
   const { user, loading, logout } = useAuth();
@@ -63,7 +64,11 @@ function AuthButton() {
       >
         Login
       </button>
-      <LoginModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      {showModal && (
+        <Suspense fallback={null}>
+          <LoginModal isOpen={showModal} onClose={() => setShowModal(false)} />
+        </Suspense>
+      )}
     </>
   );
 }
