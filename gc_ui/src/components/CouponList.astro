@@ -35,7 +35,7 @@ const counts = {
         No coupons available.
       </p>
     ) : (
-      <div id={listId} class="flex flex-col gap-3" role="list">
+      <div id={listId} class="grid grid-cols-1 md:grid-cols-2 gap-3" role="list">
         {coupons.map((coupon: any) => (
           <div role="listitem">
             <CouponCard
