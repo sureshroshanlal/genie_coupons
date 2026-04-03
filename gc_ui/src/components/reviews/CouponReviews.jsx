@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth, AuthProvider } from "../../context/AuthContext";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
@@ -51,7 +51,7 @@ function buildSummaryHtml(aggregate, reviews) {
   `;
 }
 
-export default function CouponReviews({
+function CouponReviewsInner({
   couponId,
   sectionId = "default",
   initialReviews = null,
@@ -203,5 +203,13 @@ export default function CouponReviews({
       />
     </div>,
     panelEl,
+  );
+}
+
+export default function CouponReviews(props) {
+  return (
+    <AuthProvider>
+      <CouponReviewsInner {...props} />
+    </AuthProvider>
   );
 }

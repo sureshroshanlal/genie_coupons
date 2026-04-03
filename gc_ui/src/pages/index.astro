@@ -8,7 +8,7 @@ import CoverflowCarousel from "../components/CoverflowCarousel.jsx";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 import CardStore from "../components/CardStore.astro";
 import MerchantProofsIsland from "../components/islands/MerchantProofsIsland.jsx";
-import CouponFilterTabs from "../components/islands/CouponFilterTabs.jsx";
+import CouponList from "../components/CouponList.astro";
 import SubscribeBox from "../components/SubscribeBox.jsx";
 import FaqAccordion from "../components/FAQAccordion.jsx";
 import WhyTrustUs from "../components/WhyTrustUs.jsx";
@@ -19,7 +19,7 @@ import FeedbackForm from "../components/islands/FeedbackForm.jsx";
 import VerifiedBadge from "../components/VerifiedBadge.astro";
 import PopularCategories from "../components/CategoriesSection.jsx";
 import StoresSection from "../components/StoresSection.jsx";
-import DealsSection from "../components/DealsSection.jsx";
+import DealsSection from "../components/DealsSection.astro";
 import TestimonialsCarousel from "../components/TestimonialsCarousel.jsx";
 import Img from "../components/Img.astro";
 
@@ -292,7 +292,6 @@ try {
 
 if (jsonld?.["@graph"]) {
   const storeUrl = `https://${store?.slug}.geniecoupon.com`;
-  
 
   // Patch #savings-impact value
   const savingsNode = jsonld["@graph"].find((n: any) =>
@@ -305,6 +304,8 @@ if (jsonld?.["@graph"]) {
     (n: any) => !n["@id"]?.includes("#verification-proof-"),
   );
 
+  const SUPABASE_BASE =
+    "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
   // Inject one node per proof (indexed)
   (proofs || []).forEach((proof: { image_url: any }, i: number) => {
     if (!proof?.image_url) return;
@@ -314,7 +315,11 @@ if (jsonld?.["@graph"]) {
       about: { "@id": `${storeUrl}/#merchant` },
       name: `Coupon Verification Proof ${i + 1}`,
       description: "Checkout screenshot showing successful coupon application.",
-      contentUrl: proof.image_url,
+      contentUrl:
+        proof.image_url?.replace(
+          SUPABASE_BASE,
+          "https://www.geniecoupon.com/cdn",
+        ) || proof.image_url,
     });
   });
 }
@@ -330,9 +335,10 @@ function getCurrentMonthYear() {
 const suffix = getCurrentMonthYear();
 
 const lcpSrc = banners?.[0]?.variants?.fallback || null;
-const lcpSrcset = banners?.[0]?.variants?.webp
-  ?.map((url: string, i: number) => `${url} ${[516, 800, 1200][i]}w`)
-  .join(", ") || null;
+const lcpSrcset =
+  banners?.[0]?.variants?.webp
+    ?.map((url: string, i: number) => `${url} ${[516, 800, 1200][i]}w`)
+    .join(", ") || null;
 ---
 
 <Base
@@ -529,15 +535,12 @@ const lcpSrcset = banners?.[0]?.variants?.webp
         <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ── Main Column ── */}
           <div class="lg:col-span-2 space-y-10">
-            {/* Coupon filter tabs + cards */}
-            {/* @ts-ignore */}
-            <CouponFilterTabs
-              client:visible
+            <CouponList
               coupons={couponItems}
               storeSlug={store.slug}
               sectionId="store"
+              showTabs={true}
             />
-
             {/* About this store */}
             {safeDescriptionHtml && (
               <section id="about-section" class="card-base p-6">
@@ -746,7 +749,7 @@ const lcpSrcset = banners?.[0]?.variants?.webp
         </section>
 
         <StoresSection stores={homeStores} />
-        <DealsSection client:visible coupons={homeCoupons} />
+        <DealsSection coupons={homeCoupons} />
         <PopularCategories categories={homeCategories} />
         <TestimonialsCarousel
           client:visible

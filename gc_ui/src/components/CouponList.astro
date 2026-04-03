@@ -1,0 +1,51 @@
+---
+// src/components/CouponList.astro
+import CouponCard from "./CouponCard.astro";
+import FilterTabsIsland from "./islands/FilterTabsIsland.jsx";
+
+const {
+  coupons = [],
+  storeSlug = "",
+  sectionId = "default",
+  showTabs = true,
+} = Astro.props;
+
+// unique list container id — prevents conflicts when multiple CouponLists on same page
+const listId = `coupon-list-${sectionId}`;
+
+// counts for filter tabs
+const counts = {
+  all: coupons.length,
+  coupon: coupons.filter((c: any) => c.coupon_type === "coupon").length,
+  deal: coupons.filter((c: any) => c.coupon_type === "deal").length,
+  editor: coupons.filter((c: any) => !!c.is_editor).length,
+};
+---
+
+<section id={`coupons-${sectionId}`}>
+  {
+    showTabs && counts.all > 0 && (
+      <FilterTabsIsland client:visible counts={counts} listId={listId} />
+    )
+  }
+
+  {
+    coupons.length === 0 ? (
+      <p class="text-sm" style="color:#707068;">
+        No coupons available.
+      </p>
+    ) : (
+      <div id={listId} class="flex flex-col gap-3" role="list">
+        {coupons.map((coupon: any) => (
+          <div role="listitem">
+            <CouponCard
+              coupon={coupon}
+              storeSlug={storeSlug}
+              sectionId={sectionId}
+            />
+          </div>
+        ))}
+      </div>
+    )
+  }
+</section>

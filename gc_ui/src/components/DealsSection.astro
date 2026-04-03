@@ -1,0 +1,29 @@
+---
+// src/components/DealsSection.astro
+import CouponList from "./CouponList.astro";
+
+const { coupons = [] } = Astro.props;
+---
+
+<section class="mt-10">
+  <div class="flex items-center justify-between mb-5">
+    <h2 class="section-heading mb-0">Today's Top Deals & Coupons</h2>
+    <a href="/coupons" class="btn btn-outline--light text-sm">
+      Explore more →
+    </a>
+  </div>
+  {
+    coupons.length === 0 ? (
+      <p class="text-sm" style="color:#707068;">
+        No coupons available right now. Check back soon.
+      </p>
+    ) : (
+      <CouponList
+        coupons={coupons}
+        storeSlug=""
+        sectionId="homepage"
+        showTabs={false}
+      />
+    )
+  }
+</section>

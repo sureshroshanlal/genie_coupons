@@ -60,16 +60,16 @@ export default function MerchantProofsIsland({
               key={p.id ?? idx}
               onClick={() => openLightbox(idx)}
               className="proof-strip-thumb"
-              aria-label={`View proof: ${p.filename}`}
-              title={p.filename}
+              aria-label={`View proof: ${cleanAlt(p.filename)}`}
+              title={cleanAlt(p.filename)}
             >
               <img
                 src={cdnUrl(p.image_url)}
-                alt={p.filename}
+                alt={cleanAlt(p.filename)}
                 loading="lazy"
                 decoding="async"
               />
-              <div className="proof-strip-label">{p.filename}</div>
+              <div className="proof-strip-label">{cleanAlt(p.filename)}</div>
             </button>
           ))}
         </div>
@@ -113,18 +113,18 @@ export default function MerchantProofsIsland({
               key={p.id}
               onClick={() => openLightbox(startIndex + idx)}
               className="relative block rounded-xl p-[2px] bg-gradient-to-br from-[rgba(255,90,31,0.4)] via-transparent to-[rgba(184,242,0,0.5)] hover:shadow-md hover:scale-[1.02] transition-all duration-300"
-              aria-label={`Open proof ${p.filename}`}
+              aria-label={`Open proof ${cleanAlt(p.filename)}`}
             >
               <div className="bg-white rounded-xl overflow-hidden m-[1px]">
                 <img
                   src={cdnUrl(p.image_url)}
-                  alt={p.filename}
+                  alt={cleanAlt(p.filename)}
                   loading="lazy"
                   decoding="async"
                   className="object-cover w-full h-32 sm:h-36 lg:h-40"
                 />
                 <div className="text-xs text-gray-500 mt-1 px-1 truncate">
-                  {p.filename}
+                  {cleanAlt(p.filename)}
                 </div>
               </div>
               {idx === visibleProofs.length - 1 &&
@@ -222,7 +222,7 @@ function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
       >
         <img
           src={cdnUrl(item.image_url)}
-          alt={item.filename}
+          alt={cleanAlt(item.filename)}
           className="max-h-full max-w-full rounded shadow-lg"
         />
       </a>
@@ -248,8 +248,17 @@ function Lightbox({ proofs, index, onClose, onPrev, onNext, visitUrl }) {
       </button>
 
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm text-white/90 bg-black/40 px-3 py-1 rounded">
-        {item.filename} — {index + 1}/{proofs.length}
+        {cleanAlt(item.filename)} — {index + 1}/{proofs.length}
       </div>
     </div>
   );
+}
+
+function cleanAlt(filename = "") {
+  return filename
+    .replace(/\.[^.]+$/, "")        // remove extension
+    .replace(/[-_]+/g, " ")         // replace dashes/underscores with spaces
+    .replace(/\s+/g, " ")           // collapse spaces
+    .trim()
+    .replace(/^\w/, (c) => c.toUpperCase()); // capitalize first letter
 }
