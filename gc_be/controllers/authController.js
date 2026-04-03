@@ -150,18 +150,25 @@ export async function logout(req, res) {
 
 /**
  * GET /public/v1/auth/me
+ * Returns 200 with user or { user: null } — never 401
  */
 export async function me(req, res) {
   try {
+    const token = req.cookies?.gc_token;
+    if (!token) return res.status(200).json({ user: null });
+
+    const { data } = await supabase.auth.getUser(token);
+    if (!data?.user) return res.status(200).json({ user: null });
+
     return res.status(200).json({
       user: {
-        id: req.user.id,
-        email: req.user.email,
-        full_name: req.user.user_metadata?.full_name || null,
-        avatar_url: req.user.user_metadata?.avatar_url || null,
+        id: data.user.id,
+        email: data.user.email,
+        full_name: data.user.user_metadata?.full_name || null,
+        avatar_url: data.user.user_metadata?.avatar_url || null,
       },
     });
   } catch {
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(200).json({ user: null });
   }
 }
