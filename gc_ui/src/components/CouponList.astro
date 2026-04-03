@@ -8,6 +8,7 @@ const {
   storeSlug = "",
   sectionId = "default",
   showTabs = true,
+  columns = 1,
 } = Astro.props;
 
 // unique list container id — prevents conflicts when multiple CouponLists on same page
@@ -35,9 +36,19 @@ const counts = {
         No coupons available.
       </p>
     ) : (
-      <div id={listId} class="grid grid-cols-1 md:grid-cols-2 gap-3" role="list">
+      <div
+        id={listId}
+        class={
+          columns === 2
+            ? "grid grid-cols-1 md:grid-cols-2 gap-3"
+            : "flex flex-col gap-3"
+        }
+        style={columns === 2 ? "align-items: stretch;" : ""}
+        role="list"
+      >
+        {" "}
         {coupons.map((coupon: any) => (
-          <div role="listitem">
+          <div role="listitem" class="h-full">
             <CouponCard
               coupon={coupon}
               storeSlug={storeSlug}
