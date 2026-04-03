@@ -3,7 +3,17 @@
 
 const SITE_URL = "https://www.geniecoupon.com";
 const SITE_NAME = "Genie Coupon";
-const LOGO_URL = "https://www.geniecoupon.com/logo.png";
+const LOGO_URL = "https://www.geniecoupon.com/genie_coupon_logo.webp";
+
+const SUPABASE_BASE = "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
+
+// at top of file, add helper:
+function toCdnUrl(url) {
+  if (!url) return url;
+  return url.startsWith(SUPABASE_BASE)
+    ? url.replace(SUPABASE_BASE, "https://www.geniecoupon.com/cdn")
+    : url;
+}
 
 /**
  * buildStoreSchema(payload)
@@ -84,7 +94,7 @@ export function buildStoreSchema({
     dateModified: lastUpdated,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: store.logo_url || "",
+      url: toCdnUrl(store.logo_url) || "",
     },
   });
 
@@ -122,7 +132,7 @@ export function buildStoreSchema({
     url: store.web_url || storeUrl,
     logo: {
       "@type": "ImageObject",
-      url: store.logo_url || "",
+      url: toCdnUrl(store.logo_url) || "",
     },
     description: seo.meta_description,
     // aggregateRating: {
@@ -163,10 +173,12 @@ export function buildStoreSchema({
       worksFor: {
         "@id": `${SITE_URL}/#organization`,
       },
+      ...(store.verifier.avatar_url ? {
       image: {
         "@type": "ImageObject",
         url: store.verifier.avatar_url || "",
-      },
+      }
+    } : {}),
     });
   }
 
@@ -202,7 +214,7 @@ export function buildStoreSchema({
       },
       name: `Coupon Verification Proof ${i + 1}`,
       description: "Checkout screenshot showing successful coupon application.",
-      contentUrl: proof.image_url,
+      contentUrl: toCdnUrl(proof.image_url),
     });
   });
 
@@ -262,7 +274,7 @@ export function buildStoreSchema({
       "@type": "ListItem",
       position: i + 1,
       name: rs.name,
-      url: `${SITE_URL}/stores/${rs.slug}`,
+      url: `https://${rs.slug}.geniecoupon.com`,
     })),
   });
 
@@ -270,7 +282,7 @@ export function buildStoreSchema({
   graph.push({
     "@type": "HowTo",
     "@id": `${storeUrl}/#verification-process`,
-    name: "SavingHarbor Coupon Verification Process",
+    name: "Genie Coupon Verification Process",
     step: [
       {
         "@type": "HowToStep",

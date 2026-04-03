@@ -291,7 +291,8 @@ try {
 }
 
 if (jsonld?.["@graph"]) {
-  const storeUrl = `https://savingharbor.com/stores/${store?.slug}`;
+  const storeUrl = `https://${store?.slug}.geniecoupon.com`;
+  
 
   // Patch #savings-impact value
   const savingsNode = jsonld["@graph"].find((n: any) =>
