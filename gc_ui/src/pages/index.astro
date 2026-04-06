@@ -329,7 +329,7 @@ function getCurrentMonthYear() {
   const now = new Date();
   const month = now.toLocaleString("en-US", { month: "long" }); // e.g. "Sep"
   const year = now.getFullYear(); // e.g. 2025
-  return ` ${month}, ${year}`;
+  return ` ${month} ${year}`;
 }
 
 const suffix = getCurrentMonthYear();
@@ -422,7 +422,7 @@ const lcpSrcset =
                 </div>
                 <div class="store-hero-meta">
                   <h1 class="store-hero-name">
-                    {store.name} Verified Promo Codes & Coupons - {suffix}
+                    {store.name} Promo Codes & Coupons - Verified {suffix}
                   </h1>
                   {storeMeta.description && (
                     <p class="store-hero-desc">{storeMeta.description}</p>

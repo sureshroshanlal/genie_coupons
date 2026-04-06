@@ -25,5 +25,5 @@ export function cdnSrcset(src, widths = [516, 800, 1200]) {
 export function cdnThumb(src, width = 96, quality = 80) {
   if (!src || !src.startsWith(SUPABASE_BASE)) return cdnUrl(src);
   const path = src.replace(SUPABASE_BASE + "/", "");
-  return `/cdn-transform/${path}?width=${width}&quality=${quality}`;
+  return `/cdn-transform/${path}?width=${width}&quality=${quality}&resize=contain`;
 }
