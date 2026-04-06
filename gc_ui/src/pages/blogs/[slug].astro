@@ -128,6 +128,15 @@ if (safeBodyHtml) {
     }
   );
 }
+
+let breadcrumbs: any[] = [];
+
+    breadcrumbs = [
+      { name: "Home", url: "https://geniecoupon.com" },
+      { name: "Blogs", url: "https://geniecoupon.com/blogs" },
+      { name: post?.title, url: `https://geniecoupon.com/blogs/${slug}` },
+    ];
+
 ---
 
 <Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
@@ -265,7 +274,7 @@ if (safeBodyHtml) {
                   >
                     Subscribe and Stay Updated.
                   </h3>
-                  <SubscribeBox client:visible source={post.slug} />
+                  <SubscribeBox client:visible source={slug} />
                 </div>
               </div>
 
