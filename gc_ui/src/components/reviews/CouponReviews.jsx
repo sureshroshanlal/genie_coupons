@@ -1,6 +1,6 @@
 // src/components/reviews/CouponReviews.jsx
 import { useEffect, useState } from "react";
-import { useAuth, AuthProvider } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
@@ -106,7 +106,7 @@ function CouponReviewsInner({
   initialReviews = null,
   initialAggregate = null,
 }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [reviews, setReviews] = useState(initialReviews || []);
   const [aggregate, setAggregate] = useState(
     initialAggregate || { avg_rating: 0, total: 0 },
@@ -115,14 +115,19 @@ function CouponReviewsInner({
   const [open, setOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  const isLoading = authLoading || loading;
+
   async function fetchReviews() {
     try {
-      const res = await fetch(`${API}/reviews/${couponId}`);
+      const res = await fetch(`${API}/reviews/${couponId}`, {
+        credentials: "include",
+      });
       if (!res.ok) return;
       const data = await res.json();
       setReviews(data.reviews || []);
       setAggregate(data.aggregate || { avg_rating: 0, total: 0 });
-    } catch (_) {
+    } catch (err) {
+      console.warn("fetchReviews failed", err);
     } finally {
       setLoading(false);
     }
@@ -187,7 +192,11 @@ function CouponReviewsInner({
               paddingTop: reviews.length ? 8 : 0,
             }}
           >
-            {user ? (
+            {authLoading ? (
+              <p style={{ fontSize: 12, color: "#555", margin: 0 }}>
+                Checking your login...
+              </p>
+            ) : user ? (
               userHasReviewed ? (
                 <p style={{ fontSize: 12, color: "#555", margin: 0 }}>
                   You've already reviewed this coupon.
@@ -231,9 +240,5 @@ function CouponReviewsInner({
 }
 
 export default function CouponReviews(props) {
-  return (
-    <AuthProvider>
-      <CouponReviewsInner {...props} />
-    </AuthProvider>
-  );
+  return <CouponReviewsInner {...props} />;
 }

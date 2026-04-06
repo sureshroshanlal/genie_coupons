@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import SeoHead from "../components/SeoHead.astro";
+import { AuthProvider } from "../context/AuthContext";
 
 const { meta = {} } = Astro.props as {
   meta?: {
@@ -22,7 +23,9 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
   <meta name="theme-color" content="#181818" />
 
   <body class="min-h-screen">
-    <slot />
+    <AuthProvider>
+      <slot />
+    </AuthProvider>
     {
       GA_ID && (
         <script
