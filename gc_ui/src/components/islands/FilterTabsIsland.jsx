@@ -21,15 +21,17 @@ export default function FilterTabsIsland({ counts = {}, listId }) {
     const container = document.getElementById(listId);
     if (!container) return;
 
-    const cards = container.querySelectorAll(".coupon-card");
-    cards.forEach((card) => {
+    const items = container.querySelectorAll("[data-coupon-wrapper]");
+    items.forEach((item) => {
+      const card = item.querySelector(".coupon-card");
+      if (!card) return;
       const type = card.dataset.type || "deal";
       const isEditor = card.dataset.editor === "true";
       const show =
         active === "all" ||
         active === type ||
         (active === "editor" && isEditor);
-      card.style.display = show ? "block" : "none";
+      item.style.display = show ? "" : "none";
     });
   }, [active, listId]);
 
