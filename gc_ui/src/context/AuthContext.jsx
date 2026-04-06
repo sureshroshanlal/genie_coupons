@@ -1,13 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-import {
-  subscribeAuth,
-  getAuthState,
-  refreshAuth,
-  setAuthUser,
-  clearAuthUser,
-} from "../stores/authStore";
-
 const AuthContext = createContext(null);
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
@@ -16,16 +8,40 @@ const API = import.meta.env.PUBLIC_API_BASE_URL;
 let mePromise = null;
 
 export function AuthProvider({ children }) {
-  // const [user, setUser] = useState(null);
-  // const [loading, setLoading] = useState(true);
-
-  const [auth, setAuth] = useState(getAuthState());
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = subscribeAuth(setAuth);
-    refreshAuth();
-    return unsubscribe;
+    if (!mePromise) fetchMe();
   }, []);
+
+  async function fetchMe() {
+    if (mePromise) return mePromise;
+
+    mePromise = (async () => {
+      try {
+        const res = await fetch(`${API}/auth/me`, {
+          credentials: "include",
+        });
+
+        if (res.ok) {
+          const { user } = await res.json();
+          setUser(user);
+          return user;
+        } else {
+          setUser(null);
+          return null;
+        }
+      } catch {
+        setUser(null);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    return mePromise;
+  }
 
   function resetAuthCache() {
     mePromise = null;
@@ -42,8 +58,8 @@ export function AuthProvider({ children }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Login failed");
 
-    setAuthUser(data.user ?? null);
-    window.dispatchEvent(new CustomEvent("auth:changed"));
+    setUser(data.user);
+    resetAuthCache();
     return data.user;
   }
 
@@ -80,13 +96,13 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        user: auth.user,
-        loading: auth.loading,
+        user,
+        loading,
         loginWithEmail,
         signupWithEmail,
         loginWithGoogle,
         logout,
-        refreshUser: refreshAuth,
+        refreshUser: fetchMe,
       }}
     >
       {children}

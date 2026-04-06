@@ -1,6 +1,6 @@
 // src/components/reviews/CouponReviews.jsx
 import { useEffect, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth, AuthProvider } from "../../context/AuthContext";
 import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
@@ -106,7 +106,7 @@ function CouponReviewsInner({
   initialReviews = null,
   initialAggregate = null,
 }) {
-  const { user, loading: authLoading, refreshUser } = useAuth();
+  const { user } = useAuth();
   const [reviews, setReviews] = useState(initialReviews || []);
   const [aggregate, setAggregate] = useState(
     initialAggregate || { avg_rating: 0, total: 0 },
@@ -117,9 +117,7 @@ function CouponReviewsInner({
 
   async function fetchReviews() {
     try {
-      const res = await fetch(`${API}/reviews/${couponId}`, {
-        credentials: "include",
-      });
+      const res = await fetch(`${API}/reviews/${couponId}`);
       if (!res.ok) return;
       const data = await res.json();
       setReviews(data.reviews || []);
@@ -129,13 +127,6 @@ function CouponReviewsInner({
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    refreshUser();
-    const syncAuth = () => refreshUser();
-    window.addEventListener("auth:changed", syncAuth);
-    return () => window.removeEventListener("auth:changed", syncAuth);
-  }, [refreshUser]);
 
   useEffect(() => {
     if (initialReviews !== null) return;
