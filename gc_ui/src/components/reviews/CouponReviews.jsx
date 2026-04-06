@@ -5,6 +5,8 @@ import ReviewList from "./ReviewList";
 import ReviewForm from "./ReviewForm";
 import LoginModal from "../auth/LoginModal";
 import { cdnUrl } from "../../utils/cdnUrl.js";
+import { useStore } from "@nanostores/react";
+import { userStore } from "../../stores/authStore";
 
 const API = import.meta.env.PUBLIC_API_BASE_URL;
 
@@ -106,7 +108,7 @@ function CouponReviewsInner({
   initialReviews = null,
   initialAggregate = null,
 }) {
-  const { user } = useAuth();
+  const user = useStore(userStore);
   const [reviews, setReviews] = useState(initialReviews || []);
   const [aggregate, setAggregate] = useState(
     initialAggregate || { avg_rating: 0, total: 0 },

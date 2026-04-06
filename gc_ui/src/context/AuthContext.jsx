@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { userStore, loadingStore } from "../stores/authStore";
 
 const AuthContext = createContext(null);
 
@@ -27,6 +28,7 @@ export function AuthProvider({ children }) {
         if (res.ok) {
           const { user } = await res.json();
           setUser(user);
+          userStore.set(user);
           return user;
         } else {
           setUser(null);
@@ -34,6 +36,7 @@ export function AuthProvider({ children }) {
         }
       } catch {
         setUser(null);
+        userStore.set(null);
         return null;
       } finally {
         setLoading(false);
@@ -59,6 +62,8 @@ export function AuthProvider({ children }) {
     if (!res.ok) throw new Error(data.error || "Login failed");
 
     setUser(data.user);
+    userStore.set(data.user);
+    
     resetAuthCache();
     return data.user;
   }
@@ -89,6 +94,8 @@ export function AuthProvider({ children }) {
       });
     } finally {
       setUser(null);
+      userStore.set(null);
+      loadingStore.set(false);
       resetAuthCache();
     }
   }
