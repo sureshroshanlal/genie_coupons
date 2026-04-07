@@ -97,7 +97,6 @@ const nav = [
 <main id="content"></main>
 
 <style>
-
   .header-search-wrap {
     position: relative;
     width: 100%;
@@ -148,6 +147,20 @@ const nav = [
       max-width: 100%;
       order: 3;
       flex: 0 0 100%;
+    }
+
+    header nav {
+      order: 4;
+      flex: 1;
+    }
+
+    header nav ul {
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    header .shrink-0:last-child {
+      order: 4;
     }
 
     .header-nav-link {

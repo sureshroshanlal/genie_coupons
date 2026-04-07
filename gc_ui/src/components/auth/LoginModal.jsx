@@ -89,7 +89,7 @@ export default function LoginModal({ isOpen, onClose, defaultTab = "login" }) {
 
         {/* Logo */}
         <div className="gc-modal__logo">
-          <img src="/logo.webp" alt="Genie Coupon" height="36" />
+          <img src="/genie_coupon_logo.webp" alt="Genie Coupon" height="36" />
         </div>
 
         {/* Tabs */}

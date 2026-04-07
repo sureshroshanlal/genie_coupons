@@ -42,15 +42,18 @@ const year = new Date().getFullYear();
           </li>
           <li>
             <a href={`${base}/affiliate-disclosure`} class="gc-footer__link"
-              >Affiliate Disclosure</a>
+              >Affiliate Disclosure</a
+            >
           </li>
           <li>
             <a href={`${base}/privacy-policy`} class="gc-footer__link"
-              >Privacy Policy</a>
+              >Privacy Policy</a
+            >
           </li>
           <li>
             <a href={`${base}/terms-and-conditions`} class="gc-footer__link"
-              >Terms & Conditions</a>
+              >Terms & Conditions</a
+            >
           </li>
         </ul>
       </div>
@@ -60,8 +63,8 @@ const year = new Date().getFullYear();
         <ul class="gc-footer__links">
           <li><a href={`${base}/stores`} class="gc-footer__link">Stores</a></li>
           <li>
-            <a href={`${base}/categories`} class="gc-footer__link"
-              >Categories</a>
+            <a href={`${base}/categories`} class="gc-footer__link">Categories</a
+            >
           </li>
           <li><a href={`${base}/blogs`} class="gc-footer__link">Blogs</a></li>
           <li>
@@ -69,7 +72,8 @@ const year = new Date().getFullYear();
           </li>
           <li>
             <a href={`${base}/how-it-works`} class="gc-footer__link"
-              >How it Works</a>
+              >How it Works</a
+            >
           </li>
           <li><a href={`${base}/faq`} class="gc-footer__link">FAQ</a></li>
         </ul>
@@ -413,6 +417,10 @@ const year = new Date().getFullYear();
       flex: none;
       width: 100%;
     }
+    .gc-footer__logo-link img {
+      width: 100px;
+      max-width: 100px;
+    }
     .gc-footer__nav {
       width: 100%;
       grid-template-columns: repeat(2, 1fr);
@@ -420,6 +428,15 @@ const year = new Date().getFullYear();
     }
     .gc-footer__bottom {
       padding: 16px 20px;
+    }
+    .gc-footer__socials {
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    .gc-social-btn {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
     }
   }
 
