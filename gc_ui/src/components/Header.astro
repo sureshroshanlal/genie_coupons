@@ -143,43 +143,28 @@ const nav = [
       gap: 0.5rem;
     }
 
-    /* Logo: row 1, left */
-    header .max-w-7xl > div > a:first-of-type {
-      order: 1;
-      flex-shrink: 0;
-    }
-
-    /* Search: row 2, full width */
-    header .max-w-7xl > div > div {
-      order: 2;
-      flex: 0 0 100%;
-      padding: 0;
-    }
-
     .header-search-wrap {
       max-width: 100%;
+      order: 3;
+      flex: 0 0 100%;
     }
 
-    /* Nav + Auth: row 3, together */
     header nav {
-      order: 3;
+      order: 4;
       flex: 1;
-      min-width: 0;
     }
 
     header nav ul {
-      display: flex;
+      justify-content: space-between;
       width: 100%;
-      justify-content: space-around;
     }
 
     header .shrink-0:last-child {
-      order: 3;
-      flex-shrink: 0;
+      order: 4;
     }
 
     .header-nav-link {
-      padding: 0.25rem 0.4rem;
+      padding: 0.25rem 0.5rem;
       font-size: 0.8rem;
     }
   }

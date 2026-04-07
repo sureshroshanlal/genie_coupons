@@ -6,12 +6,13 @@ const year = new Date().getFullYear();
 
 <footer role="contentinfo" class="gc-footer">
   <div class="gc-footer__inner">
-    <!-- Row 1: Brand + Why Genie -->
-    <div class="gc-footer__top-row">
-      <!-- Brand block -->
-      <div class="gc-footer__brand">
+    <!-- Brand block -->
+    <div class="gc-footer__brand">
+      <a
         href={isSubdomain ? "https://geniecoupon.com" : "/"}
-        aria-label="Genie Coupon home" class="gc-footer__logo-link" >
+        aria-label="Genie Coupon home"
+        class="gc-footer__logo-link"
+      >
         <img
           src="/GC_Footer_Logo.webp"
           alt="Genie Coupon"
@@ -20,178 +21,192 @@ const year = new Date().getFullYear();
           loading="lazy"
           decoding="async"
         />
-      </div>
+      </a>
+
       <p class="gc-footer__tagline">
         Savings you can count on — every single day.
       </p>
     </div>
 
-    <!-- Why Genie -->
-    <div class="gc-footer__col gc-footer__why">
-      <p class="gc-footer__col-heading">Why Genie</p>
-      <div class="gc-footer__trust">
-        <div class="gc-trust-item">
-          <span class="gc-trust-item__check" aria-hidden="true">✓</span>
-          <div>
-            <p class="gc-trust-item__title">Verified Coupons</p>
-            <p class="gc-trust-item__desc">
-              Every code tested before it goes live.
-            </p>
-          </div>
-        </div>
-        <div class="gc-trust-item">
-          <span class="gc-trust-item__check" aria-hidden="true">✓</span>
-          <div>
-            <p class="gc-trust-item__title">100+ Stores</p>
-            <p class="gc-trust-item__desc">Top brands across all categories.</p>
-          </div>
-        </div>
-        <div class="gc-trust-item">
-          <span class="gc-trust-item__check" aria-hidden="true">✓</span>
-          <div>
-            <p class="gc-trust-item__title">Daily Updates</p>
-            <p class="gc-trust-item__desc">Fresh deals added every day.</p>
-          </div>
-        </div>
+    <!-- Nav columns -->
+    <div class="gc-footer__nav">
+      <div class="gc-footer__col">
+        <p class="gc-footer__col-heading">Company</p>
+        <ul class="gc-footer__links">
+          <li><a href={`${base}/about`} class="gc-footer__link">About</a></li>
+          <li>
+            <a href={`${base}/contact`} class="gc-footer__link">Contact</a>
+          </li>
+          <li>
+            <a href={`${base}/careers`} class="gc-footer__link">Careers</a>
+          </li>
+          <li>
+            <a href={`${base}/affiliate-disclosure`} class="gc-footer__link"
+              >Affiliate Disclosure</a
+            >
+          </li>
+          <li>
+            <a href={`${base}/privacy-policy`} class="gc-footer__link"
+              >Privacy Policy</a
+            >
+          </li>
+          <li>
+            <a href={`${base}/terms-and-conditions`} class="gc-footer__link"
+              >Terms & Conditions</a
+            >
+          </li>
+        </ul>
       </div>
-      <div class="gc-footer__socials">
-        <a
-          href="https://www.facebook.com/profile.php?id=61575535957327"
-          aria-label="Facebook"
-          class="gc-social-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            ><path
-              d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4v-3h2.4V9.6c0-2.4 1.4-3.8 3.6-3.8 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.5.7-1.5 1.5V12h2.6l-.4 3h-2.2v7A10 10 0 0 0 22 12z"
-            ></path></svg
+
+      <div class="gc-footer__col">
+        <p class="gc-footer__col-heading">Resources</p>
+        <ul class="gc-footer__links">
+          <li><a href={`${base}/stores`} class="gc-footer__link">Stores</a></li>
+          <li>
+            <a href={`${base}/categories`} class="gc-footer__link">Categories</a
+            >
+          </li>
+          <li><a href={`${base}/blogs`} class="gc-footer__link">Blogs</a></li>
+          <li>
+            <a href={`${base}/authors`} class="gc-footer__link">Authors</a>
+          </li>
+          <li>
+            <a href={`${base}/how-it-works`} class="gc-footer__link"
+              >How it Works</a
+            >
+          </li>
+          <li><a href={`${base}/faq`} class="gc-footer__link">FAQ</a></li>
+        </ul>
+      </div>
+
+      <div class="gc-footer__col">
+        <p class="gc-footer__col-heading">Why Genie</p>
+        <div class="gc-footer__trust">
+          <div class="gc-trust-item">
+            <span class="gc-trust-item__check" aria-hidden="true">✓</span>
+            <div>
+              <p class="gc-trust-item__title">Verified Coupons</p>
+              <p class="gc-trust-item__desc">
+                Every code tested before it goes live.
+              </p>
+            </div>
+          </div>
+          <div class="gc-trust-item">
+            <span class="gc-trust-item__check" aria-hidden="true">✓</span>
+            <div>
+              <p class="gc-trust-item__title">100+ Stores</p>
+              <p class="gc-trust-item__desc">
+                Top brands across all categories.
+              </p>
+            </div>
+          </div>
+          <div class="gc-trust-item">
+            <span class="gc-trust-item__check" aria-hidden="true">✓</span>
+            <div>
+              <p class="gc-trust-item__title">Daily Updates</p>
+              <p class="gc-trust-item__desc">Fresh deals added every day.</p>
+            </div>
+          </div>
+        </div>
+        <div class="gc-footer__socials">
+          <a
+            href="https://www.facebook.com/profile.php?id=61575535957327"
+            aria-label="Facebook"
+            class="gc-social-btn"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-        </a>
-        <a
-          href="https://www.instagram.com/genie_coupon/"
-          aria-label="Instagram"
-          class="gc-social-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            ><path
-              d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm4.8-.9a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z"
-            ></path></svg
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              ><path
+                d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2.4v-3h2.4V9.6c0-2.4 1.4-3.8 3.6-3.8 1 0 2 .2 2 .2v2.2h-1.1c-1.1 0-1.5.7-1.5 1.5V12h2.6l-.4 3h-2.2v7A10 10 0 0 0 22 12z"
+              ></path></svg
+            >
+          </a>
+          <a
+            href="https://www.instagram.com/genie_coupon/"
+            aria-label="Instagram"
+            class="gc-social-btn"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-        </a>
-        <a
-          href="https://www.youtube.com/@GenieCoupon"
-          aria-label="YouTube"
-          class="gc-social-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            ><path
-              d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.2 3.5 12 3.5 12 3.5s-7.2 0-9.4.6A3 3 0 0 0 .5 6.2 31.2 31.2 0 0 0 0 12c0 1.9.2 3.9.5 5.8a3 3 0 0 0 2.1 2.1c2.2.6 9.4.6 9.4.6s7.2 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.9.5-5.8 0-1.9-.2-3.9-.5-5.8zM9.5 15.6V8.4l6.2 3.6-6.2 3.6z"
-            ></path></svg
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              ><path
+                d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm4.8-.9a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2z"
+              ></path></svg
+            >
+          </a>
+          <a
+            href="https://www.youtube.com/@GenieCoupon"
+            aria-label="YouTube"
+            class="gc-social-btn"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-        </a>
-        <a
-          href="https://x.com/GenieCouponz"
-          aria-label="X (Twitter)"
-          class="gc-social-btn"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            width="16"
-            height="16"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            ><path
-              d="M18.9 2H22l-7.7 8.8L23 22h-7.2l-5.6-7.3L4.9 22H2l8.2-9.4L1 2h7.3l5 6.6L18.9 2z"
-            ></path></svg
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              ><path
+                d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.2 3.5 12 3.5 12 3.5s-7.2 0-9.4.6A3 3 0 0 0 .5 6.2 31.2 31.2 0 0 0 0 12c0 1.9.2 3.9.5 5.8a3 3 0 0 0 2.1 2.1c2.2.6 9.4.6 9.4.6s7.2 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.9.5-5.8 0-1.9-.2-3.9-.5-5.8zM9.5 15.6V8.4l6.2 3.6-6.2 3.6z"
+              ></path></svg
+            >
+          </a>
+          <a
+            href="https://x.com/GenieCouponz"
+            aria-label="X (Twitter)"
+            class="gc-social-btn"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-        </a>
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              ><path
+                d="M18.9 2H22l-7.7 8.8L23 22h-7.2l-5.6-7.3L4.9 22H2l8.2-9.4L1 2h7.3l5 6.6L18.9 2z"
+              ></path></svg
+            >
+          </a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Row 2: Company + Resources -->
-  <div class="gc-footer__nav">
-    <div class="gc-footer__col">
-      <p class="gc-footer__col-heading">Company</p>
-      <ul class="gc-footer__links">
-        <li><a href={`${base}/about`} class="gc-footer__link">About</a></li>
-        <li><a href={`${base}/contact`} class="gc-footer__link">Contact</a></li>
-        <li><a href={`${base}/careers`} class="gc-footer__link">Careers</a></li>
-        <li>
-          <a href={`${base}/affiliate-disclosure`} class="gc-footer__link"
-            >Affiliate Disclosure</a>
-        </li>
-        <li>
-          <a href={`${base}/privacy-policy`} class="gc-footer__link"
-            >Privacy Policy</a>
-        </li>
-        <li>
-          <a href={`${base}/terms-and-conditions`} class="gc-footer__link"
-            >Terms & Conditions</a>
-        </li>
-      </ul>
-    </div>
-    <div class="gc-footer__col">
-      <p class="gc-footer__col-heading">Resources</p>
-      <ul class="gc-footer__links">
-        <li><a href={`${base}/stores`} class="gc-footer__link">Stores</a></li>
-        <li>
-          <a href={`${base}/categories`} class="gc-footer__link">Categories</a>
-        </li>
-        <li><a href={`${base}/blogs`} class="gc-footer__link">Blogs</a></li>
-        <li><a href={`${base}/authors`} class="gc-footer__link">Authors</a></li>
-        <li>
-          <a href={`${base}/how-it-works`} class="gc-footer__link"
-            >How it Works</a>
-        </li>
-        <li><a href={`${base}/faq`} class="gc-footer__link">FAQ</a></li>
-      </ul>
+  <!-- Bottom bar -->
+  <div class="gc-footer__bottom">
+    <div class="gc-footer__bottom-inner">
+      <p class="gc-footer__copy">© {year} Genie Coupon. All rights reserved.</p>
+      <a href="#top" class="gc-footer__top-link">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          aria-hidden="true"
+        >
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+        Back to top
+      </a>
     </div>
   </div>
 </footer>
-
-<!-- Bottom bar -->
-<div class="gc-footer__bottom">
-  <div class="gc-footer__bottom-inner">
-    <p class="gc-footer__copy">© {year} Genie Coupon. All rights reserved.</p>
-    <a href="#top" class="gc-footer__top-link">
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        aria-hidden="true"
-      >
-        <polyline points="18 15 12 9 6 15"></polyline>
-      </svg>
-      Back to top
-    </a>
-  </div>
-</div>
 
 <style>
   .gc-footer {
@@ -382,6 +397,7 @@ const year = new Date().getFullYear();
     color: #89e900;
   }
 
+  /* Responsive */
   @media (max-width: 1024px) {
     .gc-footer__inner {
       gap: 32px;
@@ -395,49 +411,32 @@ const year = new Date().getFullYear();
     .gc-footer__inner {
       flex-direction: column;
       padding: 40px 20px 32px;
-      gap: 28px;
+      gap: 36px;
     }
-
-    /* Row 1: brand + why genie side by side */
-    .gc-footer__top-row {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-
     .gc-footer__brand {
-      flex: 0 0 44%;
-    }
-
-    .gc-footer__why {
-      flex: 1;
-    }
-
-    /* Row 2: company + resources */
-    .gc-footer__nav {
+      flex: none;
       width: 100%;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
     }
-
     .gc-footer__logo-link img {
       width: 100px;
       max-width: 100px;
     }
-
-    .gc-footer__socials {
-      flex-wrap: nowrap;
-      gap: 6px;
+    .gc-footer__nav {
+      width: 100%;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
     }
-
-    .gc-social-btn {
-      width: 32px;
-      height: 32px;
-      flex-shrink: 0;
-    }
-
     .gc-footer__bottom {
       padding: 16px 20px;
+    }
+    .gc-footer__socials {
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    .gc-social-btn {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
     }
   }
 
@@ -445,8 +444,9 @@ const year = new Date().getFullYear();
     .gc-footer__inner {
       padding: 32px 16px 24px;
     }
-    .gc-footer__brand {
-      flex: 0 0 42%;
+    .gc-footer__nav {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
     }
   }
 </style>
