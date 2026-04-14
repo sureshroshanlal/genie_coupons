@@ -273,7 +273,7 @@ export function buildStoreSchema({
           : {}),
 
         // For free offers
-        ...(c.discount_type === "" || c.discount_type === null ||
+        ...(c.discount_type === "none" || c.discount_type === null ||
         c.title?.toLowerCase().includes("free")
           ? { price: "0", priceCurrency: "USD" }
           : {}),
