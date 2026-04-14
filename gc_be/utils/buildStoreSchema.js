@@ -5,7 +5,8 @@ const SITE_URL = "https://geniecoupon.com";
 const SITE_NAME = "Genie Coupon";
 const LOGO_URL = "https://geniecoupon.com/genie_coupon_logo.webp";
 
-const SUPABASE_BASE = "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
+const SUPABASE_BASE =
+  "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
 
 // at top of file, add helper:
 function toCdnUrl(url) {
@@ -174,12 +175,14 @@ export function buildStoreSchema({
       worksFor: {
         "@id": `${SITE_URL}/#organization`,
       },
-      ...(store.verifier.avatar_url ? {
-      image: {
-        "@type": "ImageObject",
-        url: store.verifier.avatar_url || "",
-      }
-    } : {}),
+      ...(store.verifier.avatar_url
+        ? {
+            image: {
+              "@type": "ImageObject",
+              url: store.verifier.avatar_url || "",
+            },
+          }
+        : {}),
     });
   }
 
@@ -248,7 +251,7 @@ export function buildStoreSchema({
     "@type": "ItemList",
     "@id": `${storeUrl}/#coupon-list`,
     name: `Active ${store.name} Coupons`,
-    numberOfItems: String(store.active_coupons || coupons.length || 0),
+    numberOfItems: String(coupons.length || 0),
     itemListElement: coupons.map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -257,17 +260,32 @@ export function buildStoreSchema({
         name: c.title || "",
         description: c.description || "",
         url: storeUrl,
-        discount: c.discount_value? `${c.discount_value}${c.discount_type === "percentage" ? "%" : " USD"} off` : undefined,
-        discountCode: c.code || undefined,
         availability: "https://schema.org/InStock",
-        validity: c.ends_at ? `until ${new Date(c.ends_at).toLocaleDateString()}` : "Valid until further notice",
-        seller: {
-          "@id": `${storeUrl}/#merchant`,
-        },
+        seller: { "@id": `${storeUrl}/#merchant` },
+
+        // Discount handling
+        ...(c.discount_value && c.discount_type === "percent"
+          ? { discount: `${c.discount_value}%` }
+          : {}),
+
+        ...(c.discount_value && c.discount_type === "flat"
+          ? { discount: `${c.discount_value} USD off` }
+          : {}),
+
+        // For free offers
+        ...(c.discount_type === "" || c.discount_type === null ||
+        c.title?.toLowerCase().includes("free")
+          ? { price: "0", priceCurrency: "USD" }
+          : {}),
+
+        // Code
+        ...(c.code ? { discountCode: c.code } : {}),
+
+        // Expiry
+        ...(c.ends_at ? { validThrough: c.ends_at } : {}),
       },
     })),
   });
-
   // ── 12. ItemList — Related Stores ─────────────────────────────────────────
   graph.push({
     "@type": "ItemList",
