@@ -130,26 +130,25 @@ async function writeSitemap(filename, items) {
     console.log(`  Skipped (empty): ${filename}`);
     return;
   }
-
   const finalPath = path.join(OUT_DIR, filename);
   const tmpPath = finalPath + ".tmp";
 
-  // For subdomain URLs (stores), use their full URL directly
-  // For relative URLs, SitemapStream prepends HOSTNAME
-  const smStream = new SitemapStream({ hostname: HOSTNAME });
-
-  items.forEach((i) => {
-    smStream.write({
+  await new Promise((resolve, reject) => {
+    const smStream = new SitemapStream({ hostname: HOSTNAME });
+    const writeStream = fs.createWriteStream(tmpPath);
+    smStream.pipe(writeStream);
+    items.forEach((i) => smStream.write({
       url: i.url,
       lastmod: i.lastmod,
       changefreq: i.changefreq,
       priority: i.priority,
-    });
+    }));
+    smStream.end();
+    writeStream.on("finish", resolve);
+    writeStream.on("error", reject);
+    smStream.on("error", reject);
   });
 
-  smStream.end();
-  const buffer = await streamToPromise(smStream);
-  fs.writeFileSync(tmpPath, buffer);
   fs.renameSync(tmpPath, finalPath);
   console.log(`  Wrote: ${finalPath} (${items.length} URLs)`);
 }

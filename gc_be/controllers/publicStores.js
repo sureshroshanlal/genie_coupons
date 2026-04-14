@@ -17,6 +17,8 @@ import { getOrigin, getPath } from "../utils/request-helper.js";
 import { makeListCacheKey } from "../utils/cacheKey.js";
 import { buildStoreSchema } from "../utils/buildStoreSchema.js";
 
+const SITE_URL = "geniecoupon.com";
+
 /**
  * GET /public/v1/stores
  * Cursor-based pagination
@@ -73,7 +75,7 @@ export async function list(req, res) {
         const { rows, total, nextCursor } = await StoresRepo.list(params);
 
         // Build canonical (may be async)
-        const canonical = `${origin}/stores?sort=${sort}&limit=${limit}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}`;
+        const canonical = `https://${SITE_URL}/stores?sort=${sort}&limit=${limit}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}`;
 
         return {
           data: rows,
@@ -116,7 +118,6 @@ export async function detail(req, res) {
       "editor",
     );
     const locale = valLocale(req.query.locale) || deriveLocale(req);
-    const SITE_URL = "https://geniecoupon.com";
 
     const params = {
       slug,
@@ -161,7 +162,7 @@ export async function detail(req, res) {
 
         const relatedPromise = StoresRepo.relatedByCategories({
           merchantId: store.id,
-          category_id : store.category_id || null,
+          category_id: store.category_id || null,
           subcategory_id: store.subcategory_id || null,
           limit: 9,
         }).catch((e) => {
@@ -308,7 +309,7 @@ export async function detail(req, res) {
             title: r.title,
             description: r.description,
             type_text: r.type_text,
-            code: null,
+            code: r.code || null,
             ends_at: r.ends_at,
             show_proof: !!r.show_proof,
             proof_image_url: r.proof_image_url || null,
@@ -365,7 +366,7 @@ export async function detail(req, res) {
         // };
 
         // canonical + seo
-        const canonical = `${origin}/stores/${slug}`;
+        const canonical = `https://${slug}.${SITE_URL}/`;
 
         const seo = StoresRepo.buildSeo(store, {
           canonical,

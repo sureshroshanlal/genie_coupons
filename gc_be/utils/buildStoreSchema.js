@@ -1,9 +1,9 @@
 // utils/buildStoreSchema.js
 // Builds the full JSON-LD @graph for a SavingHarbor store page.
 
-const SITE_URL = "https://www.geniecoupon.com";
+const SITE_URL = "https://geniecoupon.com";
 const SITE_NAME = "Genie Coupon";
-const LOGO_URL = "https://www.geniecoupon.com/genie_coupon_logo.webp";
+const LOGO_URL = "https://geniecoupon.com/genie_coupon_logo.webp";
 
 const SUPABASE_BASE = "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
 
@@ -11,7 +11,7 @@ const SUPABASE_BASE = "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/objec
 function toCdnUrl(url) {
   if (!url) return url;
   return url.startsWith(SUPABASE_BASE)
-    ? url.replace(SUPABASE_BASE, "https://www.geniecoupon.com/cdn")
+    ? url.replace(SUPABASE_BASE, "https://geniecoupon.com/cdn")
     : url;
 }
 
@@ -91,6 +91,7 @@ export function buildStoreSchema({
     breadcrumb: {
       "@id": `${storeUrl}/#breadcrumb`,
     },
+    datePublished: store.created_at,
     dateModified: lastUpdated,
     primaryImageOfPage: {
       "@type": "ImageObject",
@@ -254,10 +255,15 @@ export function buildStoreSchema({
       item: {
         "@type": "Offer",
         name: c.title || "",
+        description: c.description || "",
+        discountCode: c.code || undefined,
+        discount: c.discount_value? `${c.discount_value}${c.discount_type === "percentage" ? "%" : " USD"} off` : undefined,
         url: storeUrl,
-        price: "0",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
+        validity: c.ends_at ? `until ${new Date(c.ends_at).toLocaleDateString()}` : "Valid until further notice",
+        priceSpecification:{
+          "@type": "PriceSpecification",
+          price: String(c.discount_value)     
+        },   
         seller: {
           "@id": `${storeUrl}/#merchant`,
         },
