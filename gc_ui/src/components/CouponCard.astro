@@ -187,7 +187,7 @@ const clickCount =
 
     <!-- Reveal button island -->
     <RevealButton
-      client:visible
+      client:load
       offerId={id}
       couponType={c.coupon_type || "deal"}
       storeSlug={storeSlug}
@@ -197,7 +197,7 @@ const clickCount =
 
   <!-- Reviews island — renders inline, no portal -->
   <CouponReviews
-    client:visible
+    client:load
     couponId={id}
     initialReviews={c.reviews ?? null}
     initialAggregate={c.review_aggregate ?? null}
