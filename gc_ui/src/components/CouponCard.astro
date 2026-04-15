@@ -196,6 +196,23 @@ const clickCount =
   </div>
 
   <!-- Reviews island — renders inline, no portal -->
+  <!-- Good: Static summary rendered on server -->
+  <div class="reviews-summary mt-3 text-xs">
+    {
+      c.review_aggregate?.total > 0 ? (
+        <>
+          <span class="text-[#89E900]">⭐ {c.review_aggregate.avg_rating}</span>
+          <span class="text-[#B0B0A8]">
+            {" "}
+            • {c.review_aggregate.total} reviews
+          </span>
+        </>
+      ) : (
+        <span class="text-[#707068]">No reviews yet</span>
+      )
+    }
+  </div>
+  
   <CouponReviews
     client:load
     couponId={id}
