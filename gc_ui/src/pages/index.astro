@@ -77,6 +77,7 @@ type StoreDetail = {
   }[];
   faqs?: { question: string; answer: string }[];
   trust_text?: string | null;
+  proofs?: any[];
   verifier?: {
     id: number | string;
     name: string;
@@ -146,7 +147,7 @@ let breadcrumbs: any[] = [];
 if (isStoreSubdomain && storeSlug) {
   try {
     const resp = await api.get<StoreDetailResponse>(
-      `/stores/${storeSlug}?limit100`,
+      `/stores/${storeSlug}?limit=100`,
       {},
       { retries: 2, timeout: 8000 },
     );
@@ -191,12 +192,7 @@ if (isStoreSubdomain && storeSlug) {
       }
     }
 
-    try {
-      const res: any = await api.get(`/stores/${store.id}/proofs`);
-      proofs = res.proofs || [];
-    } catch (e) {
-      console.error("Error fetching proofs:", e);
-    }
+    proofs = (store as any)?.proofs || [];
   } catch (e) {
     console.error("Error fetching store:", e);
     return Astro.redirect("/404");
@@ -276,7 +272,6 @@ const pageDesc = isStoreSubdomain
 const canonical = isStoreSubdomain
   ? storeMeta?.canonical || `https://${storeSlug}.geniecoupon.com`
   : "https://geniecoupon.com";
-const jsonld = storeMeta?.jsonld || null;
 
 const couponItems = store?.coupons?.items || [];
 const totalCoupons = store?.coupons?.total || 0;
@@ -290,40 +285,110 @@ try {
   console.error("Failed to fetch stats:", e);
 }
 
-if (jsonld?.["@graph"]) {
-  const storeUrl = `https://${store?.slug}.geniecoupon.com`;
+const SITE_URL = "https://geniecoupon.com";
+const SITE_NAME = "Genie Coupon";
+const LOGO_URL = "https://geniecoupon.com/genie_coupon_logo.webp";
 
-  // Patch #savings-impact value
-  const savingsNode = jsonld["@graph"].find((n: any) =>
-    n["@id"]?.endsWith("#savings-impact"),
-  );
-  if (savingsNode) savingsNode.value = String(totalSavings);
+const homeJsonld = !isStoreSubdomain
+  ? {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: SITE_NAME,
+          url: SITE_URL,
+          logo: {
+            "@type": "ImageObject",
+            url: LOGO_URL,
+          },
+        },
+        {
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          url: SITE_URL,
+          name: SITE_NAME,
+          publisher: { "@id": `${SITE_URL}/#organization` },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: `${SITE_URL}/stores?q={search_term_string}`,
+            },
+            "query-input": "required name=search_term_string",
+          },
+        },
+        {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/#webpage`,
+          url: SITE_URL,
+          name: pageMeta.title,
+          description: pageMeta.description,
+          isPartOf: { "@id": `${SITE_URL}/#website` },
+          about: { "@id": `${SITE_URL}/#organization` },
+        },
+        ...(homeStores.length > 0
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${SITE_URL}/#featured-stores`,
+                name: "Featured Stores",
+                numberOfItems: String(homeStores.length),
+                itemListElement: homeStores.map((s: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: s.name,
+                  url: `https://${s.slug}.geniecoupon.com`,
+                })),
+              },
+            ]
+          : []),
+        ...(homeCoupons.length > 0
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${SITE_URL}/#featured-deals`,
+                name: "Featured Deals",
+                numberOfItems: String(homeCoupons.length),
+                itemListElement: homeCoupons.map((c: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  item: {
+                    "@type": "Offer",
+                    name: c.title || "",
+                    url: c.merchant?.slug
+                      ? `https://${c.merchant.slug}.geniecoupon.com`
+                      : SITE_URL,
+                    seller: {
+                      "@type": "Organization",
+                      name: c.merchant_name || c.merchant?.name || "",
+                    },
+                  },
+                })),
+              },
+            ]
+          : []),
+        ...(homeCategories.length > 0
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${SITE_URL}/#featured-categories`,
+                name: "Featured Categories",
+                numberOfItems: String(homeCategories.length),
+                itemListElement: homeCategories.map((cat: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: cat.name,
+                  url: `${SITE_URL}/categories/${cat.slug}`,
+                })),
+              },
+            ]
+          : []),
+      ],
+    }
+  : null;
 
-  // Remove any existing proof nodes built with empty/stale data on the backend
-  jsonld["@graph"] = jsonld["@graph"].filter(
-    (n: any) => !n["@id"]?.includes("#verification-proof-"),
-  );
-
-  const SUPABASE_BASE =
-    "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/object/public";
-  // Inject one node per proof (indexed)
-  (proofs || []).forEach((proof: { image_url: any }, i: number) => {
-    if (!proof?.image_url) return;
-    jsonld["@graph"].push({
-      "@type": "ImageObject",
-      "@id": `${storeUrl}/#verification-proof-${i + 1}`,
-      about: { "@id": `${storeUrl}/#merchant` },
-      name: `Coupon Verification Proof ${i + 1}`,
-      description: "Checkout screenshot showing successful coupon application.",
-      contentUrl:
-        proof.image_url?.replace(
-          SUPABASE_BASE,
-          "https://www.geniecoupon.com/cdn",
-        ) || proof.image_url,
-    });
-  });
-}
-
+const jsonld = isStoreSubdomain ? storeMeta?.jsonld || null : homeJsonld;
 // utility: returns "{Mon, YYYY}"
 function getCurrentMonthYear() {
   const now = new Date();

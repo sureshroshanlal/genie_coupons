@@ -69,7 +69,33 @@ const pageTitle =
   (post?.title ? `${post.title} - Genie Coupon` : "Blog - Genie Coupon");
 const pageDesc = meta.description || "Genie Coupon editorial.";
 const canonical = `https://geniecoupon.com${Astro.url.pathname}`;
-const jsonld = meta.jsonld;
+ const SITE_URL = "https://geniecoupon.com";
+ const jsonld = (meta.jsonld?.article || post) ? {
+   "@context": "https://schema.org",
+   "@graph": [
+     {
+       "@type": "WebPage",
+       "@id": `${SITE_URL}/blogs/${slug}/#webpage`,
+       url: canonical,
+       name: pageTitle,
+       description: pageDesc,
+       isPartOf: { "@id": `${SITE_URL}/#website` },
+       breadcrumb: { "@id": `${SITE_URL}/blogs/${slug}/#breadcrumb` },
+     },
+     ...(meta.jsonld?.breadcrumb ? [{
+       ...meta.jsonld.breadcrumb,
+       "@id": `${SITE_URL}/blogs/${slug}/#breadcrumb`,
+     }] : []),
+     ...(meta.jsonld?.article ? [{
+       ...meta.jsonld.article,
+       "@id": `${SITE_URL}/blogs/${slug}/#article`,
+       url: canonical,
+       description: pageDesc,
+       publisher: { "@id": `${SITE_URL}/#organization` },
+       mainEntityOfPage: { "@id": `${SITE_URL}/blogs/${slug}/#webpage` },
+     }] : []),
+   ],
+ } : null;
 
 const _ALLOWED_TAGS = [
   "h1","h2","h3","h4","h5","h6",
@@ -134,7 +160,7 @@ let breadcrumbs: any[] = [];
     breadcrumbs = [
       { name: "Home", url: "https://geniecoupon.com" },
       { name: "Blogs", url: "https://geniecoupon.com/blogs" },
-      { name: post?.title, url: `https://geniecoupon.com/blogs/${slug}` },
+      { name: post?.title || "Post", url: `https://geniecoupon.com/blogs/${slug}` },
     ];
 
 ---

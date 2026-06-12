@@ -85,14 +85,14 @@ function SkeletonCard() {
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
-export default function StoresGrid({ apiUrl, categorySlug }) {
-  const [stores, setStores] = useState([]);
+export default function StoresGrid({ apiUrl, categorySlug, initialStores = [], initialCursor = null, initialTotal = 0 }) {
+  const [stores, setStores] = useState(initialStores);
   const [selectedLetter, setSelectedLetter] = useState("All");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [cursor, setCursor] = useState(null);
-  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(!!initialCursor);
+  const [cursor, setCursor] = useState(initialCursor);
+  const [total, setTotal] = useState(initialTotal);
   const [error, setError] = useState(null);
   const loadMoreRef = useRef(null);
   const observerRef = useRef(null);
@@ -151,7 +151,8 @@ export default function StoresGrid({ apiUrl, categorySlug }) {
   }, [hasMore, loadingMore, loadMore]);
 
   useEffect(() => {
-    fetchStores("All", null, false);
+    if (initialStores.length === 0)
+      fetchStores("All", null, false);
   }, []);
 
   return (

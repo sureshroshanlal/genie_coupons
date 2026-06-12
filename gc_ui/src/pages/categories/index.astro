@@ -4,14 +4,75 @@ import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import CategoriesGrid from "../../components/CategoriesGrid.jsx";
 
-const pageTitle = "Categories - Genie Coupon";
-const pageDesc =
-  "Browse all categories and sub-categories with handpicked stores.";
-const canonical = "https://geniecoupon.com/categories";
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
+const SITE_URL = "https://geniecoupon.com";
+
+// ── SSR: fetch categories + first category's subcategories ────────────────────
+let initialCategories = [];
+let initialSubcategories = [];
+let initialSelectedCategory = null;
+
+try {
+  const res = await fetch(`${apiUrl}/categories?limit=100`);
+  const json = await res.json();
+  initialCategories = json?.data || [];
+
+  if (initialCategories.length > 0) {
+    initialSelectedCategory = initialCategories[0];
+    try {
+      const subRes = await fetch(`${apiUrl}/categories/${initialSelectedCategory.slug}`);
+      const subJson = await subRes.json();
+      initialSubcategories = subJson?.data?.subcategories || [];
+    } catch (e) {
+      console.error("SSR subcategories fetch failed:", e);
+    }
+  }
+} catch (e) {
+  console.error("SSR categories fetch failed:", e);
+}
+
+// ── JSON-LD ───────────────────────────────────────────────────────────────────
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/categories/#webpage`,
+      url: `${SITE_URL}/categories`,
+      name: "All Categories — Genie Coupon",
+      description: `Browse ${initialCategories.length}+ categories with handpicked stores and deals.`,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      breadcrumb: { "@id": `${SITE_URL}/categories/#breadcrumb` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/categories/#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Categories", item: `${SITE_URL}/categories` },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/categories/#category-list`,
+      name: "Coupon Categories",
+      numberOfItems: String(initialCategories.length),
+      itemListElement: initialCategories.map((cat: any, i: number) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: cat.name,
+        url: `${SITE_URL}/categories/${cat.slug}`,
+      })),
+    },
+  ],
+};
+
+const pageTitle = `All Categories (${initialCategories.length}+) — Genie Coupon`;
+const pageDesc = `Browse ${initialCategories.length}+ categories with handpicked stores and deals.`;
+const canonical = `${SITE_URL}/categories`;
 ---
 
-<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
   <Header />
   <main class="container mx-auto px-4 py-10">
     <div class="mb-8">
@@ -20,7 +81,13 @@ const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
         {pageDesc}
       </p>
     </div>
-    <CategoriesGrid client:load apiUrl={apiUrl} />
+    <CategoriesGrid
+      client:load
+      apiUrl={apiUrl}
+      initialCategories={initialCategories}
+      initialSelectedCategory={initialSelectedCategory}
+      initialSubcategories={initialSubcategories}
+    />
   </main>
   <Footer />
 </Base>

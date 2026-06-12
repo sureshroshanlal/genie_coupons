@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { cdnUrl } from '../utils/cdnUrl.js';
 
-export default function CategoriesGrid({ apiUrl }) {
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [subcategories, setSubcategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function CategoriesGrid({ apiUrl, initialCategories = [], initialSelectedCategory = null, initialSubcategories = [] }) {
+  const [categories, setCategories] = useState(initialCategories);
+  const [selectedCategory, setSelectedCategory] = useState(initialSelectedCategory);
+  const [subcategories, setSubcategories] = useState(initialSubcategories);
+  const [loading, setLoading] = useState(false);
   const [loadingSubcats, setLoadingSubcats] = useState(false);
   const [error, setError] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,7 +52,9 @@ export default function CategoriesGrid({ apiUrl }) {
   };
 
   useEffect(() => {
-    fetchCategories();
+    if (initialCategories.length === 0) {
+      fetchCategories();
+    }
   }, []);
 
   if (loading)

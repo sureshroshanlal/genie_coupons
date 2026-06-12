@@ -5,20 +5,6 @@ import Footer from "../../components/Footer.astro";
 import { api } from "../../lib/api";
 import Img from '../../components/Img.astro';
 
-export async function getStaticPaths() {
-  try {
-    const resp = await api.get<{ data: { slug: string }[] }>(
-      `/authors?limit=1000`,
-      {},
-      { retries: 2, timeout: 8000 },
-    );
-    return (resp?.data || []).map((a) => ({ params: { slug: a.slug } }));
-  } catch (e) {
-    console.error("getStaticPaths authors error:", e);
-    return [];
-  }
-}
-
 const { slug } = Astro.params;
 
 type SameAs = { type: string; url: string };
@@ -64,9 +50,9 @@ const author = resp?.data;
 if (!author) return Astro.redirect("/404");
 
 const SITE_URL = "https://geniecoupon.com";
-const pageUrl = `${SITE_URL}/author/${author.slug}`;
+const pageUrl = `${SITE_URL}/authors/${author.slug}`;
 const ORG_ID = `${SITE_URL}/#organization`;
-const AUTHOR_ID = `${SITE_URL}/author/${author.slug}`;
+const AUTHOR_ID = `${SITE_URL}/authors/${author.slug}`;
 
 const graph = {
   "@context": "https://schema.org",
@@ -78,6 +64,15 @@ const graph = {
       url: SITE_URL,
       logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     },
+    {
+       "@type": "BreadcrumbList",
+       "@id": `${pageUrl}/#breadcrumb`,
+       itemListElement: [
+         { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+         { "@type": "ListItem", position: 2, name: "Authors", item: `${SITE_URL}/authors` },
+         { "@type": "ListItem", position: 3, name: author.name, item: pageUrl },
+       ],
+     },
     {
       "@type": "Person",
       "@id": AUTHOR_ID,
@@ -259,7 +254,7 @@ const icons: Record<string, string> = {
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {author.stores.map((store) => (
               <a
-                href={`/stores/${store.slug}`}
+                href={`https://${store.slug}.geniecoupon.com`}
                 class="card-base p-3 flex flex-col items-center gap-2 text-center hover:border-brand-primary transition"
               >
                 {store.logo_url ? (

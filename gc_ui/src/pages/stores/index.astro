@@ -1,28 +1,85 @@
 ---
-// src/pages/stores/index.astro
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import StoresGrid from "../../components/StoresGrid.jsx";
 
-const pageTitle = "Stores - Genie Coupon";
-const pageDesc = "Explore verified stores with handpicked coupons.";
-const canonical = "https://geniecoupon.com/stores";
-
-// Get API URL from environment or use default
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
+
+// ── SSR: fetch first batch ────────────────────────────────────────────────────
+let initialStores = [];
+let initialCursor = null;
+let totalStores = 0;
+
+try {
+  const res = await fetch(`${apiUrl}/stores?limit=100&letter=All`);
+  const json = await res.json();
+  initialStores = json?.data || [];
+  initialCursor = json?.meta?.nextCursor || null;
+  totalStores = json?.meta?.total || 0;
+} catch (e) {
+  console.error("SSR stores fetch failed:", e);
+}
+
+// ── JSON-LD ───────────────────────────────────────────────────────────────────
+const SITE_URL = "https://geniecoupon.com";
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/stores/#webpage`,
+      url: `${SITE_URL}/stores`,
+      name: "All Stores — Genie Coupon",
+      description: `Browse ${totalStores}+ verified stores with handpicked coupons and deals.`,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      breadcrumb: { "@id": `${SITE_URL}/stores/#breadcrumb` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/stores/#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Stores", item: `${SITE_URL}/stores` },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/stores/#store-list`,
+      name: "Verified Coupon Stores",
+      numberOfItems: String(totalStores),
+      itemListElement: initialStores.slice(0, 50).map((s: any, i: number) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: s.name,
+        url: `https://${s.slug}.geniecoupon.com`,
+      })),
+    },
+  ],
+};
+
+const pageTitle = `All Stores (${totalStores}+) — Genie Coupon`;
+const pageDesc = `Browse ${totalStores}+ verified stores with handpicked coupons and deals.`;
+const canonical = `${SITE_URL}/stores`;
 ---
 
-<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
   <Header />
   <main class="container mx-auto px-4 py-10">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-brand-primary">Stores</h1>
+      <h1 class="text-3xl font-bold text-brand-primary">All Stores</h1>
       <p class="mt-2 text-base text-text-secondary max-w-2xl">{pageDesc}</p>
     </div>
 
-    <!-- React component handles all filtering, infinite scroll, and store display -->
-    <StoresGrid client:load apiUrl={apiUrl} categorySlug={null} />
+    <StoresGrid
+      client:load
+      apiUrl={apiUrl}
+      categorySlug={null}
+      initialStores={initialStores}
+      initialCursor={initialCursor}
+      initialTotal={totalStores}
+    />
   </main>
   <Footer />
 </Base>

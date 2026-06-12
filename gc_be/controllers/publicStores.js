@@ -177,37 +177,20 @@ export async function detail(req, res) {
           },
         );
 
-        // const trendingPromise = CouponsRepo.listForStore({
-        //   merchantId: store.id,
-        //   type: "all",
-        //   page: 1,
-        //   limit: 50,
-        //   sort: "trending",
-        //   skipCount: true,
-        // }).catch((e) => {
-        //   console.warn("trending listForStore failed:", e);
-        //   return null;
-        // });
+        const proofsPromise = StoresRepo.fetchProofsByMerchantId(
+          store.id,
+        ).catch((e) => {
+          console.warn("fetchProofsByMerchantId failed:", e);
+          return [];
+        });
 
-        // const recentActivityPromise = CouponsRepo.listForStore({
-        //   merchantId: store.id,
-        //   type: "all",
-        //   page: 1,
-        //   limit: 5,
-        //   sort: "latest",
-        //   skipCount: true,
-        // }).catch((e) => {
-        //   console.warn("recent listForStore failed:", e);
-        //   return { items: [], total: 0 };
-        // });
-
-        const [couponsResult, relatedResult, totalClicks] = await Promise.all([
-          couponsPromise,
-          relatedPromise,
-          // trendingPromise,
-          // recentActivityPromise,
-          clickCountPromise,
-        ]);
+        const [couponsResult, relatedResult, totalClicks, proofs] =
+          await Promise.all([
+            couponsPromise,
+            relatedPromise,
+            clickCountPromise,
+            proofsPromise,
+          ]);
 
         const extractDiscountScore = (title = "") => {
           const percentMatch = title.match(/(\d+)\s*%/);
@@ -219,25 +202,6 @@ export async function detail(req, res) {
           return 0;
         };
 
-        // const trendingOffers = (trendingResult?.items || [])
-        //   .map((c) => ({
-        //     ...c,
-        //     _score: extractDiscountScore(c.title),
-        //   }))
-        //   .filter((c) => c._score > 0)
-        //   .sort((a, b) => b._score - a._score)
-        //   .slice(0, 5)
-        //   .map((c) => ({
-        //     id: c.id,
-        //     title: c.title,
-        //     coupon_type: c.coupon_type,
-        //     short_desc: c.description,
-        //     banner_image: null,
-        //     expires_at: c.ends_at,
-        //     is_active: true,
-        //     click_count: c.click_count || 0,
-        //     code: null,
-        //   }));
 
         const rawItems =
           couponsResult && couponsResult.items ? couponsResult.items : [];
@@ -340,21 +304,6 @@ export async function detail(req, res) {
           answer: DOMPurify.sanitize(f.answer),
         }));
 
-        // const faqJsonLd = faqs.length
-        //   ? {
-        //       "@context": "https://schema.org",
-        //       "@type": "FAQPage",
-        //       mainEntity: faqs.map((f) => ({
-        //         "@type": "Question",
-        //         name: f.question,
-        //         acceptedAnswer: {
-        //           "@type": "Answer",
-        //           text: f.answer,
-        //         },
-        //       })),
-        //     }
-        //   : null;
-
         // Testimonials / ratings fallback (kept as before)
         let testimonials = [];
         let avgRating = null;
@@ -379,12 +328,9 @@ export async function detail(req, res) {
           store, // has web_url now
           seo,
           coupons: couponsItems,
-          // trendingOffers,
           relatedStores: related,
-          // recentActivity,
           faqs, // all FAQs, no limit
-          proofs: [], // proofs fetched client-side in astro; pass [] here
-          // OR pass proofs if you move that fetch to backend
+          proofs, // proofs fetched client-side in astro; pass [] here
           totalSavings: 0, // computed in [slug].astro — pass 0 here, astro will override
           totalClicks,
           generatedAt: new Date().toISOString(),
@@ -433,6 +379,7 @@ export async function detail(req, res) {
             verifier_id: store.verifier_id || null,
             aff_url: store.aff_url || null,
             web_url: store.web_url || null,
+            proofs,
           },
           meta: {
             generated_at: new Date().toISOString(),

@@ -68,7 +68,41 @@ const pageTitle = meta.title || "Blog - Genie Coupon";
 const pageDesc =
   meta.description || "Guides, tips, and insights from the Genie Coupon team.";
 const canonical = `https://geniecoupon.com${Astro.url.pathname}`;
-const jsonld = meta.jsonld;
+ const SITE_URL = "https://geniecoupon.com";
+ const jsonld = {
+   "@context": "https://schema.org",
+   "@graph": [
+     {
+       "@type": "WebPage",
+       "@id": `${SITE_URL}/blogs/#webpage`,
+       url: `${SITE_URL}/blogs`,
+       name: pageTitle,
+       description: pageDesc,
+       isPartOf: { "@id": `${SITE_URL}/#website` },
+       breadcrumb: { "@id": `${SITE_URL}/blogs/#breadcrumb` },
+     },
+     {
+       "@type": "BreadcrumbList",
+       "@id": `${SITE_URL}/blogs/#breadcrumb`,
+       itemListElement: [
+         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+         { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blogs` },
+       ],
+     },
+     ...(blogs.length > 0 ? [{
+       "@type": "ItemList",
+       "@id": `${SITE_URL}/blogs/#post-list`,
+       name: "Blog Posts",
+       numberOfItems: String(meta.total || blogs.length),
+       itemListElement: blogs.map((b, i) => ({
+         "@type": "ListItem",
+         position: i + 1,
+         name: b.title,
+         url: `${SITE_URL}/blogs/${b.slug}`,
+       })),
+     }] : []),
+   ],
+ };
 ---
 
 <Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>

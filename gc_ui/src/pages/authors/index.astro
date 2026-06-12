@@ -46,19 +46,40 @@ const pageTitle  = "Coupon Verification Experts | geniecoupon";
 const pageDesc   = "Meet the team of coupon verification specialists who personally test every deal on geniecoupon.";
 const canonical  = pageUrl;
 
-const itemListSchema = {
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  "name": "geniecoupon Coupon Verification Experts",
-  "url": pageUrl,
-  "numberOfItems": authors.length,
-  "itemListElement": authors.map((a, i) => ({
-    "@type": "ListItem",
-    "position": i + 1,
-    "url": `${SITE_URL}/author/${a.slug}`,
-    "name": a.name,
-  })),
-};
+ const itemListSchema = {
+   "@context": "https://schema.org",
+   "@graph": [
+     {
+       "@type": "WebPage",
+       "@id": `${pageUrl}/#webpage`,
+       url: pageUrl,
+       name: pageTitle,
+       description: pageDesc,
+       isPartOf: { "@id": `${SITE_URL}/#website` },
+       breadcrumb: { "@id": `${pageUrl}/#breadcrumb` },
+     },
+     {
+       "@type": "BreadcrumbList",
+       "@id": `${pageUrl}/#breadcrumb`,
+       itemListElement: [
+         { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+         { "@type": "ListItem", position: 2, name: "Authors", item: pageUrl },
+       ],
+     },
+     {
+       "@type": "ItemList",
+       "@id": `${pageUrl}/#author-list`,
+       name: "Genie Coupon Verification Experts",
+       numberOfItems: String(authors.length),
+       itemListElement: authors.map((a, i) => ({
+         "@type": "ListItem",
+         position: i + 1,
+         url: `${SITE_URL}/authors/${a.slug}`,
+         name: a.name,
+       })),
+     },
+   ],
+ };
 ---
 
 <Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld: itemListSchema }}>

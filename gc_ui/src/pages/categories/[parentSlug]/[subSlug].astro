@@ -4,7 +4,7 @@ import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import Breadcrumbs from "../../../components/Breadcrumbs.astro";
 import SubcategoryMerchants from "../../../components/SubcategoryMerchants.jsx";
-import Img from '../../../components/Img.astro';
+import Img from "../../../components/Img.astro";
 
 const { parentSlug, subSlug } = Astro.params;
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
@@ -44,10 +44,81 @@ const pageTitle =
 const pageDesc =
   subcategoryData.subcategory.meta_description ||
   `Browse ${subcategoryData.subcategory.name} stores and find the best coupons and deals.`;
-const canonical = `https://geniecoupon.com/categories/${parentSlug}/${subSlug}`;
+
+
+const SITE_URL = "https://geniecoupon.com";
+const canonical = `${SITE_URL}/categories/${parentSlug}/${subSlug}`;
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/categories/${parentSlug}/${subSlug}/#webpage`,
+      url: canonical,
+      name: pageTitle,
+      description: pageDesc,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      breadcrumb: {
+        "@id": `${SITE_URL}/categories/${parentSlug}/${subSlug}/#breadcrumb`,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/categories/${parentSlug}/${subSlug}/#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${SITE_URL}/`,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Categories",
+          item: `${SITE_URL}/categories`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: subcategoryData.parent.name,
+          item: `${SITE_URL}/categories/${parentSlug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: subcategoryData.subcategory.name,
+          item: canonical,
+        },
+      ],
+    },
+    ...(subcategoryData.merchants?.length > 0
+      ? [
+          {
+            "@type": "ItemList",
+            "@id": `${SITE_URL}/categories/${parentSlug}/${subSlug}/#store-list`,
+            name: `${subcategoryData.subcategory.name} Stores`,
+            numberOfItems: String(
+              subcategoryData.pagination?.total ||
+                subcategoryData.merchants.length,
+            ),
+            itemListElement: subcategoryData.merchants.map(
+              (m: any, i: number) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: m.name,
+                url: `https://${m.slug}.geniecoupon.com`,
+              }),
+            ),
+          },
+        ]
+      : []),
+  ],
+};
 ---
 
-<Base meta={{ title: pageTitle, description: pageDesc, canonical }}>
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
   <Header />
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <Breadcrumbs breadcrumbs={breadcrumbs} />
