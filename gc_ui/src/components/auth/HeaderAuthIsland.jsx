@@ -10,7 +10,7 @@ function AuthButton() {
   const [loggingOut, setLoggingOut] = useState(false);
 
   if (loading) {
-    return <div class="gc-auth-skeleton" aria-hidden="true" />;
+    return <div className="gc-auth-skeleton" aria-hidden="true" />;
   }
 
   if (user) {

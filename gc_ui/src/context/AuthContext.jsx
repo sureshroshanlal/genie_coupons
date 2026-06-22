@@ -17,7 +17,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function fetchMe() {
-    if (mePromise) return mePromise;
+    if (mePromise) {
+      const user = await mePromise;
+      setUser(user);
+      setLoading(false);
+      return user;
+    }
 
     mePromise = (async () => {
       try {
@@ -32,6 +37,7 @@ export function AuthProvider({ children }) {
           return user;
         } else {
           setUser(null);
+          userStore.set(null);
           return null;
         }
       } catch {
@@ -63,7 +69,7 @@ export function AuthProvider({ children }) {
 
     setUser(data.user);
     userStore.set(data.user);
-    
+
     resetAuthCache();
     return data.user;
   }
