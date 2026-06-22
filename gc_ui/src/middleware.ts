@@ -4,22 +4,10 @@ const EXCLUDED = new Set(["www", "api", "admin", "admin-api"]);
 const MAIN_DOMAIN = "geniecoupon.com";
 
 export const onRequest = defineMiddleware(async (context, next) => {
-
-const host = context.request.headers.get("host") || "";
-  console.log("🔍 MIDDLEWARE FIRED - host:", host);
-  
+  const host = context.request.headers.get("host") || "";
   const hostname = host.split(":")[0];
   const parts = hostname.split(".");
-  console.log("🔍 parts:", parts);
-
   const isSubdomain = parts.length >= 3 && !EXCLUDED.has(parts[0]);
-  console.log("🔍 isSubdomain:", isSubdomain);
-  
-  // const host = context.request.headers.get("host") || "";
-  // const hostname = host.split(":")[0];
-  // const parts = hostname.split(".");
-
-  // const isSubdomain = parts.length >= 3 && !EXCLUDED.has(parts[0]);
 
   if (isSubdomain) {
     const storeSlug = parts[0];
@@ -27,7 +15,6 @@ const host = context.request.headers.get("host") || "";
     const isRoot = url.pathname === "/" || url.pathname === "";
 
     if (!isRoot) {
-      // Redirect subdomain non-root paths to main domain
       return context.redirect(
         `https://${MAIN_DOMAIN}${url.pathname}${url.search}`,
         301,
@@ -36,10 +23,12 @@ const host = context.request.headers.get("host") || "";
 
     context.locals.storeSlug = storeSlug;
     context.locals.isSubdomain = true;
-  } else {
-    context.locals.isSubdomain = false;
-    context.locals.storeSlug = null;
+
+    return context.rewrite("/_store-page");
   }
+
+  context.locals.isSubdomain = false;
+  context.locals.storeSlug = null;
 
   return next();
 });
