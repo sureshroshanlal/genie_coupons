@@ -2,843 +2,739 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import LandingSubscribeIsland from "../components/islands/LandingSubscribeIsland.jsx";
-import { SAMPLE_TESTIMONIALS } from "../content/testimonials.sample";
-import CoverflowCarousel from "../components/CoverflowCarousel.jsx";
-import Breadcrumbs from "../components/Breadcrumbs.astro";
-import CardStore from "../components/CardStore.astro";
-import MerchantProofsIsland from "../components/islands/MerchantProofsIsland.jsx";
 import CouponList from "../components/CouponList.astro";
-import SubscribeBox from "../components/SubscribeBox.jsx";
-import FaqAccordion from "../components/FAQAccordion.jsx";
-import WhyTrustUs from "../components/WhyTrustUs.jsx";
-import DOMPurify from "isomorphic-dompurify";
 import { api } from "../lib/api";
-import SavingsImpact from "../components/SavingsImpact.astro";
-import FeedbackForm from "../components/islands/FeedbackForm.jsx";
-import VerifiedBadge from "../components/VerifiedBadge.astro";
-import PopularCategories from "../components/CategoriesSection.jsx";
-import StoresSection from "../components/StoresSection.jsx";
-import DealsSection from "../components/DealsSection.astro";
-import TestimonialsCarousel from "../components/TestimonialsCarousel.jsx";
-import Img from "../components/Img.astro";
 
-// ── Subdomain detection ──
-const storeSlug = Astro.locals?.storeSlug ?? null;
-const isStoreSubdomain = Astro.locals?.isSubdomain === true;
-
-// ── Types ──
 type Coupon = {
   id: string | number;
   title?: string | null;
-  coupon_type?: string | null;
+  code?: string | null;
   ends_at?: string | null;
-  merchant_name?: string | null;
+  coupon_type?: string | null;
   discount_type?: string | null;
   discount_value?: string | null;
+  merchant_name?: string | null;
   is_editor?: boolean | null;
   reviews?: any[] | null;
   review_aggregate?: { avg_rating: number; total: number } | null;
   merchant?: {
+    id?: number | null;
     slug?: string | null;
     logo_url?: string | null;
     affl_url?: string | null;
     web_url?: string | null;
-  };
+  } | null;
 };
 
-type StoreDetail = {
-  id: number | string;
-  slug: string;
-  name: string;
-  verifier_id?: number | string | null;
-  aff_url?: string | null;
-  web_url?: string | null;
-  logo_url?: string | null;
-  category_names?: string[];
-  category_id?: number | string | null;
-  subcategory_id?: number | string | null;
-  side_description_html?: string | null;
-  description_html?: string | null;
-  about_html?: string | null;
-  breadcrumbs?: { name: string; url: string }[];
-  stats?: { active_coupons?: number };
-  coupons?: {
-    items: Coupon[];
-    page?: number;
+type CouponsResponse = {
+  data: Coupon[];
+  meta: {
     limit?: number;
-    total?: number;
-  };
-  related_stores?: {
-    id: string | number;
-    name: string;
-    slug: string;
-    logo_url?: string | null;
-  }[];
-  faqs?: { question: string; answer: string }[];
-  trust_text?: string | null;
-  proofs?: any[];
-  verifier?: {
-    id: number | string;
-    name: string;
-    slug: string;
-    verifying_since?: string;
-    avatar_url?: string | null;
-    designation: string;
-    same_as?: { type: string; url: string }[];
-    created_at: string;
+    has_more?: boolean;
+    next_cursor?: string | null;
+    next?: string | null;
   };
 };
 
-type StoreDetailResponse = {
-  data: StoreDetail | null;
-  meta?: {
-    canonical?: string;
-    jsonld?: any;
-    title?: string;
-    description?: string;
-  };
-};
-
-// ── Homepage data ──
-const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
-let banners = [];
-try {
-  const res = await fetch(`${apiUrl}/banners`);
-  const json = await res.json();
-  banners = json?.data || [];
-} catch (e) {
-  console.error("Failed to fetch banners:", e);
-  banners = [];
-}
-
-let homeStores = [];
-let homeCoupons = [];
-let homeCategories = [];
-
-try {
-  const [storesRes, couponsRes, categoriesRes] = await Promise.all([
-    fetch(`${apiUrl}/stores?mode=homepage&limit=8`),
-    fetch(`${apiUrl}/coupons?mode=homepage&limit=6&status=active`),
-    fetch(`${apiUrl}/categories?show_home=true&limit=8`),
-  ]);
-  homeStores = (await storesRes.json())?.data || [];
-  homeCoupons = (await couponsRes.json())?.data || [];
-  homeCategories = (await categoriesRes.json())?.data || [];
-} catch (e) {
-  console.error("Failed to fetch home sections:", e);
-}
-
-const pageMeta = {
-  title: "Genie Coupon | Best Deals & Coupons Online",
-  description:
-    "Verified coupons, real savings, no expired junk — handpicked by real humans.",
-};
-const avg =
-  SAMPLE_TESTIMONIALS.reduce((s: number, t: any) => s + (t.rating || 0), 0) /
-    SAMPLE_TESTIMONIALS.length || null;
-
-// ── Store data ──
-let store: StoreDetail | null = null;
-let storeMeta: any = {};
-let proofs: any[] = [];
-let breadcrumbs: any[] = [];
-
-if (isStoreSubdomain && storeSlug) {
+const fetchSection = async (sort: string, type: string): Promise<Coupon[]> => {
   try {
-    const resp = await api.get<StoreDetailResponse>(
-      `/stores/${storeSlug}?limit=100`,
+    const params = new URLSearchParams({
+      cursor: "",
+      limit: "8",
+      type,
+      status: "active",
+      sort,
+      locale: "en",
+    });
+    const resp = await api.get<CouponsResponse>(
+      `/coupons?${params}`,
       {},
       { retries: 2, timeout: 8000 },
     );
-    store = resp?.data || null;
-    storeMeta = resp?.meta || {};
-
-    if (!store) return Astro.redirect("/404");
-
-    // breadcrumbs = store.breadcrumbs || [];
-    breadcrumbs = [
-      { name: "Home", url: "https://geniecoupon.com" },
-      { name: "Stores", url: "https://geniecoupon.com/stores" },
-      { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
-    ];
-
-    const refType = Astro.url.searchParams.get("ref");
-    const parentSlug = Astro.url.searchParams.get("parent");
-    const subSlug = Astro.url.searchParams.get("sub");
-    if (refType === "category" && parentSlug && subSlug) {
-      try {
-        const res = await fetch(
-          `${apiUrl}/categories/${parentSlug}/${subSlug}`,
-        );
-        const catData = await res.json();
-        if (catData?.data) {
-          breadcrumbs = [
-            { name: "Home", url: "https://geniecoupon.com" },
-            { name: "Categories", url: "https://geniecoupon.com/categories" },
-            {
-              name: catData.data.parent.name,
-              url: `https://geniecoupon.com/categories/${parentSlug}`,
-            },
-            {
-              name: catData.data.subcategory.name,
-              url: `https://geniecoupon.com/categories/${parentSlug}/${subSlug}`,
-            },
-            { name: store.name, url: `https://${storeSlug}.geniecoupon.com` },
-          ];
-        }
-      } catch (e) {
-        console.error("Breadcrumb category fetch failed:", e);
-      }
-    }
-
-    proofs = (store as any)?.proofs || [];
+    return resp?.data || [];
   } catch (e) {
-    console.error("Error fetching store:", e);
-    return Astro.redirect("/404");
+    console.error(`Failed to fetch coupons [sort=${sort}, type=${type}]:`, e);
+    return [];
   }
-}
+};
 
-const visitUrl = (store as any)?.aff_url || (store as any)?.web_url || null;
+const [latestCoupons, editorCoupons, couponsCoupons, dealsCoupons] =
+  await Promise.all([
+    fetchSection("latest", "all"),
+    fetchSection("editor", "all"),
+    fetchSection("latest", "coupon"),
+    fetchSection("latest", "deal"),
+  ]);
 
-// ── Sanitize HTML ──
-const _ALLOWED_TAGS = [
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "p",
-  "br",
-  "strong",
-  "b",
-  "em",
-  "i",
-  "u",
-  "s",
-  "ul",
-  "ol",
-  "li",
-  "a",
-  "img",
-  "blockquote",
+const totalDeals = new Set([
+  ...latestCoupons.map((c) => c.id),
+  ...editorCoupons.map((c) => c.id),
+  ...couponsCoupons.map((c) => c.id),
+  ...dealsCoupons.map((c) => c.id),
+]).size;
+
+const totalStores = new Set([
+  ...latestCoupons.map((c) => c.merchant?.slug).filter(Boolean),
+  ...editorCoupons.map((c) => c.merchant?.slug).filter(Boolean),
+  ...couponsCoupons.map((c) => c.merchant?.slug).filter(Boolean),
+  ...dealsCoupons.map((c) => c.merchant?.slug).filter(Boolean),
+]).size;
+
+const sections = [
+  {
+    id: "latest",
+    label: "Latest Deals",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    count: latestCoupons.length,
+  },
+  {
+    id: "editor",
+    label: "Editor's Picks",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`,
+    count: editorCoupons.length,
+  },
+  {
+    id: "coupon-codes",
+    label: "Coupons",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/></svg>`,
+    count: couponsCoupons.length,
+  },
+  {
+    id: "deals",
+    label: "Deals",
+    icon: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    count: dealsCoupons.length,
+  },
 ];
-const _ALLOWED_ATTR = [
-  "href",
-  "title",
-  "rel",
-  "target",
-  "src",
-  "alt",
-  "width",
-  "height",
-  "id",
-  "class",
-  "loading",
-];
 
-const safeDescriptionHtml = store?.description_html
-  ? DOMPurify.sanitize(store.description_html, {
-      ALLOWED_TAGS: _ALLOWED_TAGS,
-      ALLOWED_ATTR: _ALLOWED_ATTR,
-    })
-  : null;
+const now = new Date();
+const updatedAt = now.toLocaleTimeString("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
 
-// ── Store page meta ──
-const activeCoupons = store?.stats?.active_coupons || 0;
-const totalSavings =
-  activeCoupons > 0
-    ? Math.floor(
-        Math.random() * (activeCoupons * 100 + 100 - activeCoupons * 100 + 1),
-      ) +
-      activeCoupons * 100
-    : 0;
-
-const verifier = store?.verifier;
-const lastVerified = verifier
-  ? `${Math.floor(Math.random() * 11) + 2} hours ago`
-  : undefined;
-const successRate = Math.floor(Math.random() * 7) + 92;
-
-const pageTitle = isStoreSubdomain
-  ? storeMeta?.title ||
-    (store?.name
-      ? `${store.name} Coupons & Deals - Genie Coupon`
-      : "Store - Genie Coupon")
-  : pageMeta.title;
-const pageDesc = isStoreSubdomain
-  ? storeMeta?.description ||
-    (store?.name ? `Get the latest ${store.name} coupons and deals.` : "")
-  : pageMeta.description;
-const canonical = isStoreSubdomain
-  ? storeMeta?.canonical || `https://${storeSlug}.geniecoupon.com`
-  : "https://geniecoupon.com";
-
-const couponItems = store?.coupons?.items || [];
-const totalCoupons = store?.coupons?.total || 0;
-
-let siteStats = { total_coupons: 0, total_stores: 0 };
-try {
-  const res = await fetch(`${apiUrl}/stats`);
-  const json = await res.json();
-  siteStats = json?.data || siteStats;
-} catch (e) {
-  console.error("Failed to fetch stats:", e);
-}
+const pageTitle = "Today's Deals — Genie Coupon";
+const pageDesc =
+  "Hand-picked coupons, editor favourites, and the freshest deals — all in one place.";
+const canonical = "https://geniecoupon.com/todays-deals";
 
 const SITE_URL = "https://geniecoupon.com";
-const SITE_NAME = "Genie Coupon";
-const LOGO_URL = "https://geniecoupon.com/genie_coupon_logo.webp";
 
-const homeJsonld = !isStoreSubdomain
-  ? {
-      "@context": "https://schema.org",
-      "@graph": [
+const allCoupons = [
+  ...new Map(
+    [
+      ...latestCoupons,
+      ...editorCoupons,
+      ...couponsCoupons,
+      ...dealsCoupons,
+    ].map((c) => [c.id, c]),
+  ).values(),
+];
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/todays-deals/#webpage`,
+      url: canonical,
+      name: pageTitle,
+      description: pageDesc,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      breadcrumb: { "@id": `${SITE_URL}/todays-deals/#breadcrumb` },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/todays-deals/#breadcrumb`,
+      itemListElement: [
         {
-          "@type": "Organization",
-          "@id": `${SITE_URL}/#organization`,
-          name: SITE_NAME,
-          url: SITE_URL,
-          logo: {
-            "@type": "ImageObject",
-            url: LOGO_URL,
-          },
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: `${SITE_URL}/`,
         },
         {
-          "@type": "WebSite",
-          "@id": `${SITE_URL}/#website`,
-          url: SITE_URL,
-          name: SITE_NAME,
-          publisher: { "@id": `${SITE_URL}/#organization` },
-          potentialAction: {
-            "@type": "SearchAction",
-            target: {
-              "@type": "EntryPoint",
-              urlTemplate: `${SITE_URL}/stores?q={search_term_string}`,
-            },
-            "query-input": "required name=search_term_string",
-          },
+          "@type": "ListItem",
+          position: 2,
+          name: "Today's Deals",
+          item: canonical,
         },
-        {
-          "@type": "WebPage",
-          "@id": `${SITE_URL}/#webpage`,
-          url: SITE_URL,
-          name: pageMeta.title,
-          description: pageMeta.description,
-          isPartOf: { "@id": `${SITE_URL}/#website` },
-          about: { "@id": `${SITE_URL}/#organization` },
-        },
-        ...(homeStores.length > 0
-          ? [
-              {
-                "@type": "ItemList",
-                "@id": `${SITE_URL}/#featured-stores`,
-                name: "Featured Stores",
-                numberOfItems: String(homeStores.length),
-                itemListElement: homeStores.map((s: any, i: number) => ({
-                  "@type": "ListItem",
-                  position: i + 1,
-                  name: s.name,
-                  url: `https://${s.slug}.geniecoupon.com`,
-                })),
-              },
-            ]
-          : []),
-        ...(homeCoupons.length > 0
-          ? [
-              {
-                "@type": "ItemList",
-                "@id": `${SITE_URL}/#featured-deals`,
-                name: "Featured Deals",
-                numberOfItems: String(homeCoupons.length),
-                itemListElement: homeCoupons.map((c: any, i: number) => ({
-                  "@type": "ListItem",
-                  position: i + 1,
-                  item: {
-                    "@type": "Offer",
-                    name: c.title || "",
-                    url: c.merchant?.slug
-                      ? `https://${c.merchant.slug}.geniecoupon.com`
-                      : SITE_URL,
-                    seller: {
-                      "@type": "Organization",
-                      name: c.merchant_name || c.merchant?.name || "",
-                    },
-                  },
-                })),
-              },
-            ]
-          : []),
-        ...(homeCategories.length > 0
-          ? [
-              {
-                "@type": "ItemList",
-                "@id": `${SITE_URL}/#featured-categories`,
-                name: "Featured Categories",
-                numberOfItems: String(homeCategories.length),
-                itemListElement: homeCategories.map((cat: any, i: number) => ({
-                  "@type": "ListItem",
-                  position: i + 1,
-                  name: cat.name,
-                  url: `${SITE_URL}/categories/${cat.slug}`,
-                })),
-              },
-            ]
-          : []),
       ],
-    }
-  : null;
-
-const jsonld = isStoreSubdomain ? storeMeta?.jsonld || null : homeJsonld;
-// utility: returns "{Mon, YYYY}"
-function getCurrentMonthYear() {
-  const now = new Date();
-  const month = now.toLocaleString("en-US", { month: "long" }); // e.g. "Sep"
-  const year = now.getFullYear(); // e.g. 2025
-  return ` ${month} ${year}`;
-}
-
-const suffix = getCurrentMonthYear();
-
-const lcpSrc = banners?.[0]?.variants?.fallback || null;
-const lcpSrcset =
-  banners?.[0]?.variants?.webp
-    ?.map((url: string, i: number) => `${url} ${[516, 800, 1200][i]}w`)
-    .join(", ") || null;
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/todays-deals/#deal-list`,
+      name: "Today's Deals",
+      numberOfItems: String(allCoupons.length),
+      itemListElement: allCoupons.map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        item: {
+          "@type": "Offer",
+          name: c.title || "",
+          url: c.merchant?.slug
+            ? `https://${c.merchant.slug}.geniecoupon.com`
+            : SITE_URL,
+          ...(c.code ? { discountCode: c.code } : {}),
+          ...(c.ends_at ? { validThrough: c.ends_at } : {}),
+          ...(c.discount_value && c.discount_type === "percent"
+            ? { discount: `${c.discount_value}%` }
+            : {}),
+          ...(c.discount_value && c.discount_type === "flat"
+            ? { discount: `${c.discount_value} USD off` }
+            : {}),
+          seller: {
+            "@type": "Organization",
+            name: c.merchant_name || "",
+          },
+        },
+      })),
+    },
+  ],
+};
 ---
 
-<Base
-  meta={{
-    title: pageTitle,
-    description: pageDesc,
-    canonical,
-    jsonld,
-    preloadHero: !isStoreSubdomain && !!lcpSrc,
-    heroSrc: lcpSrc,
-    heroSrcSetWebp: lcpSrcset,
-  }}
->
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
   <Header />
 
-  {
-    isStoreSubdomain && store ? (
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ── Breadcrumbs ── */}
-        <Breadcrumbs breadcrumbs={breadcrumbs} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {/* ── HERO ── */}
+    <section class="deals-hero" aria-label="Today's Deals">
+      {/* Background decoration */}
+      <div class="deals-hero-bg" aria-hidden="true">
+        <div class="deals-hero-glow"></div>
+        <div class="deals-hero-dots"></div>
+      </div>
 
-        {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <section
-          class="store-hero mt-4"
-          aria-label={`${store.name} store page`}
-        >
-          <div class="store-hero-layout">
-            {/* Left: logo + meta */}
-            <div class="store-hero-left">
-              <div class="store-hero-inner">
-                <div class="store-hero-logo">
-                  {visitUrl ? (
-                    <a
-                      href={visitUrl}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      class="store-hero-logo"
-                      aria-label={`Visit ${store.name}`}
-                    >
-                      {store.logo_url ? (
-                        <Img
-                          src={store.logo_url}
-                          alt={`${store.name} logo`}
-                          width="80"
-                          height="80"
-                          class="object-contain max-h-full max-w-full"
-                          loading="eager"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span
-                          class="text-sm font-semibold"
-                          style="color:#707068;"
-                        >
-                          {store.name.charAt(0)}
-                        </span>
-                      )}
-                    </a>
-                  ) : (
-                    <div class="store-hero-logo">
-                      {store.logo_url ? (
-                        <Img
-                          src={store.logo_url}
-                          alt={`${store.name} logo`}
-                          width="80"
-                          height="80"
-                          class="object-contain max-h-full max-w-full"
-                          loading="eager"
-                          decoding="async"
-                        />
-                      ) : (
-                        <span
-                          class="text-sm font-semibold"
-                          style="color:#707068;"
-                        >
-                          {store.name.charAt(0)}
-                        </span>
-                      )}
-                    </div>
+      <div class="deals-hero-layout">
+        {/* Left: badge + title + subtitle + nav */}
+        <div class="deals-hero-left">
+          <div class="deals-hero-badge">
+            <span class="deals-hero-badge-dot"></span>
+            Live & Verified
+          </div>
+          <h1 class="deals-hero-title">
+            Today's <span class="deals-hero-title-accent">Deals</span>
+          </h1>
+          <p class="deals-hero-sub">{pageDesc}</p>
+          <nav class="deals-hero-nav" aria-label="Jump to section">
+            {
+              sections.map((s) => (
+                <a href={`#${s.id}`} class="deals-hero-anchor">
+                  <span set:html={s.icon} />
+                  {s.label}
+                  {s.count > 0 && (
+                    <span class="deals-hero-anchor-count">{s.count}</span>
                   )}
-                </div>
-                <div class="store-hero-meta">
-                  <h1 class="store-hero-name">
-                    {store.name} Promo Codes & Coupons - Verified {suffix}
-                  </h1>
-                  {storeMeta.description && (
-                    <p class="store-hero-desc">{storeMeta.description}</p>
-                  )}
-                  <div class="store-hero-pills">
-                    <span class="pill pill-green">
-                      <svg
-                        class="w-3 h-3 mr-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
-                        />
-                      </svg>
-                      {totalCoupons} {totalCoupons === 1 ? "Offer" : "Offers"}
-                    </span>
-                    <span class="pill pill-gray">
-                      <svg
-                        class="w-3 h-3 mr-1"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        aria-hidden="true"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      Updated today
-                    </span>
-                    {store.category_names &&
-                      store.category_names.length > 0 && (
-                        <span class="pill pill-gray">
-                          {store.category_names[0]}
-                        </span>
-                      )}
-                    {visitUrl && (
-                      <a
-                        href={visitUrl}
-                        target="_blank"
-                        rel="noopener noreferrer sponsored"
-                        class="store-hero-visit-btn"
-                      >
-                        <svg
-                          class="w-3 h-3"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2.5"
-                          aria-hidden="true"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                          />
-                        </svg>
-                        Visit Store
-                      </a>
-                    )}
-                    <a href="#about-section" class="store-hero-about-link">
-                      About {store.name} ↓
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+                </a>
+              ))
+            }
+          </nav>
+        </div>
 
-            {/* Right: proofs column — vertical on desktop, horizontal strip on mobile */}
-            {proofs.length > 0 && (
-              <div class="store-hero-proofs-col">
-                <div class="store-hero-proofs-label">
+        {/* Right: stats block */}
+        <div class="deals-hero-right" aria-label="Deal statistics">
+          <div class="deals-stat-card">
+            <span class="deals-stat-value">{totalDeals}+</span>
+            <span class="deals-stat-label">Active Deals</span>
+          </div>
+          <div class="deals-stat-card">
+            <span class="deals-stat-value">{totalStores}+</span>
+            <span class="deals-stat-label">Stores</span>
+          </div>
+          <div class="deals-stat-card">
+            <span class="deals-stat-value">{editorCoupons.length}</span>
+            <span class="deals-stat-label">Editor Picks</span>
+          </div>
+          <div class="deals-stat-card deals-stat-card--time">
+            <span class="deals-stat-value deals-stat-value--sm"
+              >{updatedAt}</span
+            >
+            <span class="deals-stat-label">Last Updated</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── SECTIONS ── */}
+    <div class="mt-14 space-y-16">
+      {
+        latestCoupons.length > 0 && (
+          <section id="latest" aria-labelledby="heading-latest">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon">
                   <svg
-                    class="w-3 h-3"
+                    class="w-5 h-5"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#89E900"
-                    stroke-width="2"
-                    aria-hidden="true"
+                    stroke-width="2.5"
                   >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  Verified Proofs
-                </div>
-                <MerchantProofsIsland
-                  client:visible
-                  proofs={proofs}
-                  mode="strip"
-                  visitUrl={visitUrl}
-                />
+                </span>
+                <h2 id="heading-latest" class="section-heading">
+                  Latest Deals
+                </h2>
+                <span class="deals-section-count">{latestCoupons.length}</span>
               </div>
-            )}
-          </div>
-        </section>
-
-        {/* ── MAIN GRID ─────────────────────────────────────────────────────── */}
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ── Main Column ── */}
-          <div class="lg:col-span-2 space-y-10">
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
             <CouponList
-              coupons={couponItems}
-              storeSlug={store.slug}
-              sectionId="store"
+              coupons={latestCoupons}
+              storeSlug=""
+              sectionId="latest"
               showTabs={true}
-              columns={1}
+              columns={2}
             />
-            {/* About this store */}
-            {safeDescriptionHtml && (
-              <section id="about-section" class="card-base p-6">
-                <h2 class="section-heading">About {store.name}</h2>
-                <div class="about-expand-wrapper">
-                  <div
-                    class="about-expand-content prose max-w-none ql-editor merchant-description"
-                    set:html={safeDescriptionHtml}
-                  />
-                  <div class="about-expand-fade" aria-hidden="true" />
-                </div>
-                <button
-                  class="about-expand-btn"
-                  onclick="
-                  const wrapper = this.closest('section').querySelector('.about-expand-wrapper');
-                  const fade = wrapper.querySelector('.about-expand-fade');
-                  const content = wrapper.querySelector('.about-expand-content');
-                  const isExpanded = wrapper.dataset.expanded === 'true';
-                  if (isExpanded) {
-                    wrapper.dataset.expanded = 'false';
-                    content.style.maxHeight = '320px';
-                    fade.style.display = 'block';
-                    this.textContent = 'Read more ↓';
-                  } else {
-                    wrapper.dataset.expanded = 'true';
-                    content.style.maxHeight = 'none';
-                    fade.style.display = 'none';
-                    this.textContent = 'Show less ↑';
-                  }
-                "
-                >
-                  Read more ↓
-                </button>
-              </section>
-            )}
+          </section>
+        )
+      }
 
-            {/* FAQs */}
-            {store.faqs && store.faqs.length > 0 && (
-              <section id="faqs-section" class="card-base p-6">
-                <FaqAccordion client:visible faqs={store.faqs} />
-              </section>
-            )}
-
-            {/* Related stores */}
-            {store.related_stores && store.related_stores.length > 0 && (
-              <section>
-                <h2 class="section-heading">Similar Stores</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {store.related_stores.map((rs) => (
-                    <CardStore store={rs} />
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-
-          {/* ── Sidebar ── */}
-          <aside
-            class="lg:col-span-1 space-y-5"
-            style="position: sticky; top: 1.5rem; align-self: start;"
-          >
-            {verifier && (
-              <div class="sidebar-box p-0 overflow-hidden">
-                <VerifiedBadge
-                  name={verifier.name}
-                  designation={verifier.designation}
-                  authorSlug={verifier.slug}
-                  avatarUrl={verifier.avatar_url}
-                  lastVerified={lastVerified ?? ""}
-                  successRate={successRate}
-                  verifyingSince={verifier.verifying_since}
-                  sameAs={verifier?.same_as ?? []}
-                />
+      {
+        editorCoupons.length > 0 && (
+          <section id="editor" aria-labelledby="heading-editor">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-editor" class="section-heading">
+                  Editor's Picks
+                </h2>
+                <span class="deals-section-count">{editorCoupons.length}</span>
               </div>
-            )}
-
-            <div class="sidebar-box p-0 overflow-hidden">
-              <SavingsImpact
-                totalSavings={totalSavings}
-                activeCoupons={activeCoupons}
-              />
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
             </div>
+            <CouponList
+              coupons={editorCoupons}
+              storeSlug=""
+              sectionId="editor"
+              showTabs={true}
+              columns={2}
+            />
+          </section>
+        )
+      }
 
-            <div class="sidebar-box p-0 overflow-hidden">
-              <WhyTrustUs client:visible />
-            </div>
-
-            <div class="sidebar-box p-0 overflow-hidden">
-              <div class="p-4">
-                <h3
-                  class="text-sm font-bold uppercase tracking-widest mb-3"
-                  style="color:#89E900;"
-                >
-                  Subscribe and Stay Updated.
-                </h3>
-                <SubscribeBox client:visible source={store.slug} />
+      {
+        couponsCoupons.length > 0 && (
+          <section id="coupon-codes" aria-labelledby="heading-coupons">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-coupons" class="section-heading">
+                  Coupons
+                </h2>
+                <span class="deals-section-count">{couponsCoupons.length}</span>
               </div>
-            </div>
-
-            <div class="sidebar-box p-0 overflow-hidden">
-              <FeedbackForm client:visible storeSlug={store.slug} />
-            </div>
-
-            {store.trust_text && (
-              <p class="text-xs px-1" style="color:#707068;">
-                {store.trust_text}
-              </p>
-            )}
-          </aside>
-        </div>
-      </main>
-    ) : isStoreSubdomain && !store ? (
-      <main class="max-w-7xl mx-auto px-4 py-20 text-center">
-        <h1 class="text-2xl font-bold text-brand-primary">Store not found</h1>
-        <p class="text-text-secondary mt-2">
-          Please check the URL or browse all stores.
-        </p>
-        <a
-          href="https://geniecoupon.com/stores"
-          class="btn btn-primary mt-4 inline-block"
-        >
-          Browse Stores
-        </a>
-      </main>
-    ) : (
-      <main class="container mx-auto px-4 pt-4 pb-8">
-        {/* ── Hero — two column: text left, carousel right ── */}
-        <section class="homepage-hero-2col">
-          {/* Left: text */}
-          <div class="homepage-hero-left">
-            <h1 class="homepage-hero-headline">
-              Save More on <span style="color:#89E900;">Every Purchase.</span>
-            </h1>
-            <p class="homepage-hero-sub">
-              Verified coupons, real savings — handpicked and tested by real
-              humans.
-            </p>
-            <div class="homepage-hero-stats">
-              <span class="pill pill-green">
-                <svg
-                  class="w-3 h-3 mr-1"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"
-                  />
-                </svg>
-                {siteStats.total_coupons}+ verified coupons
-              </span>
-              <span class="pill pill-gray">
-                <svg
-                  class="w-3 h-3 mr-1"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                  />
-                </svg>
-                {siteStats.total_stores}+ stores
-              </span>
-              <span class="pill pill-gray">
-                <svg
-                  class="w-3 h-3 mr-1"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Updated daily
-              </span>
-            </div>{" "}
-            <div class="homepage-hero-ctas">
-              <a href="/stores" class="btn btn-primary">
-                Browse Stores
-              </a>
-              <a href="/todays-deals" class="btn btn-outline--dark">
-                Today's Deals
-              </a>
-              <a href="/categories" class="btn btn-outline--dark">
-                Categories
+              <a href="#top" class="deals-back-top">
+                ↑ Top
               </a>
             </div>
-          </div>
+            <CouponList
+              coupons={couponsCoupons}
+              storeSlug=""
+              sectionId="coupons"
+              showTabs={true}
+              columns={2}
+            />
+          </section>
+        )
+      }
 
-          {/* Right: portrait coverflow carousel */}
-          <div class="homepage-hero-right">
-            {/* @ts-ignore */}
-            <CoverflowCarousel client:load banners={banners} />
-          </div>
-        </section>
-
-        <StoresSection stores={homeStores} />
-        <DealsSection coupons={homeCoupons} />
-        <PopularCategories categories={homeCategories} />
-        <TestimonialsCarousel
-          client:visible
-          items={SAMPLE_TESTIMONIALS}
-          avgRating={avg}
-          totalReviews={SAMPLE_TESTIMONIALS.length}
-        />
-        {/* ── Subscribe CTA ── */}
-        <section
-          class="homepage-subscribe mt-12"
-          aria-labelledby="newsletter-cta-heading"
-        >
-          <h2 id="newsletter-cta-heading" class="homepage-subscribe-heading">
-            Subscribe and stay ahead — no spam, ever.
-          </h2>
-          <p class="homepage-subscribe-sub">
-            Get the best deals delivered weekly.
-          </p>
-          <LandingSubscribeIsland client:visible />
-        </section>
-      </main>
-    )
-  }
+      {
+        dealsCoupons.length > 0 && (
+          <section id="deals" aria-labelledby="heading-deals">
+            <div class="deals-section-heading">
+              <div class="deals-section-heading-left">
+                <span class="deals-section-icon">
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#89E900"
+                    stroke-width="2.5"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </span>
+                <h2 id="heading-deals" class="section-heading">
+                  Deals
+                </h2>
+                <span class="deals-section-count">{dealsCoupons.length}</span>
+              </div>
+              <a href="#top" class="deals-back-top">
+                ↑ Top
+              </a>
+            </div>
+            <CouponList
+              coupons={dealsCoupons}
+              storeSlug=""
+              sectionId="deals"
+              showTabs={true}
+              columns={2}
+            />
+          </section>
+        )
+      }
+    </div>
+  </main>
 
   <Footer />
 </Base>
+
+<style>
+  /* ── Hero ── */
+  .deals-hero {
+    margin-top: 1rem;
+    padding: 2rem 2.5rem;
+    border-radius: 1.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .deals-hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .deals-hero-glow {
+    position: absolute;
+    top: -80px;
+    right: -120px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(137, 233, 0, 0.07) 0%,
+      transparent 65%
+    );
+  }
+
+  .deals-hero-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      rgba(137, 233, 0, 0.12) 1px,
+      transparent 1px
+    );
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse at 80% 50%, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(
+      ellipse at 80% 50%,
+      black 20%,
+      transparent 70%
+    );
+  }
+
+  /* Two-column layout */
+  .deals-hero-layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .deals-hero-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .deals-hero-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.625rem;
+    flex-shrink: 0;
+    width: 240px;
+  }
+
+  /* Stat cards — strict 2x2, no spanning */
+  .deals-stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.75rem 0.5rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    border-radius: 0.75rem;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .deals-stat-card--time {
+    grid-column: span 1;
+  }
+
+  .deals-stat-value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #89e900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .deals-stat-value--sm {
+    font-size: 0.9rem;
+  }
+
+  .deals-stat-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  /* Live badge */
+  .deals-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #89e900;
+    background: rgba(137, 233, 0, 0.08);
+    border: 1px solid rgba(137, 233, 0, 0.2);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .deals-hero-badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #89e900;
+    flex-shrink: 0;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(137, 233, 0, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 5px rgba(137, 233, 0, 0);
+    }
+  }
+
+  .deals-hero-title {
+    font-size: clamp(1.875rem, 4vw, 2.75rem);
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.625rem;
+  }
+
+  .deals-hero-title-accent {
+    color: #89e900;
+  }
+
+  .deals-hero-sub {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    max-width: 480px;
+  }
+
+  .deals-hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .deals-hero-anchor {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    text-decoration: none;
+    transition:
+      background 150ms ease,
+      color 150ms ease,
+      border-color 150ms ease,
+      transform 150ms ease;
+  }
+
+  .deals-hero-anchor:hover {
+    background: rgba(137, 233, 0, 0.1);
+    color: #89e900;
+    border-color: rgba(137, 233, 0, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .deals-hero-anchor-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: rgba(137, 233, 0, 0.15);
+    color: #89e900;
+  }
+
+  /* ── Section headings ── */
+  .deals-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-default);
+    position: relative;
+  }
+
+  .deals-section-heading::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 3rem;
+    height: 2px;
+    background: #89e900;
+    border-radius: 999px;
+  }
+
+  .deals-section-heading-left {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .deals-section-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+    background: rgba(137, 233, 0, 0.08);
+    border: 1px solid rgba(137, 233, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .deals-section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(137, 233, 0, 0.1);
+    color: #89e900;
+    border: 1px solid rgba(137, 233, 0, 0.15);
+  }
+
+  .deals-back-top {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-default);
+    transition:
+      color 150ms ease,
+      border-color 150ms ease,
+      background 150ms ease;
+  }
+
+  .deals-back-top:hover {
+    color: #89e900;
+    border-color: rgba(137, 233, 0, 0.3);
+    background: rgba(137, 233, 0, 0.06);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .deals-hero {
+      padding: 1.5rem 1.25rem;
+    }
+
+    .deals-hero-layout {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .deals-hero-right {
+      width: 100%;
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .deals-hero-right {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
