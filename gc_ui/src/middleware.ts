@@ -13,8 +13,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const storeSlug = parts[0];
     const url = new URL(context.request.url);
     const isRoot = url.pathname === "/" || url.pathname === "";
+    const isInternalStorePage = url.pathname === "/store-page";
 
-    if (!isRoot) {
+    if (!isRoot && !isInternalStorePage) {
       return context.redirect(
         `https://${MAIN_DOMAIN}${url.pathname}${url.search}`,
         301,
@@ -24,7 +25,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.storeSlug = storeSlug;
     context.locals.isSubdomain = true;
 
-    return context.rewrite("/store-page");
+    if (isRoot) {
+      return context.rewrite("/store-page");
+    }
+
+    // Re-entry after rewrite — locals already set, just proceed
+    return next();
   }
 
   context.locals.isSubdomain = false;
