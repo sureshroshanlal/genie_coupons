@@ -16,6 +16,10 @@ import FeedbackForm from "../components/islands/FeedbackForm.jsx";
 import VerifiedBadge from "../components/VerifiedBadge.astro";
 import Img from "../components/Img.astro";
 
+if (!Astro.locals?.isSubdomain || !Astro.locals?.storeSlug) {
+  return Astro.redirect("/404");
+}
+
 // ── Subdomain detection ──
 const storeSlug = Astro.locals?.storeSlug ?? null;
 const isStoreSubdomain = Astro.locals?.isSubdomain === true;

@@ -24,7 +24,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.storeSlug = storeSlug;
     context.locals.isSubdomain = true;
 
-    return context.rewrite("/_store-page");
+    return context.rewrite("/store-page");
   }
 
   context.locals.isSubdomain = false;
