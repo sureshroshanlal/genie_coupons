@@ -208,7 +208,7 @@ export function buildStoreSchema({
   }
 
   // ── 8. ImageObject (Verification Proofs — one node per proof, indexed) ──────
-  (proofs || []).forEach((proof, i) => {
+  (Array.isArray(proofs) ? proofs : []).forEach((proof, i) => {
     if (!proof?.image_url) return;
     graph.push({
       "@type": "ImageObject",
