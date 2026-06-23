@@ -102,28 +102,32 @@ type StoreDetailResponse = {
 
 // ── Homepage data ──
 const apiUrl = import.meta.env.PUBLIC_API_BASE_URL;
+let banners = [];
+try {
+  const res = await fetch(`${apiUrl}/banners`);
+  const json = await res.json();
+  banners = json?.data || [];
+} catch (e) {
+  console.error("Failed to fetch banners:", e);
+  banners = [];
+}
 
-const [bannersRes, storesRes, couponsRes, categoriesRes, statsRes] =
-  await Promise.allSettled([
-    fetch(`${apiUrl}/banners`).then((r) => r.json()),
-    fetch(`${apiUrl}/stores?mode=homepage&limit=8`).then((r) => r.json()),
-    fetch(`${apiUrl}/coupons?mode=homepage&limit=6&status=active`).then((r) => r.json()),
-    fetch(`${apiUrl}/categories?show_home=true&limit=8`).then((r) => r.json()),
-    fetch(`${apiUrl}/stats`).then((r) => r.json()),
+let homeStores = [];
+let homeCoupons = [];
+let homeCategories = [];
+
+try {
+  const [storesRes, couponsRes, categoriesRes] = await Promise.all([
+    fetch(`${apiUrl}/stores?mode=homepage&limit=8`),
+    fetch(`${apiUrl}/coupons?mode=homepage&limit=6&status=active`),
+    fetch(`${apiUrl}/categories?show_home=true&limit=8`),
   ]);
-
-const banners = bannersRes.status === "fulfilled" ? bannersRes.value?.data || [] : [];
-const homeStores = storesRes.status === "fulfilled" ? storesRes.value?.data || [] : [];
-const homeCoupons = couponsRes.status === "fulfilled" ? couponsRes.value?.data || [] : [];
-const homeCategories = categoriesRes.status === "fulfilled" ? categoriesRes.value?.data || [] : [];
-let siteStats = { total_coupons: 0, total_stores: 0 };
-if (statsRes.status === "fulfilled") siteStats = statsRes.value?.data || siteStats;
-
-if (bannersRes.status === "rejected") console.error("Failed to fetch banners:", bannersRes.reason);
-if (storesRes.status === "rejected") console.error("Failed to fetch home stores:", storesRes.reason);
-if (couponsRes.status === "rejected") console.error("Failed to fetch home coupons:", couponsRes.reason);
-if (categoriesRes.status === "rejected") console.error("Failed to fetch home categories:", categoriesRes.reason);
-if (statsRes.status === "rejected") console.error("Failed to fetch stats:", statsRes.reason);
+  homeStores = (await storesRes.json())?.data || [];
+  homeCoupons = (await couponsRes.json())?.data || [];
+  homeCategories = (await categoriesRes.json())?.data || [];
+} catch (e) {
+  console.error("Failed to fetch home sections:", e);
+}
 
 const pageMeta = {
   title: "Genie Coupon | Best Deals & Coupons Online",
@@ -271,6 +275,15 @@ const canonical = isStoreSubdomain
 
 const couponItems = store?.coupons?.items || [];
 const totalCoupons = store?.coupons?.total || 0;
+
+let siteStats = { total_coupons: 0, total_stores: 0 };
+try {
+  const res = await fetch(`${apiUrl}/stats`);
+  const json = await res.json();
+  siteStats = json?.data || siteStats;
+} catch (e) {
+  console.error("Failed to fetch stats:", e);
+}
 
 const SITE_URL = "https://geniecoupon.com";
 const SITE_NAME = "Genie Coupon";
