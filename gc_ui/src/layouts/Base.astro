@@ -49,26 +49,36 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
             if(!GA_ID) return;
             if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') return;
 
+            console.log('[GA DEBUG] script loaded, GA_ID:', GA_ID);
+
             var inited = false;
             function hasConsent() {
-              return localStorage.getItem('gc_cookie_consent') === 'accepted';
+              var c = localStorage.getItem('gc_cookie_consent') === 'accepted';
+              console.log('[GA DEBUG] hasConsent() ->', c);
+              return c;
             }
             function init() {
-              if (inited || !hasConsent()) return; inited = true;
+              console.log('[GA DEBUG] init() called, inited:', inited);
+              if (inited || !hasConsent()) { console.log('[GA DEBUG] init() bailed'); return; }
+              inited = true;
+              console.log('[GA DEBUG] creating GA script tag now');
               var s = document.createElement('script');
               s.async = true;
               s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
               s.crossOrigin = 'anonymous';
               document.head.appendChild(s);
               s.addEventListener('load', function(){
-                try{ gtag('js', new Date()); gtag('config', GA_ID, { send_page_view: false }); gtag('event','page_view',{page_location:location.href}); }catch(e){}
+                console.log('[GA DEBUG] GA script tag loaded successfully');
+                try{ gtag('js', new Date()); gtag('config', GA_ID, { send_page_view: false }); gtag('event','page_view',{page_location:location.href}); }catch(e){ console.log('[GA DEBUG] gtag call error:', e); }
               });
+              s.addEventListener('error', function(){ console.log('[GA DEBUG] GA script tag FAILED to load'); });
             }
 
-            // If consent already granted (returning visitor / post-refresh), init immediately
             if (hasConsent()) {
+              console.log('[GA DEBUG] consent present on load, calling init()');
               init();
             } else {
+              console.log('[GA DEBUG] no consent on load, arming listeners');
               var evs=['pointerdown','keydown','touchstart','scroll'];
               function onFirst(){ init(); remove(); }
               function add(){ evs.forEach(e=>window.addEventListener(e,onFirst,{once:true,passive:true})); }
@@ -77,8 +87,8 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
               setTimeout(function(){ if(!inited) init(); }, 10000);
             }
 
-            // Fires the moment Accept is clicked — no need to wait for another interaction
             window.addEventListener('cookie-consent-changed', function(e){
+              console.log('[GA DEBUG] consent-changed event received:', e.detail);
               if (e.detail === 'accepted') init();
             });
           })();
