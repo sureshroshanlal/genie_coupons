@@ -20,16 +20,16 @@ try {
   const resp = await api.get(`/categories/${slug}`);
   const responseData = resp as { data: any; meta?: any };
   category = responseData.data;
-  if (category) {
-    breadcrumbs = [
-      { name: "Home", url: "/" },
-      { name: "Categories", url: "/categories" },
-      { name: category.name, url: `/categories/${slug}` },
-    ];
-  }
 } catch (e) {
   console.error("Category fetch error:", e);
 }
+
+if (!category) return Astro.redirect("/404");
+breadcrumbs = [
+  { name: "Home", url: "/" },
+  { name: "Categories", url: "/categories" },
+  { name: category.name, url: `/categories/${slug}` },
+];
 
 const pageTitle =
   category?.meta_title || `${category?.name || "Category"} - Genie Coupon`;

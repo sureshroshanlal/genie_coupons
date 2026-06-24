@@ -1,0 +1,82 @@
+---
+
+---
+
+<div id="cookie-consent-banner" class="cookie-consent-banner" hidden>
+  <p class="cookie-consent-text">
+    We use cookies to improve your experience and analyze site traffic.
+    <a href="/privacy-policy">Learn more</a>
+  </p>
+  <div class="cookie-consent-actions">
+    <button id="cookie-decline" class="btn btn-outline--dark">Decline</button>
+    <button id="cookie-accept" class="btn btn-primary">Accept</button>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var KEY = "gc_cookie_consent";
+    var banner = document.getElementById("cookie-consent-banner");
+    if (banner) {
+      // create a local non-null alias so closures keep the narrowed type
+      var b = banner;
+      var stored = localStorage.getItem(KEY);
+
+      if (!stored) {
+        b.hidden = false;
+      }
+
+      document
+        .getElementById("cookie-accept")
+        ?.addEventListener("click", function () {
+          localStorage.setItem(KEY, "accepted");
+          b.hidden = true;
+          window.dispatchEvent(
+            new CustomEvent("cookie-consent-changed", { detail: "accepted" }),
+          );
+        });
+
+      document
+        .getElementById("cookie-decline")
+        ?.addEventListener("click", function () {
+          localStorage.setItem(KEY, "declined");
+          b.hidden = true;
+          window.dispatchEvent(
+            new CustomEvent("cookie-consent-changed", { detail: "declined" }),
+          );
+        });
+    }
+  })();
+</script>
+
+<style>
+  .cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: #1a1a1a;
+    border-top: 1px solid #2a2a2a;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .cookie-consent-text {
+    font-size: 0.875rem;
+    color: #b0b0a8;
+    margin: 0;
+  }
+  .cookie-consent-text a {
+    color: #89e900;
+    text-decoration: underline;
+  }
+  .cookie-consent-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+</style>

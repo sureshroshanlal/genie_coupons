@@ -136,7 +136,18 @@ export default function RevealButton({
         }
       }
     } catch (_) {
-      pushToast("An error occurred. Try again.");
+      pushToast("An error occurred. Redirecting...");
+      const fallback = merchant?.affl_url?.startsWith("http")
+        ? merchant.affl_url
+        : merchant?.web_url?.startsWith("http")
+          ? merchant.web_url
+          : null;
+      if (fallback) {
+        setTimeout(
+          () => window.open(fallback, "_blank", "noopener,noreferrer"),
+          300,
+        );
+      }
       setState("idle");
     }
   };
@@ -153,81 +164,87 @@ export default function RevealButton({
   return (
     <>
       {state === "idle" || state === "loading" ? (
-        <button
-          type="button"
-          onClick={handleReveal}
-          disabled={state === "loading"}
-          className="js-reveal-btn flex-shrink-0 inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-bold transition disabled:opacity-60 disabled:cursor-not-allowed"
-          style={{ background: "#89E900", color: "#222222" }}
-          onMouseOver={(e) => {
-            if (state !== "loading")
-              e.currentTarget.style.background = "#75C900";
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.background = "#89E900";
-          }}
-          aria-label={
-            couponType === "coupon" ? "Reveal coupon code" : "Activate deal"
-          }
-        >
-          {state === "loading" ? (
-            <svg
-              className="h-3.5 w-3.5 animate-spin"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-          ) : couponType === "coupon" ? (
-            <svg
-              className="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-          ) : (
-            <svg
-              className="h-3.5 w-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-          )}
-          {state === "loading"
-            ? "Loading..."
-            : couponType === "coupon"
-              ? "Reveal Code"
-              : "Activate Deal"}
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={handleReveal}
+            disabled={state === "loading"}
+            className="js-reveal-btn flex-shrink-0 inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-bold transition disabled:opacity-60 disabled:cursor-not-allowed"
+            style={{ background: "#89E900", color: "#222222" }}
+            onMouseOver={(e) => {
+              if (state !== "loading")
+                e.currentTarget.style.background = "#75C900";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "#89E900";
+            }}
+            aria-label={
+              couponType === "coupon" ? "Reveal coupon code" : "Activate deal"
+            }
+          >
+            {state === "loading" ? (
+              <svg
+                className="h-3.5 w-3.5 animate-spin"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
+              </svg>
+            ) : couponType === "coupon" ? (
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="h-3.5 w-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            )}
+            {state === "loading"
+              ? "Loading..."
+              : couponType === "coupon"
+                ? "Reveal Code"
+                : "Activate Deal"}
+          </button>
+          <p className="text-xs mt-1" style={{ color: "#707068" }}>
+            We may earn a commission when you use this{" "}
+            {couponType === "coupon" ? "code" : "deal"}.
+          </p>
+        </>
       ) : state === "code" ? (
         <div className="flex flex-col gap-1.5 w-full">
           <button
@@ -263,18 +280,26 @@ export default function RevealButton({
               ? "✓ Code copied to clipboard"
               : "⚠ Copy manually — clipboard blocked"}
           </div>
+          <p className="text-xs" style={{ color: "#707068" }}>
+            We may earn a commission when you use this code.
+          </p>
         </div>
       ) : state === "deal" ? (
-        <div
-          className="w-full rounded-md px-3 py-2 text-sm font-semibold text-center"
-          style={{
-            background: "#f0fdf4",
-            color: "#15803d",
-            border: "1px solid #bbf7d0",
-          }}
-        >
-          ✓ Deal Activated
-        </div>
+        <>
+          <div
+            className="w-full rounded-md px-3 py-2 text-sm font-semibold text-center"
+            style={{
+              background: "#f0fdf4",
+              color: "#15803d",
+              border: "1px solid #bbf7d0",
+            }}
+          >
+            ✓ Deal Activated
+          </div>
+          <p className="text-xs" style={{ color: "#707068" }}>
+            We may earn a commission when you use this code.
+          </p>
+        </>
       ) : null}
 
       {toast && <Toast message={toast} />}

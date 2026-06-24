@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import SeoHead from "../components/SeoHead.astro";
+import CookieConsent from "../components/CookieConsent.astro";
 
 const { meta = {} } = Astro.props as {
   meta?: {
@@ -36,6 +37,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
 
   <body class="min-h-screen">
     <slot />
+    <CookieConsent />
     {
       GA_ID && (
         <script
@@ -46,8 +48,11 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
             if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') return;
 
             var inited = false;
+            function hasConsent() {
+              return localStorage.getItem('gc_cookie_consent') === 'accepted';
+            }
             function init() {
-              if (inited) return; inited = true;
+              if (inited || !hasConsent()) return; inited = true;
               var s = document.createElement('script');
               s.async = true;
               s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
