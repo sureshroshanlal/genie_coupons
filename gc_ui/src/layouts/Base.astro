@@ -20,16 +20,18 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
 
 <html lang="en" class="scroll-smooth">
   <SeoHead meta={meta} />
-  {meta.preloadHero && meta.heroSrc && (
-    <link
-      rel="preload"
-      as="image"
-      href={meta.heroSrc}
-      imagesrcset={meta.heroSrcSetWebp || undefined}
-      imagesizes="(max-width: 768px) 516px, (max-width: 1200px) 800px, 1200px"
-      fetchpriority="high"
-    />
-  )}
+  {
+    meta.preloadHero && meta.heroSrc && (
+      <link
+        rel="preload"
+        as="image"
+        href={meta.heroSrc}
+        imagesrcset={meta.heroSrcSetWebp || undefined}
+        imagesizes="(max-width: 768px) 516px, (max-width: 1200px) 800px, 1200px"
+        fetchpriority="high"
+      />
+    )
+  }
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
@@ -43,7 +45,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
         <script
           set:html={`
           (function(){
-            var GA_ID='${GA_ID}';  // ← Fix: use env var
+            var GA_ID='${GA_ID}';
             if(!GA_ID) return;
             if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') return;
 
@@ -63,17 +65,23 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
               });
             }
 
-            // only load on first meaningful interaction
-            var evs=['pointerdown','keydown','touchstart','scroll'];
-            function onFirst(){ init(); remove(); }
-            function add(){ evs.forEach(e=>window.addEventListener(e,onFirst,{once:true,passive:true})); }
-            function remove(){ evs.forEach(e=>window.removeEventListener(e,onFirst)); }
-            add();
+            // If consent already granted (returning visitor / post-refresh), init immediately
+            if (hasConsent()) {
+              init();
+            } else {
+              var evs=['pointerdown','keydown','touchstart','scroll'];
+              function onFirst(){ init(); remove(); }
+              function add(){ evs.forEach(e=>window.addEventListener(e,onFirst,{once:true,passive:true})); }
+              function remove(){ evs.forEach(e=>window.removeEventListener(e,onFirst)); }
+              add();
+              setTimeout(function(){ if(!inited) init(); }, 10000);
+            }
 
-            // fallback: only load if session remains active for 10s (avoids Lighthouse fetch)
-            setTimeout(function(){ if(!inited) init(); }, 10000);
+            // Fires the moment Accept is clicked — no need to wait for another interaction
+            window.addEventListener('cookie-consent-changed', function(e){
+              if (e.detail === 'accepted') init();
+            });
           })();
-
         `}
         />
       )
