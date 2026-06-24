@@ -47,7 +47,6 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-WYE5L7QPS4";
           (function(){
             var GA_ID='${GA_ID}';
             if(!GA_ID) return;
-            if (navigator.doNotTrack === '1' || navigator.doNotTrack === 'yes') return;
 
             console.log('[GA DEBUG] script loaded, GA_ID:', GA_ID);
 
