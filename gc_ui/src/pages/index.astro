@@ -192,7 +192,7 @@ if (isStoreSubdomain && storeSlug) {
       }
     }
 
-    proofs = (store as any)?.proofs || [];
+    proofs = (store as any)?.proofs?.proofs || [];
   } catch (e) {
     console.error("Error fetching store:", e);
     return Astro.redirect("/404");
