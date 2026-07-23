@@ -19,7 +19,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-PPL5T57VCS";
 ---
 
 <html lang="en" class="scroll-smooth">
-  <SeoHead meta={meta} />
+  <SeoHead meta={meta} GA_ID={GA_ID} />
   {
     meta.preloadHero && meta.heroSrc && (
       <link
@@ -40,52 +40,5 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-PPL5T57VCS";
   <body class="min-h-screen">
     <slot />
     <CookieConsent />
-    {
-      GA_ID && (
-        <script
-          set:html={`
-          (function(){
-            var GA_ID='${GA_ID}';
-            if(!GA_ID) return;
-
-
-            var inited = false;
-            function hasConsent() {
-              var c = localStorage.getItem('gc_cookie_consent') === 'accepted';
-              return c;
-            }
-            function init() {
-              if (inited || !hasConsent()) { console.log('[GA DEBUG] init() bailed'); return; }
-              inited = true;
-              var s = document.createElement('script');
-              s.async = true;
-              s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-              s.crossOrigin = 'anonymous';
-              document.head.appendChild(s);
-              s.addEventListener('load', function(){
-                try{ gtag('js', new Date()); gtag('config', GA_ID, { send_page_view: false }); gtag('event','page_view',{page_location:location.href}); }catch(e){ console.log('[GA DEBUG] gtag call error:', e); }
-              });
-              s.addEventListener('error', function(){ console.log('[GA DEBUG] GA script tag FAILED to load'); });
-            }
-
-            if (hasConsent()) {
-              init();
-            } else {
-              var evs=['pointerdown','keydown','touchstart','scroll'];
-              function onFirst(){ init(); remove(); }
-              function add(){ evs.forEach(e=>window.addEventListener(e,onFirst,{once:true,passive:true})); }
-              function remove(){ evs.forEach(e=>window.removeEventListener(e,onFirst)); }
-              add();
-              setTimeout(function(){ if(!inited) init(); }, 10000);
-            }
-
-            window.addEventListener('cookie-consent-changed', function(e){
-              if (e.detail === 'accepted') init();
-            });
-          })();
-        `}
-        />
-      )
-    }
   </body>
 </html>
