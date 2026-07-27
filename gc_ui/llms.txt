@@ -1,0 +1,25 @@
+# GenieCoupon
+
+> GenieCoupon is a coupon and deals platform with 455 verified merchant stores across 10+ categories. Coupons are tested by hand before publishing.
+
+## Key Sections
+- [All Stores (A-Z)](https://geniecoupon.com/stores): Full merchant directory
+- [Categories](https://geniecoupon.com/categories): Deals organized by category
+- [Today's Coupons](https://geniecoupon.com/coupons): Currently active codes and deals
+- [How It Works](https://geniecoupon.com/how-it-works): Coupon verification process
+- [Blog](https://geniecoupon.com/blogs): Shopping guides and savings tips
+
+## Top Categories
+- [Software](https://geniecoupon.com/category/software)
+- [Health & Wellness](https://geniecoupon.com/category/health-and-wellness)
+- [Electronics](https://geniecoupon.com/category/electronics)
+- [Home & Garden](https://geniecoupon.com/category/home-and-garden)
+- [Clothing & Accessories](https://geniecoupon.com/category/clothing-and-accessories)
+- [Themes & Templates](https://geniecoupon.com/category/themes-and-templates)
+- [Services](https://geniecoupon.com/category/services)
+- [Beauty](https://geniecoupon.com/category/beauty)
+- [Education](https://geniecoupon.com/category/education)
+- [Sports & Outdoor](https://geniecoupon.com/category/sports-and-outdoor)
+
+## Sitemap
+https://geniecoupon.com/sitemap.xml
