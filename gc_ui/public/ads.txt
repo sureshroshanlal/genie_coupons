@@ -1,3 +1,6 @@
 # GenieCoupon Ads Config
 
-# No authorized sellers declared
+# ads.txt file for geniecoupon.com
+# This file is maintained per IAB Tech Lab's ads.txt specification.
+# No authorized digital sellers are declared at this time.
+# Contact: [contact@geniecoupon.com]
