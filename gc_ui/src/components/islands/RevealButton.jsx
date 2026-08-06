@@ -165,6 +165,11 @@ export default function RevealButton({
     <>
       {state === "idle" || state === "loading" ? (
         <>
+          <p className="text-xs mt-1" style={{ color: "#707068" }}>
+            We may earn a commission when you use this{" "}
+            {couponType === "coupon" ? "code" : "deal"}.
+          </p>
+
           <button
             type="button"
             onClick={handleReveal}
@@ -240,13 +245,12 @@ export default function RevealButton({
                 ? "Reveal Code"
                 : "Activate Deal"}
           </button>
-          <p className="text-xs mt-1" style={{ color: "#707068" }}>
-            We may earn a commission when you use this{" "}
-            {couponType === "coupon" ? "code" : "deal"}.
-          </p>
         </>
       ) : state === "code" ? (
         <div className="flex flex-col gap-1.5 w-full">
+          <p className="text-xs" style={{ color: "#707068" }}>
+            We may earn a commission when you use this code.
+          </p>
           <button
             type="button"
             onClick={handleCopy}
@@ -280,12 +284,12 @@ export default function RevealButton({
               ? "✓ Code copied to clipboard"
               : "⚠ Copy manually — clipboard blocked"}
           </div>
-          <p className="text-xs" style={{ color: "#707068" }}>
-            We may earn a commission when you use this code.
-          </p>
         </div>
       ) : state === "deal" ? (
         <>
+          <p className="text-xs" style={{ color: "#707068" }}>
+            We may earn a commission when you use this code.
+          </p>
           <div
             className="w-full rounded-md px-3 py-2 text-sm font-semibold text-center"
             style={{
@@ -296,9 +300,6 @@ export default function RevealButton({
           >
             ✓ Deal Activated
           </div>
-          <p className="text-xs" style={{ color: "#707068" }}>
-            We may earn a commission when you use this code.
-          </p>
         </>
       ) : null}
 
