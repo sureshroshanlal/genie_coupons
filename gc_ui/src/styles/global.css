@@ -876,7 +876,7 @@ button[aria-label^="Go to slide"]:focus-visible {
 
 .proof-strip-label {
   font-size: 0.6rem;
-  color: var(--text-muted);
+  color: #c9c9c7;
   padding: 0.2rem 0.375rem 0.3rem;
   white-space: nowrap;
   overflow: hidden;
