@@ -165,7 +165,7 @@ export default function RevealButton({
     <>
       {state === "idle" || state === "loading" ? (
         <>
-          <p className="text-xs mt-1" style={{ color: "#707068" }}>
+          <p className="text-xs mt-1" style={{ color: "#c9c9c2" }}>
             We may earn a commission when you use this{" "}
             {couponType === "coupon" ? "code" : "deal"}.
           </p>
@@ -248,7 +248,7 @@ export default function RevealButton({
         </>
       ) : state === "code" ? (
         <div className="flex flex-col gap-1.5 w-full">
-          <p className="text-xs" style={{ color: "#707068" }}>
+          <p className="text-xs" style={{ color: "#c9c9c2" }}>
             We may earn a commission when you use this code.
           </p>
           <button
@@ -287,7 +287,7 @@ export default function RevealButton({
         </div>
       ) : state === "deal" ? (
         <>
-          <p className="text-xs" style={{ color: "#707068" }}>
+          <p className="text-xs" style={{ color: "#c9c9c2" }}>
             We may earn a commission when you use this code.
           </p>
           <div
