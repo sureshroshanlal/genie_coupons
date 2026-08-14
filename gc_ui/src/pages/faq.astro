@@ -3,6 +3,8 @@ import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 
+const base ="https://geniecoupon.com";
+
 const pageMeta = {
   title: "FAQ — Genie Coupon",
   description:
@@ -123,15 +125,15 @@ const faqs = [
                     set:html={faq.a
                       ?.replace(
                         "/contact",
-                        '<a href="/contact" style="color:#89E900;" class="hover:underline">Contact page</a>',
+                        `<a href="${base}/contact" style="color:#89E900;" class="hover:underline">Contact page</a>`,
                       )
                       .replace(
                         "Affiliate Disclosure",
-                        '<a href="/affiliate-disclosure" style="color:#89E900;" class="hover:underline">Affiliate Disclosure</a>',
+                        `<a href="${base}/affiliate-disclosure" style="color:#89E900;" class="hover:underline">Affiliate Disclosure</a>`,
                       )
                       .replace(
                         "Privacy Policy",
-                        '<a href="/privacy-policy" style="color:#89E900;" class="hover:underline">Privacy Policy</a>',
+                        `<a href="${base}/privacy-policy" style="color:#89E900;" class="hover:underline">Privacy Policy</a>`,
                       )}
                   />
                 )}
@@ -146,7 +148,7 @@ const faqs = [
         style="background: rgba(137,233,0,0.06); border: 1px solid rgba(137,233,0,0.15); color: var(--text-secondary);"
       >
         Still have a question? <a
-          href="/contact"
+          href={`${base}/contact`}
           style="color:#89E900;"
           class="hover:underline font-semibold">Get in touch →</a
         >
