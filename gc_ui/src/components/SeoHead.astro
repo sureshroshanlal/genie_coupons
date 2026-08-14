@@ -66,7 +66,10 @@ const jsonld = meta.jsonld;
     }
     window.gtag = window.gtag || gtag;
   </script>
-  <script type="text/javascript" src="http://classic.avantlink.com/affiliate_app_confirm.php?mode=js&authResponse=cea74a000c2a248abd86e78b560893cacdf4ca25"></script>
+  <script
+    type="text/javascript"
+    src="http://classic.avantlink.com/affiliate_app_confirm.php?mode=js&authResponse=cea74a000c2a248abd86e78b560893cacdf4ca25"
+  ></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{defaultTitle}</title>
@@ -116,10 +119,7 @@ const jsonld = meta.jsonld;
   </noscript>
   {
     jsonld && (
-      <script
-        type="application/ld+json"
-        set:html={JSON.stringify(jsonld)}
-      />
+      <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
     )
   }
 
