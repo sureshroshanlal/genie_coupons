@@ -166,7 +166,7 @@ export function renderCouponCardHtml(item = {}, sectionId = "default") {
         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m9-1.13a4 4 0 10-8 0 4 4 0 008 0z" />
         </svg>
-        <span>${clickCount} ${clickCount === 1 ? "user" : "users"}</span>
+        // <span>${clickCount} ${clickCount === 1 ? "user" : "users"}</span>
       </div>`
       : "";
 
