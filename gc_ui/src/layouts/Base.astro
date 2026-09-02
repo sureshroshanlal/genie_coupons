@@ -20,18 +20,6 @@ const GA_ID = import.meta.env.PUBLIC_GA_ID || "G-PPL5T57VCS";
 
 <html lang="en" class="scroll-smooth">
   <SeoHead meta={meta} GA_ID={GA_ID} />
-  {
-    meta.preloadHero && meta.heroSrc && (
-      <link
-        rel="preload"
-        as="image"
-        href={meta.heroSrc}
-        imagesrcset={meta.heroSrcSetWebp || undefined}
-        imagesizes="(max-width: 768px) 516px, (max-width: 1200px) 800px, 1200px"
-        fetchpriority="high"
-      />
-    )
-  }
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />

@@ -159,10 +159,13 @@ const homeJsonld = {
 };
 
 const lcpSrc = banners?.[0]?.variants?.fallback || null;
+const webpList = banners?.[0]?.variants?.webp || [];
+const heroWidths = webpList.length === 4 ? [360, 516, 800, 1200] : [360, 516, 800];
 const lcpSrcset =
-  banners?.[0]?.variants?.webp
-    ?.map((url: string, i: number) => `${url} ${[516, 800, 1200][i]}w`)
-    .join(", ") || null;
+  webpList.length > 0
+    ? webpList.map((url: string, i: number) => `${url} ${heroWidths[i] || 516}w`).join(", ")
+    : null;
+const heroSizes = "(max-width: 640px) 65vw, (max-width: 1024px) 400px, 516px";
 ---
 
 <Base
@@ -174,6 +177,7 @@ const lcpSrcset =
     preloadHero: !!lcpSrc,
     heroSrc: lcpSrc,
     heroSrcSetWebp: lcpSrcset,
+    heroSizes,
   }}
 >
   <Header />

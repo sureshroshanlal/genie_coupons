@@ -50,9 +50,10 @@ export async function listActive({ limit = 20 } = {}) {
     // Shape expected by CoverflowCarousel
     variants: {
       webp: [
-        transformUrl(row.image_url, 516), // mobile display size
-        transformUrl(row.image_url, 800), // tablet
-        transformUrl(row.image_url, 1200), // desktop
+        transformUrl(row.image_url, 360), // mobile display (saves ~144 KiB on phones)
+        transformUrl(row.image_url, 516), // mobile retina / small tablet
+        transformUrl(row.image_url, 800), // tablet / desktop
+        transformUrl(row.image_url, 1200), // desktop retina
       ],
       fallback: transformUrl(row.image_url, 516),
     },

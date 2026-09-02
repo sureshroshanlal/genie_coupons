@@ -89,12 +89,12 @@ const jsonld = meta.jsonld;
         as="image"
         href={meta.heroSrc}
         imagesrcset={meta.heroSrcSetWebp}
-        imagesizes="(max-width: 480px) 516px, (max-width: 1024px) 800px, 1200px"
+        imagesizes={meta.heroSizes || "(max-width: 640px) 65vw, (max-width: 1024px) 400px, 516px"}
         fetchpriority="high"
       />
     ) : null
   }
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     rel="preload"
