@@ -128,8 +128,8 @@ export default function CoverflowCarousel({ banners = [] }) {
                   sizes="(max-width: 640px) 65vw, (max-width: 1024px) 400px, 516px"
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
-                  fetchpriority={offset === 0 && active === 0 ? "high" : undefined}
-                  decoding={offset === 0 ? "sync" : "async"}
+                  fetchPriority={offset === 0 && active === 0 ? "high" : undefined}
+                  decoding="async"
                   draggable={false}
                   width={516}
                   height={290}
