@@ -16,10 +16,11 @@ const PROXY_TRANSFORM = "https://www.geniecoupon.com/cdn-transform";
  * @param {*} quality
  * @returns
  */
-function transformUrl(imageUrl, width, quality = 60) {
+function transformUrl(imageUrl, width, height, quality = 60) {
   if (!imageUrl?.startsWith(SUPABASE_BASE)) return imageUrl;
   const path = imageUrl.replace(SUPABASE_BASE + "/", "");
-  return `${PROXY_TRANSFORM}/${path}?width=${width}&quality=${quality}`;
+  const h = height || Math.round((width * 9) / 16);
+  return `${PROXY_TRANSFORM}/${path}?width=${width}&height=${h}&resize=cover&quality=${quality}`;
 }
 
 /**
@@ -50,12 +51,12 @@ export async function listActive({ limit = 20 } = {}) {
     // Shape expected by CoverflowCarousel
     variants: {
       webp: [
-        transformUrl(row.image_url, 360), // mobile display (saves ~144 KiB on phones)
-        transformUrl(row.image_url, 516), // mobile retina / small tablet
-        transformUrl(row.image_url, 800), // tablet / desktop
-        transformUrl(row.image_url, 1200), // desktop retina
+        transformUrl(row.image_url, 360, 202), // mobile display
+        transformUrl(row.image_url, 516, 290), // mobile retina / small tablet
+        transformUrl(row.image_url, 800, 450), // tablet / desktop
+        transformUrl(row.image_url, 1200, 675), // desktop retina
       ],
-      fallback: transformUrl(row.image_url, 516),
+      fallback: transformUrl(row.image_url, 800, 450),
     },
     alt:
       row.alt_text ||

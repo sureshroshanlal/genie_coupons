@@ -29,6 +29,16 @@ function getOpacity(offset) {
   return 0.35;
 }
 
+function ensure16x9(url, width) {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("cdn-transform")) return url;
+  const h = Math.round((width * 9) / 16);
+  if (!url.includes("height=")) {
+    return `${url}&height=${h}&resize=cover`;
+  }
+  return url;
+}
+
 export default function CoverflowCarousel({ banners = [] }) {
   const [active, setActive] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -94,9 +104,9 @@ export default function CoverflowCarousel({ banners = [] }) {
       >
         {visible.map(({ idx, offset }) => {
           const b = banners[idx];
-          const fallback = b.variants?.fallback || b.variants?.webp?.[0] || "";
+          const rawFallback = b.variants?.fallback || b.variants?.webp?.[1] || b.variants?.webp?.[0] || "";
+          const fallback = ensure16x9(rawFallback, 516);
           const webpVariants = b.variants?.webp || [];
-          // const webpSrc = b.variants?.webp?.[1] || fallback;
           const clickUrl = b.click_url || null;
 
           const card = (
@@ -122,10 +132,11 @@ export default function CoverflowCarousel({ banners = [] }) {
                   srcSet={webpVariants
                     .map((url, i) => {
                       const widths = webpVariants.length === 4 ? [360, 516, 800, 1200] : [360, 516, 800];
-                      return `${url} ${widths[i] || 516}w`;
+                      const w = widths[i] || 516;
+                      return `${ensure16x9(url, w)} ${w}w`;
                     })
                     .join(", ")}
-                  sizes="(max-width: 640px) 65vw, (max-width: 1024px) 400px, 516px"
+                  sizes="(max-width: 640px) 78vw, (max-width: 1024px) 65vw, 650px"
                   alt={b.alt || `Banner ${idx + 1}`}
                   loading={offset === 0 ? "eager" : "lazy"}
                   fetchPriority={offset === 0 && active === 0 ? "high" : undefined}

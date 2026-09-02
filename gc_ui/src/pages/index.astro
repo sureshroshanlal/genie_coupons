@@ -158,14 +158,28 @@ const homeJsonld = {
   ],
 };
 
-const lcpSrc = banners?.[0]?.variants?.fallback || null;
+function ensure16x9(url: string, width: number) {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("cdn-transform")) return url;
+  const h = Math.round((width * 9) / 16);
+  if (!url.includes("height=")) {
+    return `${url}&height=${h}&resize=cover`;
+  }
+  return url;
+}
+
+const rawFallback = banners?.[0]?.variants?.fallback || null;
+const lcpSrc = rawFallback ? ensure16x9(rawFallback, 516) : null;
 const webpList = banners?.[0]?.variants?.webp || [];
 const heroWidths = webpList.length === 4 ? [360, 516, 800, 1200] : [360, 516, 800];
 const lcpSrcset =
   webpList.length > 0
-    ? webpList.map((url: string, i: number) => `${url} ${heroWidths[i] || 516}w`).join(", ")
+    ? webpList.map((url: string, i: number) => {
+        const w = heroWidths[i] || 516;
+        return `${ensure16x9(url, w)} ${w}w`;
+      }).join(", ")
     : null;
-const heroSizes = "(max-width: 640px) 65vw, (max-width: 1024px) 400px, 516px";
+const heroSizes = "(max-width: 640px) 78vw, (max-width: 1024px) 65vw, 650px";
 ---
 
 <Base
