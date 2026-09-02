@@ -97,6 +97,11 @@
       "permanent": true
     },
     {
+      "source": "/store/:slug*",
+      "destination": "/stores/:slug*",
+      "permanent": true
+    },
+    {
       "source": "/(.*)/",
       "destination": "/$1",
       "permanent": true

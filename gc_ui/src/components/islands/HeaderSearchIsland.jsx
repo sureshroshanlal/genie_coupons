@@ -159,7 +159,7 @@ export default function HeaderSearchIsland() {
     } else if (e.key === "Enter") {
       e.preventDefault();
       const sel = active >= 0 ? items[active] : items[0];
-      if (sel) window.location.href = `https://${sel.slug}.geniecoupon.com`;
+      if (sel) window.location.href = `/stores/${sel.slug}`;
     } else if (e.key === "Escape") {
       setOpen(false);
       setActive(-1);
@@ -167,7 +167,7 @@ export default function HeaderSearchIsland() {
   };
 
   const onClickItem = (s) => {
-    if (s && s.slug) window.location.href = `https://${s.slug}.geniecoupon.com`;
+    if (s && s.slug) window.location.href = `/stores/${s.slug}`;
   };
 
   return (

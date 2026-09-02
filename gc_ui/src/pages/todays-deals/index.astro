@@ -157,7 +157,7 @@ const jsonld = {
           "@type": "Offer",
           name: c.title || "",
           url: c.merchant?.slug
-            ? `https://${c.merchant.slug}.geniecoupon.com`
+            ? `${SITE_URL}/stores/${c.merchant.slug}`
             : SITE_URL,
           ...(c.code ? { discountCode: c.code } : {}),
           ...(c.ends_at ? { validThrough: c.ends_at } : {}),

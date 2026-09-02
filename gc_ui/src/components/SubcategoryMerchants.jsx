@@ -70,7 +70,7 @@ export default function SubcategoryMerchants({
         {merchants.map((merchant) => (
           <a
             key={merchant.id}
-            href={`https://${merchant.slug}.geniecoupon.com?ref=category&parent=${parentSlug}&sub=${subSlug}`}
+            href={`/stores/${merchant.slug}?ref=category&parent=${parentSlug}&sub=${subSlug}`}
             className="group block rounded-xl p-3 transition-all"
             style={{
               background: "var(--bg-surface)",

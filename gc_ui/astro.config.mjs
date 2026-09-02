@@ -23,5 +23,9 @@ export default defineConfig({
       status: 301,
       destination: "/todays-deals",
     },
+    "/store/[...slug]": {
+      status: 301,
+      destination: "/stores/[...slug]",
+    },
   },
 });

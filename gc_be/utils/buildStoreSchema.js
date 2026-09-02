@@ -45,7 +45,7 @@ export function buildStoreSchema({
   totalClicks = 0,
   generatedAt,
 }) {
-  const storeUrl = `https://${store.slug}.geniecoupon.com`;
+  const storeUrl = `${SITE_URL}/stores/${store.slug}`;
   const lastUpdated = generatedAt || new Date().toISOString();
   const lastVerified = store.verifier?.created_at || lastUpdated;
   const graph = [];
@@ -295,7 +295,7 @@ export function buildStoreSchema({
       "@type": "ListItem",
       position: i + 1,
       name: rs.name,
-      url: `https://${rs.slug}.geniecoupon.com`,
+      url: `${SITE_URL}/stores/${rs.slug}`,
     })),
   });
 

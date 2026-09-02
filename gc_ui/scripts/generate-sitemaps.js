@@ -28,7 +28,7 @@ if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // ─── Fetchers ─────────────────────────────────────────────────────────────────
 
-// Stores — each store lives at {slug}.geniecoupon.com
+// Stores — each store lives at /stores/{slug}
 async function fetchStores() {
   const pageSize = 1000;
   let page = 0;
@@ -50,8 +50,8 @@ async function fetchStores() {
   }
 
   return all.map((r) => ({
-    // Store pages are subdomains — use full URL
-    url: `https://${r.slug}.geniecoupon.com`,
+    // Store pages are under root subfolder /stores/${slug}
+    url: `${HOSTNAME}/stores/${r.slug}`,
     lastmod: r.updated_at
       ? new Date(r.updated_at).toISOString().slice(0, 10)
       : undefined,

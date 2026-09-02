@@ -254,7 +254,7 @@ const icons: Record<string, string> = {
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {author.stores.map((store) => (
               <a
-                href={`https://${store.slug}.geniecoupon.com`}
+                href={`/stores/${store.slug}`}
                 class="card-base p-3 flex flex-col items-center gap-2 text-center hover:border-brand-primary transition"
               >
                 {store.logo_url ? (

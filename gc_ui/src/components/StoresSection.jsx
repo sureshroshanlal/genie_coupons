@@ -26,7 +26,7 @@ export default function StoresSection({ stores = [] }) {
           : stores.map((store) => (
               <a
                 key={store.id}
-                href={`https://${store.slug}.geniecoupon.com`}
+                href={`/stores/${store.slug}`}
                 className="store-card-home"
               >
                 <div className="store-card-home-logo">

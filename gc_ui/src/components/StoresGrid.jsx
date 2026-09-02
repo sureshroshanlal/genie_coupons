@@ -41,7 +41,7 @@ function StoreCard({ store }) {
 
   return (
     <a
-      href={`https://${store.slug}.geniecoupon.com`}
+      href={`/stores/${store.slug}`}
       className="store-grid-card"
     >
       {/* Offer badge */}

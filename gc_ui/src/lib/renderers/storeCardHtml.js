@@ -145,7 +145,7 @@ export function renderStoreCardHtml(store = {}) {
 
   const anchorHtml = `
   <a
-    href="https://${slug}.geniecoupon.com"
+    href="/stores/${slug}"
     class="card-base block p-4 h-full hover:shadow-lg hover:-translate-y-0.5 transition-transform duration-150"
     aria-label="Open ${name}"
   >

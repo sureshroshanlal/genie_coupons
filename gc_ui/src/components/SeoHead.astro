@@ -5,15 +5,10 @@ const GA_ID = props.GA_ID;
 
 const siteName = "Genie Coupon";
 
-// Fix 1: correct canonical for subdomains
-const isSubdomain = Astro.locals?.isSubdomain === true;
-const storeSlug = Astro.locals?.storeSlug ?? null;
-
+// Canonical link locked to root domain
 const canonical = meta.canonical
   ? meta.canonical // use explicitly passed canonical if available
-  : isSubdomain && storeSlug
-    ? `https://${storeSlug}.geniecoupon.com`
-    : `https://geniecoupon.com${Astro.url.pathname}`;
+  : `https://geniecoupon.com${Astro.url.pathname}`;
 
 // utility: returns "{Mon, YYYY}"
 function getCurrentMonthYear() {

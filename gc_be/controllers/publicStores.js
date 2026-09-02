@@ -315,7 +315,7 @@ export async function detail(req, res) {
         // };
 
         // canonical + seo
-        const canonical = `https://${slug}.${SITE_URL}/`;
+        const canonical = `https://${SITE_URL}/stores/${slug}`;
 
         const seo = StoresRepo.buildSeo(store, {
           canonical,
