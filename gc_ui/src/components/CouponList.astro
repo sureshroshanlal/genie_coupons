@@ -23,7 +23,10 @@ const counts = {
 };
 ---
 
-<section id={`coupons-${sectionId}`}>
+<section id={`coupons-${sectionId}`} aria-labelledby={`heading-coupons-${sectionId}`}>
+  <h2 id={`heading-coupons-${sectionId}`} class="sr-only">
+    Available Coupons and Promo Codes
+  </h2>
   {
     showTabs && counts.all > 0 && (
       <FilterTabsIsland client:visible counts={counts} listId={listId} />

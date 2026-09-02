@@ -153,7 +153,7 @@ function CouponReviewsInner({
           justifyContent: "space-between",
         }}
       >
-        <span style={{ fontSize: 12, color: "#555" }}>
+        <span style={{ fontSize: 12, color: "#9ca3af" }}>
           {loading ? (
             "Loading reviews..."
           ) : (
@@ -163,7 +163,7 @@ function CouponReviewsInner({
         <span
           style={{
             fontSize: 11,
-            color: "#555",
+            color: "#9ca3af",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
             transition: "transform 0.2s",
           }}
@@ -191,7 +191,7 @@ function CouponReviewsInner({
           >
             {user ? (
               userHasReviewed ? (
-                <p style={{ fontSize: 12, color: "#555", margin: 0 }}>
+                <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>
                   You've already reviewed this coupon.
                 </p>
               ) : (

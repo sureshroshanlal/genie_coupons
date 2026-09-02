@@ -193,7 +193,7 @@ export default function ReviewForm({ couponId, onSubmitted }) {
               borderRadius: 6,
               padding: "5px 10px",
               fontSize: 12,
-              color: "#555",
+              color: "#9ca3af",
               cursor: "pointer",
             }}
             onMouseOver={(e) => {
@@ -202,7 +202,7 @@ export default function ReviewForm({ couponId, onSubmitted }) {
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.borderColor = "#2a2a2a";
-              e.currentTarget.style.color = "#555";
+              e.currentTarget.style.color = "#9ca3af";
             }}
           >
             📎 Attach screenshot (optional)
