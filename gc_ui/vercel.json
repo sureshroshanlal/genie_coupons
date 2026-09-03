@@ -83,6 +83,14 @@
     {
       "source": "/cdn-transform/:path*",
       "destination": "https://ldyyraumuunwimvyutnx.supabase.co/storage/v1/render/image/public/:path*"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml"
+    },
+    {
+      "source": "/sitemap-:name.xml",
+      "destination": "/sitemaps/sitemap-:name.xml"
     }
   ],
   "redirects": [

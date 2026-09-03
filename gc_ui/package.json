@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "prebuild": "node scripts/fetch-home.js && npm run optimize:banners && npm run export:banners",
+    "prebuild": "node scripts/fetch-home.js && node scripts/export-stores.js && npm run optimize:banners && npm run export:banners",
     "dev": "astro dev",
     "preview": "astro preview",
     "lint": "eslint .",
