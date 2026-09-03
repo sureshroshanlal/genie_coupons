@@ -1,0 +1,389 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import CouponList from "../components/CouponList.astro";
+import CardStore from "../components/CardStore.astro";
+import FAQAccordion from "../components/FAQAccordion.jsx";
+import { api } from "../lib/api";
+
+// ── Types ──
+type Coupon = {
+  id: string | number;
+  title?: string | null;
+  code?: string | null;
+  coupon_type?: string | null;
+  description?: string | null;
+  show_proof?: boolean;
+  is_editor?: boolean;
+  click_count?: number;
+  ends_at?: string | null;
+  aff_url?: string | null;
+  image_url?: string | null;
+  discount_type?: string | null;
+  discount_value?: string | null;
+  merchant?: {
+    id?: number | null;
+    slug?: string | null;
+    name?: string | null;
+    logo_url?: string | null;
+  } | null;
+  merchant_name?: string | null;
+};
+
+type CouponsResponse = {
+  data: Coupon[];
+  meta: {
+    limit?: number;
+    has_more?: boolean;
+    next_cursor?: string | null;
+  };
+};
+
+type Store = {
+  id: string | number;
+  slug: string;
+  name: string;
+  logo_url?: string | null;
+  stats?: { active_coupons?: number };
+};
+
+type StoresResponse = {
+  data: Store[];
+};
+
+// ── Data Fetching ──
+let laborCoupons: Coupon[] = [];
+let featuredCoupons: Coupon[] = [];
+let participatingStores: Store[] = [];
+
+try {
+  const [laborRes, featuredRes, storesRes] = await Promise.all([
+    api.get<CouponsResponse>("/coupons?q=Labor&limit=30", {}, { retries: 2, timeout: 8000 }),
+    api.get<CouponsResponse>("/coupons?mode=homepage&limit=15&status=active", {}, { retries: 2, timeout: 8000 }),
+    api.get<StoresResponse>("/stores?mode=homepage&limit=8", {}, { retries: 2, timeout: 8000 }),
+  ]);
+
+  laborCoupons = laborRes?.data || [];
+  featuredCoupons = featuredRes?.data || [];
+  participatingStores = storesRes?.data || [];
+} catch (e) {
+  console.error("Failed to fetch Labor Day data:", e);
+}
+
+// Merge & deduplicate coupons (Labor Day first, then featured deals)
+const seenIds = new Set<string | number>();
+const allDeals: Coupon[] = [];
+
+for (const c of [...laborCoupons, ...featuredCoupons]) {
+  if (c && c.id && !seenIds.has(c.id)) {
+    seenIds.add(c.id);
+    allDeals.push(c);
+  }
+}
+
+const totalOffers = allDeals.length;
+const totalStoresCount = new Set(allDeals.map((c) => c.merchant?.slug).filter(Boolean)).size;
+
+// ── Meta & SEO ──
+const SITE_URL = "https://geniecoupon.com";
+const canonical = `${SITE_URL}/labor-day`;
+const pageTitle = "Labor Day Deals & Promo Codes 2026 | Verified Holiday Sales";
+const pageDesc =
+  "Save up to 65% with verified Labor Day coupons, exclusive promo codes, and limited-time holiday sales. Hand-tested and updated daily on Genie Coupon.";
+
+const currentYear = new Date().getFullYear();
+
+const faqs = [
+  {
+    question: `When do Labor Day ${currentYear} sales start and end?`,
+    answer:
+      `Labor Day sales traditionally begin the week leading up to the holiday (late August) and extend through Labor Day weekend into the following Tuesday. Many major online retailers also offer early bird specials up to two weeks prior.`,
+  },
+  {
+    question: "Are these Labor Day promo codes verified and working?",
+    answer:
+      "Yes. Every coupon and promo code listed on Genie Coupon is hand-tested by our verification team. Look for the 'Verified' badge and proof screenshots to confirm code validity before checking out.",
+  },
+  {
+    question: "Which categories offer the biggest discounts during Labor Day?",
+    answer:
+      "Labor Day is known for massive markdowns on electronics & computers, web hosting & SaaS tools, home appliances, mattresses & furniture, outdoor gear, and end-of-summer apparel.",
+  },
+  {
+    question: "Can I stack Labor Day coupons with existing store sales?",
+    answer:
+      "Many merchants allow stacking sitewide Labor Day discount codes on top of already-discounted clearance or sale items. Check the terms and conditions on each coupon card to see stackability details.",
+  },
+  {
+    question: "How do I redeem a Labor Day coupon code on Genie Coupon?",
+    answer:
+      "Simply click 'Show Code' or 'Get Deal' on any offer card. The promo code is automatically copied to your clipboard, and you'll be redirected to the merchant's checkout page where you can paste the code and enjoy instant savings.",
+  },
+];
+
+// ── JSON-LD Structured Data ──
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SaleEvent",
+      "@id": `${canonical}#sale-event`,
+      name: `Labor Day Sale ${currentYear}`,
+      description: pageDesc,
+      url: canonical,
+      startDate: `${currentYear}-08-25T00:00:00Z`,
+      endDate: `${currentYear}-09-08T23:59:59Z`,
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+      location: {
+        "@type": "VirtualLocation",
+        url: canonical,
+      },
+      organizer: {
+        "@type": "Organization",
+        name: "Genie Coupon",
+        url: SITE_URL,
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Labor Day Deals",
+          item: canonical,
+        },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${canonical}#deal-list`,
+      name: `Featured Labor Day Offers`,
+      numberOfItems: String(allDeals.length),
+      itemListElement: allDeals.slice(0, 10).map((deal, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Offer",
+          name: deal.title || "Holiday Discount",
+          description: deal.description || undefined,
+          url: deal.merchant?.slug ? `${SITE_URL}/stores/${deal.merchant.slug}` : canonical,
+          seller: {
+            "@type": "Organization",
+            name: deal.merchant_name || deal.merchant?.name || "Merchant",
+          },
+        },
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${canonical}#faq`,
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `<p>${faq.answer}</p>`,
+        },
+      })),
+    },
+  ],
+};
+---
+
+<Base meta={{ title: pageTitle, description: pageDesc, canonical, jsonld }}>
+  <Header />
+
+  <main id="content" class="container mx-auto px-4 py-6 max-w-6xl">
+    {/* ── Breadcrumbs ── */}
+    <nav aria-label="Breadcrumbs" class="mb-4 text-xs flex items-center gap-1.5" style="color: #888;">
+      <a href="/" class="hover:underline hover:text-white transition">Home</a>
+      <span>/</span>
+      <span class="font-medium" style="color: #89E900;">Labor Day Deals</span>
+    </nav>
+
+    {/* ── Hero Banner ── */}
+    <section
+      class="relative overflow-hidden rounded-2xl p-6 sm:p-10 mb-8"
+      style="background: linear-gradient(135deg, #131722 0%, #1a2233 50%, #0d121c 100%); border: 1px solid #273042; box-shadow: 0 10px 30px rgba(0,0,0,0.5);"
+    >
+      {/* Decorative glow */}
+      <div
+        class="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none opacity-20 blur-3xl"
+        style="background: #89E900;"
+      ></div>
+
+      <div class="relative z-10 max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3" style="background: rgba(137,233,0,0.15); color: #89E900; border: 1px solid rgba(137,233,0,0.3);">
+          <span>🔥 Limited Time Event</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight mb-3">
+          Labor Day Deals & <span style="color: #89E900;">Promo Codes</span>
+        </h1>
+
+        <p class="text-base sm:text-lg mb-6 leading-relaxed" style="color: #9ca3af;">
+          Celebrate the holiday with hand-verified discounts, exclusive doorbusters, and stackable promo codes. Tested daily to ensure 100% working savings.
+        </p>
+
+        {/* Quick Highlights */}
+        <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-medium">
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style="background: #1e2535; color: #e5e7eb; border: 1px solid #2b354a;">
+            <svg class="w-4 h-4" style="color:#89E900;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{totalOffers} Active Offers</span>
+          </div>
+
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style="background: #1e2535; color: #e5e7eb; border: 1px solid #2b354a;">
+            <svg class="w-4 h-4" style="color:#89E900;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <span>{totalStoresCount} Stores Participating</span>
+          </div>
+
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style="background: #1e2535; color: #e5e7eb; border: 1px solid #2b354a;">
+            <svg class="w-4 h-4" style="color:#89E900;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Discounts Up to 65% OFF</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── Category Shortcuts ── */}
+    <section class="mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white">Popular Holiday Categories</h2>
+        <a href="/categories" class="text-xs font-semibold hover:underline" style="color: #89E900;">View All Categories →</a>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <a href="/categories/electronics" class="group p-3.5 rounded-xl transition flex items-center gap-3" style="background: #161922; border: 1px solid #272a37;">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(137,233,0,0.1); color: #89E900;">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Electronics</div>
+            <div class="text-xs" style="color: #888;">Laptops, Audio & Tech</div>
+          </div>
+        </a>
+
+        <a href="/categories/web-hosting" class="group p-3.5 rounded-xl transition flex items-center gap-3" style="background: #161922; border: 1px solid #272a37;">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(137,233,0,0.1); color: #89E900;">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Hosting & SaaS</div>
+            <div class="text-xs" style="color: #888;">Servers, Tools & VPNs</div>
+          </div>
+        </a>
+
+        <a href="/categories/home-garden" class="group p-3.5 rounded-xl transition flex items-center gap-3" style="background: #161922; border: 1px solid #272a37;">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(137,233,0,0.1); color: #89E900;">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Home & Plants</div>
+            <div class="text-xs" style="color: #888;">Decor, Plants & Living</div>
+          </div>
+        </a>
+
+        <a href="/categories/health-beauty" class="group p-3.5 rounded-xl transition flex items-center gap-3" style="background: #161922; border: 1px solid #272a37;">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background: rgba(137,233,0,0.1); color: #89E900;">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-white group-hover:text-emerald-400 transition">Health & Wellness</div>
+            <div class="text-xs" style="color: #888;">Supplements & Fitness</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    {/* ── Main Coupon Deals Section ── */}
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Verified Labor Day Coupons & Deals</h2>
+          <p class="text-xs sm:text-sm mt-1" style="color: #9ca3af;">
+            Click on any coupon code to copy and apply directly at store checkout.
+          </p>
+        </div>
+      </div>
+
+      <CouponList
+        coupons={allDeals}
+        sectionId="labor-day-deals"
+        showTabs={true}
+        columns={1}
+      />
+    </section>
+
+    {/* ── Featured Participating Stores ── */}
+    {participatingStores.length > 0 && (
+      <section class="mb-12">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-2xl font-bold text-white">Top Participating Stores</h2>
+            <p class="text-xs sm:text-sm mt-1" style="color: #9ca3af;">
+              Shop directly from brands running verified holiday sales.
+            </p>
+          </div>
+          <a href="/stores" class="text-xs font-semibold hover:underline" style="color: #89E900;">
+            Browse All Stores →
+          </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {participatingStores.map((store) => (
+            <CardStore store={store} />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* ── Shopping Guide & Tips ── */}
+    <section class="mb-12 p-6 sm:p-8 rounded-xl" style="background: #161922; border: 1px solid #272a37;">
+      <h2 class="text-xl font-bold text-white mb-3">Smart Shopping Guide for Labor Day Sales</h2>
+      <div class="space-y-3 text-sm leading-relaxed" style="color: #9ca3af;">
+        <p>
+          Labor Day marks the transition into fall and is one of the most lucrative times of the year to score massive savings online. Whether you are upgrading your home office tech, renewing subscription services, or refreshing home decor, retailers offer deep discounts to clear late-summer inventory.
+        </p>
+        <p>
+          <strong class="text-white">Pro Tip:</strong> Look for coupon codes labeled "Sitewide" or "Extra Discount". In many cases, these can be applied on top of clearance prices. Always double-check expiry dates, as many holiday flash sales run for 48 to 72 hours only.
+        </p>
+      </div>
+    </section>
+
+    {/* ── Frequently Asked Questions ── */}
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-white mb-2">Frequently Asked Questions</h2>
+      <p class="text-sm mb-6" style="color: #9ca3af;">
+        Everything you need to know about Labor Day sales and redeeming discounts.
+      </p>
+
+      <FAQAccordion faqs={faqs} client:visible />
+    </section>
+  </main>
+
+  <Footer />
+</Base>

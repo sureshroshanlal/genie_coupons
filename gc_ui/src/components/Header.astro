@@ -9,6 +9,7 @@ const base = isSubdomain ? MAIN : "";
 const nav = [
   { href: `${base}/stores`, label: "Stores" },
   { href: `${base}/categories`, label: "Categories" },
+  { href: `${base}/labor-day`, label: "🔥 Labor Day", highlight: true },
   { href: `${base}/blogs`, label: "Blogs" },
 ];
 ---
@@ -79,7 +80,10 @@ const nav = [
           {
             nav.map((n) => (
               <li>
-                <a href={n.href} class="header-nav-link">
+                <a
+                  href={n.href}
+                  class={n.highlight ? "header-nav-link header-nav-highlight" : "header-nav-link"}
+                >
                   {n.label}
                 </a>
               </li>
@@ -132,6 +136,17 @@ const nav = [
   .header-nav-link:hover {
     background: rgba(137, 233, 0, 0.1);
     color: #89e900;
+  }
+
+  .header-nav-highlight {
+    background: rgba(137, 233, 0, 0.14);
+    color: #89e900 !important;
+    border: 1px solid rgba(137, 233, 0, 0.35);
+  }
+
+  .header-nav-highlight:hover {
+    background: rgba(137, 233, 0, 0.25) !important;
+    color: #ffffff !important;
   }
 
   /* Mobile: stack search below logo+nav */

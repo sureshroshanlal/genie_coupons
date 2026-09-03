@@ -206,6 +206,12 @@ function chunk(arr, size) {
         changefreq: "daily",
         priority: 0.9,
       },
+      {
+        url: "/labor-day",
+        lastmod: today,
+        changefreq: "daily",
+        priority: 0.9,
+      },
       { url: "/about", lastmod: today, changefreq: "yearly", priority: 0.4 },
       { url: "/contact", lastmod: today, changefreq: "yearly", priority: 0.4 },
       { url: "/careers", lastmod: today, changefreq: "yearly", priority: 0.3 },
