@@ -16,6 +16,13 @@ dotenv.config(); // keep for local dev, but PORT comes from Render in production
 
 const app = express();
 
+// Block all crawlers from crawling the API subdomain
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain");
+  res.send(`User-agent: *
+Disallow: /`);
+});
+
 // Basic parsers
 app.use(express.json({ limit: process.env.JSON_LIMIT || "1mb" }));
 app.use(express.urlencoded({ extended: true }));
