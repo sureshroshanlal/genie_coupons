@@ -59,7 +59,7 @@ let participatingStores: Store[] = [];
 
 try {
   const [laborRes, featuredRes, storesRes] = await Promise.all([
-    api.get<CouponsResponse>("/coupons?q=Labor&limit=30", {}, { retries: 2, timeout: 8000 }),
+    api.get<CouponsResponse>("/coupons?q=Labor%20Day&limit=100", {}, { retries: 2, timeout: 8000 }),
     api.get<CouponsResponse>("/coupons?mode=homepage&limit=15&status=active", {}, { retries: 2, timeout: 8000 }),
     api.get<StoresResponse>("/stores?mode=homepage&limit=8", {}, { retries: 2, timeout: 8000 }),
   ]);
